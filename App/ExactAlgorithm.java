@@ -13,7 +13,9 @@ class ExactAlgorithm {
 
     }
 
-    public int exactAlgorithm(/*getVertices and getEdges*/) { //this is where my algorithm will be, at first I'll write an algorithm that basically brute forces it's way to the correct number.
+    public int exactAlgorithm(String[] vertices, String[][] edges) { //this is where my algorithm will be, at first I'll write an algorithm that basically brute forces it's way to the correct number.
+        int exactChroNumber = 0;
 
+        return exactChroNumber;
     }
 }
