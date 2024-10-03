@@ -11,17 +11,33 @@ class ExactAlgorithm {
 
         for(int i = 0; i < colors.length; i++) {
             String[] neighbours = getNeighbours(vertices[i], edges);
-            for(int c = 1; c <= upperBound; c++) {
-                for(int j = 0; j <= neighbours.length; j++) {
-                    if(j == neighbours.length) {
-                        colors[i] = c;
+            for (int c = 1; c <= upperBound; c++) {
+                boolean valid = true;
+                for (String neighbour : neighbours) {
+                    for (int j = 0; j < vertices.length; j++) {
+                        if (vertices[j].equals(neighbour) && colors[j] == c) {
+                            valid = false;
+                            break;
+                        }
                     }
-                    else {
-                        
-                    }
+                    if (!valid) break;
+                }
+                
+                if (valid) {
+                    colors[i] = c;
+                    break;
                 }
             }
         }
+
+        int maxColorUsed = 0;
+        for (int color : colors) {
+            if (color > maxColorUsed) {
+                maxColorUsed = color;
+            }
+        }
+
+        exactChroNumber = maxColorUsed;
 
         return exactChroNumber;
     }
@@ -38,7 +54,7 @@ class ExactAlgorithm {
             }
         }
 
-        String[] neighbours = (String[]) list.toArray();
+        String[] neighbours = list.toArray(new String[list.size()]);
 
         return neighbours;
     }
