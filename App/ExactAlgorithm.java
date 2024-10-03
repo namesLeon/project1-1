@@ -5,9 +5,9 @@ import java.util.List;
 
 class ExactAlgorithm {
     public int exactAlgorithm(String[] vertices, String[][] edges, int upperBound) {
-        int exactChroNumber = 0;
+        int exactChroNumber = 0; //initialising the int
 
-        int[] colors = new int[vertices.length];
+        int[] colors = new int[vertices.length]; //initialising array that keeps track of the amount of colors that have been chosen
 
         for(int i = 0; i < colors.length; i++) {
             String[] neighbours = getNeighbours(vertices[i], edges);
@@ -15,37 +15,37 @@ class ExactAlgorithm {
                 boolean valid = true;
                 for (String neighbour : neighbours) {
                     for (int j = 0; j < vertices.length; j++) {
-                        if (vertices[j].equals(neighbour) && colors[j] == c) {
+                        if (vertices[j].equals(neighbour) && colors[j] == c) { //all these loops and if statements basically just check if any neighbours have the same color
                             valid = false;
                             break;
                         }
                     }
-                    if (!valid) break;
+                    if (!valid) break; //if a neighbour with the same color is detected don't continue checking
                 }
                 
-                if (valid) {
+                if (valid) { //if no neighbour with the same color is detected assign that color
                     colors[i] = c;
-                    break;
+                    break; //if the vertice has a color don't check for new colors
                 }
             }
         }
 
         int maxColorUsed = 0;
         for (int color : colors) {
-            if (color > maxColorUsed) {
+            if (color > maxColorUsed) { //checking the amount of colors used
                 maxColorUsed = color;
             }
         }
 
-        exactChroNumber = maxColorUsed;
+        exactChroNumber = maxColorUsed; //i realise now this line is kinda useless but oh well
 
         return exactChroNumber;
     }
 
     public String[] getNeighbours(String vertice, String[][] edges) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<String>(); //using a list because it's easier to work with in this scenario
 
-        for(int i = 0; i < edges.length; i++) {
+        for(int i = 0; i < edges.length; i++) { //checking if the given vertice appears in an edge, if so add the other vertice of said edge to the list
             if(edges[i][0].equals(vertice)) {
                 list.add(edges[i][1]);
             }
@@ -54,7 +54,7 @@ class ExactAlgorithm {
             }
         }
 
-        String[] neighbours = list.toArray(new String[list.size()]);
+        String[] neighbours = list.toArray(new String[list.size()]); //turning list into an array
 
         return neighbours;
     }

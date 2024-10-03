@@ -12,6 +12,9 @@ public class Main {
             {"b", "d"},
             {"c", "d"}
         };
+
+        //I made the first example a square because it's easy to understand
+
         int upperBound = 4; //number of vertices for an easy reference
 
         ExactAlgorithm exactAlg = new ExactAlgorithm();
