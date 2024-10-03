@@ -16,6 +16,6 @@ public class Main {
 
         ExactAlgorithm exactAlg = new ExactAlgorithm();
         int exactChroNumber = exactAlg.exactAlgorithm(vertices, edges, upperBound);
-        System.out.println(exactChroNumber);
+        System.out.println(exactChroNumber); //should be 2
     }
 }
