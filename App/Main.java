@@ -5,11 +5,17 @@ package App;
 
 public class Main {
     public static void main(String[] args) {
-        String[] vertices;
-        String[][] edges;
-        int upperBound;
-        
+        String[] vertices = {"a", "b", "c", "d"};
+        String[][] edges = {
+            {"a", "b"}, 
+            {"a", "c"}, 
+            {"b", "d"},
+            {"c", "d"}
+        };
+        int upperBound = 4; //number of vertices for an easy reference
+
         ExactAlgorithm exactAlg = new ExactAlgorithm();
         int exactChroNumber = exactAlg.exactAlgorithm(vertices, edges, upperBound);
+        System.out.println(exactChroNumber);
     }
 }
