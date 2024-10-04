@@ -15,7 +15,7 @@ public class Main {
 
         //I made the first example a square because it's easy to understand
 
-        int upperBound = 4; //number of vertices for an easy reference
+        int upperBound = vertices.length; //number of vertices for an easy reference
 
         ExactAlgorithm exactAlg = new ExactAlgorithm();
         int exactChroNumber = exactAlg.exactAlgorithm(vertices, edges, upperBound);
