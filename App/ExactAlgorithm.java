@@ -5,7 +5,12 @@ import java.util.List;
 
 class ExactAlgorithm {
     public int exactAlgorithm(String[] vertices, String[][] edges, int upperBound) {
-        int exactChroNumber = 0; //initialising the int
+        if (vertices == null || vertices.length == 0) {
+            return 0; //hadle an empty vrtices array
+        }
+        if(edges == null) {
+            edges = new String[0][0]; //handle a null case edges matrix
+        }
 
         int[] colors = new int[vertices.length]; //initialising array that keeps track of the amount of colors that have been chosen
 
@@ -25,7 +30,7 @@ class ExactAlgorithm {
                 
                 if (valid) { //if no neighbour with the same color is detected assign that color
                     colors[i] = c;
-                    break; //if the vertice has a color don't check for new colors
+                    break; //if the vertex has a color don't check for new colors
                 }
             }
         }
@@ -37,19 +42,17 @@ class ExactAlgorithm {
             }
         }
 
-        exactChroNumber = maxColorUsed; //i realise now this line is kinda useless but oh well
-
-        return exactChroNumber;
+        return maxColorUsed;
     }
 
-    public String[] getNeighbours(String vertice, String[][] edges) {
+    public String[] getNeighbours(String vertex, String[][] edges) {
         List<String> list = new ArrayList<String>(); //using a list because it's easier to work with in this scenario
 
-        for(int i = 0; i < edges.length; i++) { //checking if the given vertice appears in an edge, if so add the other vertice of said edge to the list
-            if(edges[i][0].equals(vertice)) {
+        for(int i = 0; i < edges.length; i++) { //checking if the given vertex appears in an edge, if so add the other vertex of said edge to the list
+            if(edges[i][0].equals(vertex)) {
                 list.add(edges[i][1]);
             }
-            if(edges[i][1].equals(vertice)) {
+            if(edges[i][1].equals(vertex)) {
                 list.add(edges[i][0]);
             }
         }
