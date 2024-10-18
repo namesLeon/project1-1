@@ -72,6 +72,7 @@ class ExactAlgorithm {
                 list.add(edges[i][1]);
             }
             if(edges[i][1].equals(vertex)) {
+            if(edges[i][1].equals(vertex)) {
                 list.add(edges[i][0]);
             }
         }
