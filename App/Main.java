@@ -16,9 +16,16 @@ public class Main {
         //I made the first example a square because it's easy to understand
 
         int upperBound = 4; //number of vertices for an easy reference
+        int[] colors = new int [vertices.length];
 
         ExactAlgorithm exactAlg = new ExactAlgorithm();
-        int exactChroNumber = exactAlg.exactAlgorithm(vertices, edges, upperBound);
-        System.out.println(exactChroNumber); //should be 2
+
+        int exactChroNumber = exactAlg.recursiveBacktracking(vertices, edges, upperBound, colors);
+        System.out.println("Using recursive backtracking gives " + exactChroNumber + " as the exact chromatic number");
+
+        colors = new int [vertices.length];
+
+        exactChroNumber = exactAlg.branchAndBound(vertices, edges, 0, colors, upperBound);
+        System.out.println("Using a branching and bounding technique gives " + exactChroNumber + " as the exact chromatic number");
     }
 }
