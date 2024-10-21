@@ -9,7 +9,7 @@ public class Main {
             {"a", "b"}, 
             {"a", "c"}, 
             {"b", "d"},
-            {"c", "d"}
+            {"c", "d"} //test 
         };
 
         //I made the first example a square because it's easy to understand
