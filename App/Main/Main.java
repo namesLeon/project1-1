@@ -3,8 +3,7 @@ package App.Main;
 import App.Algorithms.*;
 import App.GUI.*;
 
-//This is the main file of the program, mainly used by
-//the code lead, to call the other files and have them all work together
+/* The plan for now is to have Main.java call the GUI, which then in turn can call upon the Algorithms which then call TxtInterpretation.java */
 public class Main {
     @SuppressWarnings("unused") //To get rid of the temporary annoying unused errors
     public static void main(String[] args) {
