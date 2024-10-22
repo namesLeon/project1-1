@@ -2,6 +2,7 @@ package App.Main;
 
 import App.Algorithms.*;
 import App.GUI.*;
+import App.Txt.*;
 
 /* The plan for now is to have Main.java call the GUI, which then in turn can call upon the Algorithms which then call TxtInterpretation.java */
 public class Main {
