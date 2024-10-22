@@ -1,9 +1,9 @@
-package App;
+package App.Algorithms;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class ExactAlgorithm {
+public class ExactAlgorithm {
     public int recursiveBacktracking(String[] vertices, String[][] edges, int upperBound, int[] colors) {
         int exactChroNumber = 0;
 

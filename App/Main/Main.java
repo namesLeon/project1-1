@@ -1,15 +1,19 @@
-package App;
+package App.Main;
+
+import App.Algorithms.*;
+import App.GUI.*;
 
 //This is the main file of the program, mainly used by
 //the code lead, to call the other files and have them all work together
 public class Main {
+    @SuppressWarnings("unused") //To get rid of the temporary annoying unused errors
     public static void main(String[] args) {
         String[] vertices = {"a", "b", "c", "d"};
         String[][] edges = {
             {"a", "b"}, 
             {"a", "c"}, 
             {"b", "d"},
-            {"c", "d"} //test 
+            {"c", "d"}
         };
 
         //I made the first example a square because it's easy to understand
@@ -18,6 +22,9 @@ public class Main {
         int[] colors = new int [vertices.length];
 
         ExactAlgorithm exactAlg = new ExactAlgorithm();
+        LowerBoundAlgorithm lowBoundAlg = new LowerBoundAlgorithm();
+        UpperBoundAlgorithm uppBoundAlg = new UpperBoundAlgorithm();
+        BasicGUI basicGUI = new BasicGUI();
 
         int exactChroNumber = exactAlg.recursiveBacktracking(vertices, edges, upperBound, colors);
         System.out.println("Using recursive backtracking gives " + exactChroNumber + " as the exact chromatic number");
