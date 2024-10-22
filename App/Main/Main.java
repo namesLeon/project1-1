@@ -25,6 +25,7 @@ public class Main {
         LowerBoundAlgorithm lowBoundAlg = new LowerBoundAlgorithm();
         UpperBoundAlgorithm uppBoundAlg = new UpperBoundAlgorithm();
         BasicGUI basicGUI = new BasicGUI();
+        TxtInterpretation txt = new TxtInterpretation();
 
         int exactChroNumber = exactAlg.recursiveBacktracking(vertices, edges, upperBound, colors);
         System.out.println("Using recursive backtracking gives " + exactChroNumber + " as the exact chromatic number");
