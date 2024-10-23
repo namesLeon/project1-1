@@ -104,8 +104,17 @@ public class BasicGUI {
     }
 
     private void runExactAlgorithm(){
-        //todo: complete this method later
+        if(vertices == null || edges == null) {
+            System.out.println("load a graph first");
+            return;
+        }
+
         ExactAlgorithm exactAlg = new ExactAlgorithm();
+        int upperBound = vertices.length; // assuming upper bound is the number of vertices
+        int[] colors = new int[vertices.length];
+
+        int exactChroNumber = exactAlg.recursiveBacktracking(vertices, edges, upperBound, colors);
+        System.out.println("exact chromatic number: " + exactChroNumber);    
     }
 
     private void runUpperBoundAlgorithm(){
