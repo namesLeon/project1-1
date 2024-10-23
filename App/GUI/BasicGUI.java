@@ -17,6 +17,7 @@ public class BasicGUI {
     // instance variables for graph data (optional at this point)
     private String[] vertices;
     private String[][] edges;
+    private JTextArea resultArea;
     
     // method to create and display the gui
     public void createShowGUI() {
