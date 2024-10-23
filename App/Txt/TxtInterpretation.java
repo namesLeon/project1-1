@@ -10,6 +10,10 @@ class ColEdge {
     int u;
     int v;
 }
+/* This file needs to be called upon by the algorithms so it can return the vertices array and the edges matrix, in order to do this
+ * you need to change the main method into another method that is not called main and remove the parts where you call the algorithms or
+ * include their methods.
+ */
 
 public class TxtInterpretation {
 
