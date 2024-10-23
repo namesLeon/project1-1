@@ -14,14 +14,14 @@ public class TxtInterpretation{
 
     private String[] vertices;   // Instance variable for vertices
     private String[][] edges;    // Instance variable for edges
+    private ColEdge[] e;
 
     // Read graph from file
-    public void readGraphFromFile(String inputfile) {
+    public int readGraphFromFile(String inputfile, int a) {
         boolean seen[] = null;
 
         int n = -1; // Number of vertices
         int m = -1; // Number of edges
-        ColEdge[] e = null;
 
         try {
             FileReader fr = new FileReader(inputfile);
@@ -72,32 +72,43 @@ public class TxtInterpretation{
                 if (surplus.length() >= 2) if (DEBUG) System.out.println(COMMENT + " Warning: there appeared to be data in your file after the last edge: '" + surplus + "'");
             }
 
+            br.close();
+
         } catch (IOException ex) {
             System.out.println("Error! Problem reading file " + inputfile);
             System.exit(0);
         }
 
-        // Initialize vertices array
+        if(a == 0) {
+            return n;
+        }
+        else {
+            return m;
+        }
+    }
+
+    // Method to return vertices array
+    public String[] getVertices(String inputfile) {
+        int n = readGraphFromFile(inputfile, 0);
+
         vertices = new String[n];
         for (int i = 0; i < n; i++) {
             vertices[i] = String.valueOf(i + 1);
         }
 
-        // Initialize edges matrix
+        return vertices;
+    }
+
+    // Method to return edges matrix
+    public String[][] getEdges(String inputfile) {
+        int m = readGraphFromFile(inputfile, 1);
+
         edges = new String[m][2];
         for (int i = 0; i < m; i++) {
             edges[i][0] = String.valueOf(e[i].u);
             edges[i][1] = String.valueOf(e[i].v);
         }
-    }
 
-    // Method to return vertices array
-    public String[] getVertices() {
-        return vertices;
-    }
-
-    // Method to return edges matrix
-    public String[][] getEdges() {
         return edges;
     }
 }
