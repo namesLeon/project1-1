@@ -66,6 +66,7 @@ public class BasicGUI {
         loadGraphButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
                 //todo: create a load graph method and implement action listener later
                 System.out.println("load Graph button clicked.");
             }
@@ -75,6 +76,7 @@ public class BasicGUI {
         exactButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
                 runExactAlgorithm();
                 System.out.println("exact Algorithm button clicked.");
             }
@@ -84,6 +86,7 @@ public class BasicGUI {
         upperBoundButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
                 runUpperBoundAlgorithm();
                 System.out.println("upper bound algorithm button clicked.");
             }
@@ -93,6 +96,7 @@ public class BasicGUI {
         lowerBoundButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
                 runLowerBoundAlgorithm();
                 System.out.println("lower bound algorithm button clicked.");
             }
