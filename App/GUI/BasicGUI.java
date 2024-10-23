@@ -4,12 +4,13 @@ package App.GUI;
 import App.Algorithms.ExactAlgorithm;
 import App.Algorithms.LowerBoundAlgorithm;
 import App.Algorithms.UpperBoundAlgorithm;
+import App.Txt.TxtInterpretation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import javax.swing.*;
-
-
+import java.io.File;
+import javax.swing.JFileChooser;
+import java.io.IOException;
 
 
 public class BasicGUI {
@@ -17,6 +18,7 @@ public class BasicGUI {
     // instance variables for graph data (optional at this point)
     private String[] vertices;
     private String[][] edges;
+    // declaring result area as an instance variable to make it accessible to other methods
     private JTextArea resultArea;
     
     // method to create and display the gui
@@ -100,12 +102,14 @@ public class BasicGUI {
     // helper methods
 
     private void loadGraphFromFile(File file) {
-        //todo: complete this method later
+        // logic to read graph from file
+        TxtInterpretation txtInt = new TxtInterpretation();
     }
 
     private void runExactAlgorithm(){
         if(vertices == null || edges == null) {
             System.out.println("load a graph first");
+            resultArea.append("load a graph first");
             return;
         }
 
@@ -118,14 +122,23 @@ public class BasicGUI {
     }
 
     private void runUpperBoundAlgorithm(){
-        //todo: complete this method later
+        if(vertices == null || edges == null) {
+            System.out.println("load a graph first");
+            return;
+        }
+
         UpperBoundAlgorithm upperAlg = new UpperBoundAlgorithm();
+        // upper bound algorithm not implemented yet
     }
 
     private void runLowerBoundAlgorithm(){
-        //todo: complete this method later
-        LowerBoundAlgorithm lowerAlg = new LowerBoundAlgorithm();
+        if(vertices == null || edges == null) {
+            System.out.println("load a graph first");
+            return;
+        }
 
+        LowerBoundAlgorithm lowerAlg = new LowerBoundAlgorithm();
+        // lower bound algorithm not implemented yet
     }
 
 }
