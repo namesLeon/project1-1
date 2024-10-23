@@ -109,7 +109,6 @@ public class BasicGUI {
     private void runExactAlgorithm(){
         if(vertices == null || edges == null) {
             System.out.println("load a graph first");
-            resultArea.append("load a graph first");
             return;
         }
 
