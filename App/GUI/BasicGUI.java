@@ -18,6 +18,7 @@ public class BasicGUI {
     // instance variables for graph data (optional at this point)
     private String[] vertices;
     private String[][] edges;
+    private int upperBound = -1;
     // declaring result area as an instance variable to make it accessible to other methods
     private JTextArea resultArea;
     
@@ -113,7 +114,9 @@ public class BasicGUI {
         }
 
         ExactAlgorithm exactAlg = new ExactAlgorithm();
-        int upperBound = vertices.length; // assuming upper bound is the number of vertices
+        if(upperBound == -1) { //Checks whether or not UpperBoundAlgorithm has been run
+            upperBound = vertices.length;
+        }
         int[] colors = new int[vertices.length];
 
         int exactChroNumber = exactAlg.recursiveBacktracking(vertices, edges, upperBound, colors);
@@ -127,7 +130,7 @@ public class BasicGUI {
         }
 
         UpperBoundAlgorithm upperAlg = new UpperBoundAlgorithm();
-        // upper bound algorithm not implemented yet
+        upperBound = upperAlg.UpperBound(vertices, edges);
     }
 
     private void runLowerBoundAlgorithm(){
