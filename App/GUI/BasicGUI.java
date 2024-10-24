@@ -16,7 +16,8 @@ public class BasicGUI {
     // instance variables for graph data (optional at this point)
     private String[] vertices;
     private String[][] edges;
-    private int upperBound = -1;
+    private int upperBound;
+    private int lowerBound;
     // declaring result area as an instance variable to make it accessible to other methods
     private JTextArea resultArea;
     private JFrame frame;
@@ -150,24 +151,27 @@ public class BasicGUI {
 
     private void runExactAlgorithm(){
         if(vertices == null || edges == null) {
-            resultArea.append("please load a graph first.");
+            resultArea.append("please load a graph first \n.");
             return;
         }
 
-        ExactAlgorithm exactAlg = new ExactAlgorithm();
-        if(upperBound == -1) { //Checks whether or not UpperBoundAlgorithm has been run
-            upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
-        }
+        ExactAlgorithm exactAlg = new ExactAlgorithm(vertices, edges);
+        upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
+        lowerBound = LowerBoundAlgorithm.LowerBound(vertices, edges);
         int[] colors = new int[vertices.length];
-        int startingVertex = 0;
 
-        int exactChroNumber = exactAlg.branchAndBound(vertices, edges, startingVertex, colors, upperBound);
-        resultArea.append("exact chromatic number: " + exactChroNumber + "\n");
+        int exactChroNumber = exactAlg.branchAndBound(vertices, edges, colors, upperBound, lowerBound);
+        if(exactChroNumber == -1) {
+            resultArea.append("the calculation took more than 30 seconds \n" + "here is the upper bound " + upperBound + "\n" + "here is the lower bound " + lowerBound + "\n");
+        }
+        else {
+            resultArea.append("exact chromatic number: " + exactChroNumber + "\n");
+        }
     }
 
     private void runUpperBoundAlgorithm(){
         if(vertices == null || edges == null) {
-            resultArea.append("load a graph first");
+            resultArea.append("load a graph first \n");
             return;
         }
 
@@ -177,12 +181,18 @@ public class BasicGUI {
 
     private void runLowerBoundAlgorithm(){
         if(vertices == null || edges == null) {
-            System.out.println("load a graph first");
+            System.out.println("load a graph first \n");
             return;
         }
 
         LowerBoundAlgorithm lowerAlg = new LowerBoundAlgorithm();
-        // lower bound algorithm not implemented yet
+        if(vertices == null || edges == null) {
+            resultArea.append("load a graph first \n");
+            return;
+        }
+
+        lowerBound = LowerBoundAlgorithm.LowerBound(vertices, edges);
+        resultArea.append("lower bound: " + lowerBound + "\n");
     }
 
 }

@@ -4,92 +4,138 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExactAlgorithm {
-    public int recursiveBacktracking(String[] vertices, String[][] edges, int upperBound, int[] colors) {
-        int exactChroNumber = 0;
+    private List<List<Integer>> adjacencyList;
+    private static final long TIME_LIMIT_MS = 30000; // 30 seconds in milliseconds
 
-        for(int i = 0; i < colors.length; i++) {
-            for (int color = 1; color <= upperBound; color++) {
-                if (isColorValid(vertices, edges, i, colors, color)) {
-                    colors[i] = color;
-                    break;
-                }
-            }
-        }
-
-        exactChroNumber = getMaxColorUsed(colors);
-
-        return exactChroNumber;
+    public ExactAlgorithm(String[] vertices, String[][] edges) {
+        this.adjacencyList = buildAdjacencyList(vertices, edges);
     }
 
-    public int branchAndBound(String[] vertices, String[][] edges, int vertexIndex, int[] colors, int upperBound) {
-        if(vertexIndex == (vertices.length)) {
-            int currentMaxColor = getMaxColorUsed(colors);
+    public int branchAndBound(String[] vertices, String[][] edges, int[] colors, int upperBound, int lowerBound) {
+        long startTime = System.currentTimeMillis(); // Store the start time
+        return branchAndBoundRecursive(vertices, edges, colors, upperBound, lowerBound, startTime);
+    }
 
-            if(currentMaxColor < upperBound) {
+    private int branchAndBoundRecursive(String[] vertices, String[][] edges, int[] colors, int upperBound, int lowerBound, long startTime) {
+        if (System.currentTimeMillis() - startTime > TIME_LIMIT_MS) {
+            return -1;
+        }
+
+        int nextVertex = selectNextVertexDSATUR(colors, adjacencyList);
+
+        if (nextVertex == -1) {
+            int currentMaxColor = getMaxColorUsed(colors);
+            if (currentMaxColor < upperBound) {
                 upperBound = currentMaxColor;
             }
-
             return upperBound;
         }
 
-        for(int color = 1; color <= upperBound; color++) {
-            if(isColorValid(vertices, edges, vertexIndex, colors, color)) {
-                colors[vertexIndex] = color;
+        List<Integer> availableColors = getValidColors(nextVertex, colors, upperBound);
 
-                upperBound = branchAndBound(vertices, edges, vertexIndex + 1, colors, upperBound);
+        for (int color : availableColors) {
+            colors[nextVertex] = color;
+            int currentMaxColor = getMaxColorUsed(colors);
 
-                colors[vertexIndex] = 0;
+            if (currentMaxColor >= upperBound || currentMaxColor < lowerBound) {
+                colors[nextVertex] = 0;
+                continue;
             }
+
+            upperBound = branchAndBoundRecursive(vertices, edges, colors, upperBound, lowerBound, startTime);
+
+            if (upperBound == -1) {
+                return -1;
+            }
+
+            if (upperBound == lowerBound) {
+                return lowerBound;
+            }
+
+            colors[nextVertex] = 0;
         }
 
         return upperBound;
     }
 
-    public boolean isColorValid(String[] vertices, String[][] edges, int vertexIndex, int[] colors, int color) {
-        boolean valid = true;
-        String[] neighbours = getNeighbours(vertices[vertexIndex], edges);
-
-        for (String neighbour : neighbours) {
-            for (int j = 0; j < vertices.length; j++) {
-                if (vertices[j].equals(neighbour) && colors[j] == color) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (!valid) { 
-                break;
-            }
+    private List<List<Integer>> buildAdjacencyList(String[] vertices, String[][] edges) {
+        List<List<Integer>> adjacencyList = new ArrayList<>();
+        for (int i = 0; i < vertices.length; i++) {
+            adjacencyList.add(new ArrayList<>());
         }
 
-        return valid;
+        for (String[] edge : edges) {
+            int u = Integer.parseInt(edge[0]) - 1;
+            int v = Integer.parseInt(edge[1]) - 1;
+            adjacencyList.get(u).add(v);
+            adjacencyList.get(v).add(u);
+        }
+
+        return adjacencyList;
     }
 
-    public String[] getNeighbours(String vertex, String[][] edges) {
-        List<String> list = new ArrayList<String>();
+    public int selectNextVertexDSATUR(int[] colors, List<List<Integer>> adjacencyList) {
+        int maxSaturation = -1;
+        int selectedVertex = -1;
 
-        for(int i = 0; i < edges.length; i++) {
-            if(edges[i][0].equals(vertex)) {
-                list.add(edges[i][1]);
-            }
-            if(edges[i][1].equals(vertex)) {
-                list.add(edges[i][0]);
+        for (int i = 0; i < colors.length; i++) {
+            if (colors[i] == 0) {
+                int saturation = computeSaturation(i, colors, adjacencyList);
+                if (saturation > maxSaturation) {
+                    maxSaturation = saturation;
+                    selectedVertex = i;
+                }
             }
         }
 
-        String[] neighbours = list.toArray(new String[list.size()]);
+        return selectedVertex;
+    }
 
-        return neighbours;
+    private int computeSaturation(int vertex, int[] colors, List<List<Integer>> adjacencyList) {
+        boolean[] adjacentColors = new boolean[colors.length + 1];
+
+        for (int neighbor : adjacencyList.get(vertex)) {
+            if (colors[neighbor] != 0) {
+                adjacentColors[colors[neighbor]] = true;
+            }
+        }
+
+        int saturation = 0;
+        for (boolean hasColor : adjacentColors) {
+            if (hasColor) {
+                saturation++;
+            }
+        }
+
+        return saturation;
+    }
+
+    public List<Integer> getValidColors(int vertexIndex, int[] colors, int upperBound) {
+        boolean[] usedColors = new boolean[upperBound + 1];
+
+        for (int neighbor : adjacencyList.get(vertexIndex)) {
+            if (colors[neighbor] > 0) {
+                usedColors[colors[neighbor]] = true;
+            }
+        }
+
+        List<Integer> validColors = new ArrayList<>();
+        for (int color = 1; color <= upperBound; color++) {
+            if (!usedColors[color]) {
+                validColors.add(color);
+            }
+        }
+
+        return validColors;
     }
 
     public int getMaxColorUsed(int[] colors) {
         int maxColorUsed = 0;
-
         for (int color : colors) {
             if (color > maxColorUsed) {
                 maxColorUsed = color;
             }
         }
-
         return maxColorUsed;
     }
 }
