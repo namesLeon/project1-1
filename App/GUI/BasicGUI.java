@@ -71,6 +71,10 @@ public class BasicGUI {
                 SoundFX.playSound("button.wav");
                 //todo: create a load graph method and implement action listener later
                 JFileChooser fileChooser = new JFileChooser();
+
+                File defaultDirectory = new File("App/Txt/Graphs");
+                fileChooser.setCurrentDirectory(defaultDirectory);
+
                 int result = fileChooser.showOpenDialog(null);
                 if(result == JFileChooser.APPROVE_OPTION){
                     File selectedFile = fileChooser.getSelectedFile();
