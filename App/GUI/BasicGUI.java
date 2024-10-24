@@ -67,6 +67,7 @@ public class BasicGUI {
         loadGraphButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                resultArea.setText("");
                 SoundFX.playSound("button.wav");
                 //todo: create a load graph method and implement action listener later
                 JFileChooser fileChooser = new JFileChooser();
