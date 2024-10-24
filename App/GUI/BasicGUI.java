@@ -7,10 +7,8 @@ import App.Algorithms.UpperBoundAlgorithm;
 import App.Txt.TxtInterpretation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
 import java.io.File;
-import javax.swing.JFileChooser;
-import java.io.IOException;
+import javax.swing.*;
 
 
 public class BasicGUI {
@@ -44,7 +42,7 @@ public class BasicGUI {
         JButton lowerBoundButton = new JButton("Run Lower Bound Algorithm");
 
         // new text area to display the results
-        JTextArea resultArea = new JTextArea(15, 40);
+        resultArea = new JTextArea(15, 40);
         resultArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(resultArea);
 
@@ -109,6 +107,23 @@ public class BasicGUI {
     private void loadGraphFromFile(File file) {
         // logic to read graph from file
         TxtInterpretation txtInt = new TxtInterpretation();
+        // getting vertices and edges
+        vertices = txtInt.getVertices(file.getAbsolutePath());
+        edges = txtInt.getEdges(file.getAbsolutePath());
+
+        if(vertices!=null && edges!=null){
+            upperBound=-1; // reset
+            
+            // display in result area
+            resultArea.append("graph loaded from file: " + file.getName() + "\n");
+            resultArea.append("number of vertices: " + vertices.length + "\n");
+            resultArea.append("number of edges: " + edges.length + "\n\n");
+
+        } else {
+            resultArea.append("failed to load graph from file " + file.getName() + "\n");
+        }
+
+
     }
 
     private void runExactAlgorithm(){
