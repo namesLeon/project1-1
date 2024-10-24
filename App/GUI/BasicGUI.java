@@ -156,7 +156,7 @@ public class BasicGUI {
 
         ExactAlgorithm exactAlg = new ExactAlgorithm();
         if(upperBound == -1) { //Checks whether or not UpperBoundAlgorithm has been run
-            upperBound = vertices.length;
+            upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
         }
         int[] colors = new int[vertices.length];
         int startingVertex = 0;
