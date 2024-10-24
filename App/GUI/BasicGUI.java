@@ -19,6 +19,8 @@ public class BasicGUI {
     private int upperBound = -1;
     // declaring result area as an instance variable to make it accessible to other methods
     private JTextArea resultArea;
+    private JFrame frame;
+    private GraphVisualizer graphPanel;
     
     // method to create and display the gui
     public void createShowGUI() {
@@ -138,7 +140,16 @@ public class BasicGUI {
             resultArea.append("number of vertices: " + vertices.length + "\n");
             resultArea.append("number of edges: " + edges.length + "\n\n");
 
-        } else {
+        } 
+        
+        if (vertices != null && edges != null) {
+            graphPanel = new GraphVisualizer(vertices, edges);
+            frame.add(graphPanel); // Add the visualizer to the frame
+            frame.revalidate();    // Revalidate the frame to reflect the changes
+            frame.repaint();       // Repaint the frame to show the graph
+        }
+        
+        else {
             resultArea.append("failed to load graph from file " + file.getName() + "\n");
         }
 
