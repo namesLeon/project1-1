@@ -66,7 +66,14 @@ public class BasicGUI {
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("button.wav");
                 //todo: create a load graph method and implement action listener later
-                System.out.println("load Graph button clicked.");
+                JFileChooser fileChooser = new JFileChooser();
+                int result = fileChooser.showOpenDialog(null);
+                if(result == JFileChooser.APPROVE_OPTION){
+                    File selectedFile = fileChooser.getSelectedFile();
+                    loadGraphFromFile(selectedFile);
+                } else {
+                    resultArea.append("file selection cancelled.");
+                }
             }
         });
 
@@ -128,7 +135,7 @@ public class BasicGUI {
 
     private void runExactAlgorithm(){
         if(vertices == null || edges == null) {
-            System.out.println("load a graph first");
+            resultArea.append("please load a graph first.");
             return;
         }
 
@@ -139,17 +146,18 @@ public class BasicGUI {
         int[] colors = new int[vertices.length];
 
         int exactChroNumber = exactAlg.recursiveBacktracking(vertices, edges, upperBound, colors);
-        System.out.println("exact chromatic number: " + exactChroNumber);    
+        resultArea.append("exact chromatic number: " + exactChroNumber + "\n");
     }
 
     private void runUpperBoundAlgorithm(){
         if(vertices == null || edges == null) {
-            System.out.println("load a graph first");
+            resultArea.append("load a graph first");
             return;
         }
 
         UpperBoundAlgorithm upperAlg = new UpperBoundAlgorithm();
         upperBound = upperAlg.UpperBound(vertices, edges);
+        resultArea.append("upper bound: " + upperBound + "\n");
     }
 
     private void runLowerBoundAlgorithm(){
