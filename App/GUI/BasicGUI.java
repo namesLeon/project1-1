@@ -37,7 +37,8 @@ public class BasicGUI {
 
         // button that does nothing for now 
         JButton loadGraphButton = new JButton("Load Graph");
-        JButton exactButton = new JButton("Run Exact Algorithm");
+        JButton exact1Button = new JButton("Run Exact Algorithm 1");
+        JButton exact2Button = new JButton("Run Exact Algorithm 2");
         JButton upperBoundButton = new JButton("Run Upper Bound Algorithm");
         JButton lowerBoundButton = new JButton("Run Lower Bound Algorithm");
 
@@ -49,7 +50,8 @@ public class BasicGUI {
         
         // add buttons to panel
         panel.add(loadGraphButton);
-        panel.add(exactButton);
+        panel.add(exact1Button);
+        panel.add(exact2Button);
         panel.add(upperBoundButton);
         panel.add(lowerBoundButton);
         panel.add(scrollPane);
@@ -77,13 +79,23 @@ public class BasicGUI {
             }
         });
 
-        // action listener for exact alg. button
-        exactButton.addActionListener(new ActionListener() {
+        // action listener for exact alg. 1 button
+        exact1Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("button.wav");
-                runExactAlgorithm();
-                System.out.println("exact Algorithm button clicked.");
+                runExactAlgorithm1();
+                System.out.println("exact Algorithm 1 button clicked.");
+            }
+        });
+
+        // action listener for exact alg. 2 button
+        exact2Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
+                runExactAlgorithm2();
+                System.out.println("exact Algorithm 2 button clicked.");
             }
         });
         
@@ -133,7 +145,7 @@ public class BasicGUI {
 
     }
 
-    private void runExactAlgorithm(){
+    private void runExactAlgorithm1(){
         if(vertices == null || edges == null) {
             resultArea.append("please load a graph first.");
             return;
@@ -146,6 +158,23 @@ public class BasicGUI {
         int[] colors = new int[vertices.length];
 
         int exactChroNumber = exactAlg.recursiveBacktracking(vertices, edges, upperBound, colors);
+        resultArea.append("exact chromatic number: " + exactChroNumber + "\n");
+    }
+
+    private void runExactAlgorithm2(){
+        if(vertices == null || edges == null) {
+            resultArea.append("please load a graph first.");
+            return;
+        }
+
+        ExactAlgorithm exactAlg = new ExactAlgorithm();
+        if(upperBound == -1) { //Checks whether or not UpperBoundAlgorithm has been run
+            upperBound = vertices.length;
+        }
+        int[] colors = new int[vertices.length];
+        int startingVertex = 0;
+
+        int exactChroNumber = exactAlg.branchAndBound(vertices, edges, startingVertex, colors, upperBound);
         resultArea.append("exact chromatic number: " + exactChroNumber + "\n");
     }
 
