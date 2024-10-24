@@ -41,9 +41,10 @@ public class UpperBoundAlgorithm {
         int n = graph.length;
         int[][] ordered = new int[n][n];
         int[] cnt = new int[n];
+        int[] order = new int[n]; 
         for(int i=1; i<n; i++){
             for(int j=1; j<n; j++){
-                if(graph[i][j]==1){
+                if(graph[i][j] == 1){
                     cnt[i]++;
                 }
             }
@@ -61,10 +62,13 @@ public class UpperBoundAlgorithm {
                     index = r;
                 }
             }
-            for(int s=1; s<n; s++){
-                ordered[k][s] = graph[index][s];
-            }
+            order[k] = index;
             used[index] = true;
+        }
+        for(int i=1; i<n; i++){
+            for(int j=1; j<n; j++){
+                ordered[i][j] = graph[order[i]][order[j]];
+            }
         }
         return ordered;
     }
