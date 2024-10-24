@@ -10,6 +10,7 @@ public class UpperBoundAlgorithm {
             graph[u][v] = 1;
             graph[v][u] = 1;
         }
+        graph = orderedGraph(graph);
         int[] clrofver = new int[n + 1];
         boolean[] isavailable = new boolean[n + 1];
         for(int k=1; k<=n; k++){
@@ -34,5 +35,37 @@ public class UpperBoundAlgorithm {
             currans = Math.max(currans, clrofver[j]);
         }
         return currans;
+    }
+
+    public static int[][] orderedGraph(int[][] graph){
+        int n = graph.length;
+        int[][] ordered = new int[n][n];
+        int[] cnt = new int[n];
+        for(int i=1; i<n; i++){
+            for(int j=1; j<n; j++){
+                if(graph[i][j]==1){
+                    cnt[i]++;
+                }
+            }
+        }
+        boolean[] used = new boolean[n];
+        for(int k=1; k<n; k++){
+            int maxim = -1;
+            int index = -1;
+            for(int r=1; r<n; r++){
+                if(used[r]){
+                    continue;
+                }
+                if(cnt[r] > maxim){
+                    maxim = cnt[r];
+                    index = r;
+                }
+            }
+            for(int s=1; s<n; s++){
+                ordered[k][s] = graph[index][s];
+            }
+            used[index] = true;
+        }
+        return ordered;
     }
 }
