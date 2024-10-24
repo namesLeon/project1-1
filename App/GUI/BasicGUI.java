@@ -163,6 +163,7 @@ public class BasicGUI {
 
         int exactChroNumber = exactAlg.branchAndBound(vertices, edges, colors, upperBound, lowerBound);
         if(exactChroNumber == -1) {
+            SoundFX.playSound("fail.wav");
             resultArea.append("the calculation took more than 30 seconds \n" + "here is the upper bound " + upperBound + "\n" + "here is the lower bound " + lowerBound + "\n");
         }
         else {
