@@ -155,8 +155,7 @@ public class BasicGUI {
             return;
         }
 
-        UpperBoundAlgorithm upperAlg = new UpperBoundAlgorithm();
-        upperBound = upperAlg.UpperBound(vertices, edges);
+        upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
         resultArea.append("upper bound: " + upperBound + "\n");
     }
 
