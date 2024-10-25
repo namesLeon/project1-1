@@ -183,12 +183,6 @@ public class BasicGUI {
 
     private void runLowerBoundAlgorithm(){
         if(vertices == null || edges == null) {
-            System.out.println("load a graph first \n");
-            return;
-        }
-
-        LowerBoundAlgorithm lowerAlg = new LowerBoundAlgorithm();
-        if(vertices == null || edges == null) {
             resultArea.append("load a graph first \n");
             return;
         }
