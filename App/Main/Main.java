@@ -26,23 +26,23 @@ public class Main {
         imageLabel.setVerticalAlignment(JLabel.CENTER);
 
         JPanel buttonPanel = new JPanel();
+        JPanel exitPanel = new JPanel();
 
         JButton BasicGUI = new JButton("Basic GUI");
         JButton ICMM = new JButton("I Changed My Mind");
         JButton RO = new JButton("Random Order");
         JButton TTBE = new JButton("To The Bitter End");
+        JButton Exit = new JButton("Exit");
 
         buttonPanel.add(BasicGUI);
         buttonPanel.add(RO);
         buttonPanel.add(ICMM);
         buttonPanel.add(TTBE);
+        exitPanel.add(Exit);
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(imageLabel, BorderLayout.NORTH);
-        mainPanel.add(buttonPanel, BorderLayout.CENTER);
-
-        frame.add(mainPanel);
+        frame.add(imageLabel, BorderLayout.NORTH);
+        frame.add(buttonPanel, BorderLayout.CENTER);
+        frame.add(exitPanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
 
@@ -77,6 +77,14 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("fail.wav");
                 //TODO make ToTheBitterEnd.java
+            }
+        });
+
+        Exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
+                frame.dispose();
             }
         });
     }

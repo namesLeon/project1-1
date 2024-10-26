@@ -30,7 +30,7 @@ public class BasicGUI {
     public void createShowGUI() {
 
         // create a new window
-        JFrame frame = new JFrame("Basic GUI");
+        frame = new JFrame("Basic GUI");
 
         // application exits when we close the window
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,7 +42,7 @@ public class BasicGUI {
 
         // panel to hold components
         JPanel panel1 = new JPanel();
-        JPanel backButtonPanel = new JPanel();
+        JPanel panel2 = new JPanel();
 
         // button that does nothing for now 
         JButton loadGraphButton = new JButton("Load Graph");
@@ -50,6 +50,8 @@ public class BasicGUI {
         JButton upperBoundButton = new JButton("Run Upper Bound Algorithm");
         JButton lowerBoundButton = new JButton("Run Lower Bound Algorithm");
         JButton backButton = new JButton("Back");
+        JButton zoomInButton = new JButton("Zoom In");
+        JButton zoomOutButton = new JButton("Zoom Out");
 
         // new text area to display the results
         resultArea = new JTextArea(15, 40);
@@ -62,7 +64,9 @@ public class BasicGUI {
         panel1.add(upperBoundButton);
         panel1.add(lowerBoundButton);
         panel1.add(scrollPane);
-        backButtonPanel.add(backButton);
+        panel2.add(zoomInButton);
+        panel2.add(backButton);
+        panel2.add(zoomOutButton);
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
@@ -70,7 +74,7 @@ public class BasicGUI {
         // add the panel to the window
         frame.add(panel1, BorderLayout.NORTH);
         frame.add(graphPanel, BorderLayout.CENTER);
-        frame.add(backButtonPanel, BorderLayout.SOUTH);
+        frame.add(panel2, BorderLayout.SOUTH);
         
         // make the window visible
         frame.setVisible(true);
@@ -133,6 +137,22 @@ public class BasicGUI {
                 SoundFX.playSound("button.wav");
                 Main.mainMenu();
                 frame.dispose();
+            }
+        });
+
+        zoomInButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
+                graphPanel.zoomIn();
+            }
+        });
+        
+        zoomOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
+                graphPanel.zoomOut();
             }
         });
 

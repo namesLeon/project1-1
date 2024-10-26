@@ -2,6 +2,7 @@ package App.GUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -11,6 +12,11 @@ public class GraphVisualizer extends JPanel {
     private String[] vertices; // List of vertices
     private String[][] edges;  // List of edges
     private Map<String, Point> vertexPositions; // Map to store vertex positions to avoid overlap
+    private double zoomFactor = 1.0; // Default zoom level
+    private int panX = 0; // Horizontal pan offset
+    private int panY = 0; // Vertical pan offset
+    private Point lastMousePosition; // Tracks last mouse position for dragging
+
 
     // Constructor to initialize the graph data
     public GraphVisualizer(String[] vertices, String[][] edges) {
@@ -19,6 +25,26 @@ public class GraphVisualizer extends JPanel {
         this.vertexPositions = new HashMap<>();
         setPreferredSize(new Dimension(600, 600)); // Set panel size
         generateVertexPositions(); // Generate random non-overlapping positions for vertices
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                lastMousePosition = e.getPoint();
+            }
+        });
+
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                // Calculate the difference in mouse position and adjust pan
+                int dx = e.getX() - lastMousePosition.x;
+                int dy = e.getY() - lastMousePosition.y;
+                panX += dx;
+                panY += dy;
+                lastMousePosition = e.getPoint();
+                repaint(); // Repaint to show the panned view
+            }
+        });
     }
 
     // Method to generate random positions for vertices, ensuring no overlap
@@ -67,6 +93,9 @@ public class GraphVisualizer extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        g2d.translate(panX, panY);
+        g2d.scale(zoomFactor, zoomFactor);
+
         // First draw edges
         drawEdges(g2d);
 
@@ -85,7 +114,7 @@ public class GraphVisualizer extends JPanel {
             int y = pos.y - radius / 2;
 
             // Draw the vertex as a filled circle
-            g2d.setColor(Color.BLUE);
+            g2d.setColor(Color.WHITE);
             g2d.fillOval(x, y, radius, radius);
 
             // Draw the vertex label
@@ -116,6 +145,16 @@ public class GraphVisualizer extends JPanel {
         this.vertexPositions.clear(); // Clear old positions
         generateVertexPositions();    // Generate new positions
         repaint();                    // Repaint the component to reflect changes
+    }
+
+    public void zoomIn() {
+        zoomFactor *= 1.2;
+        repaint();
+    }
+
+    public void zoomOut() {
+        zoomFactor /= 1.2;
+        repaint();
     }
 }
 
