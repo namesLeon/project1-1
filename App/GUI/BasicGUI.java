@@ -27,13 +27,13 @@ public class BasicGUI {
     public void createShowGUI() {
 
         // create a new window
-        JFrame frame = new JFrame("project1-1");
+        JFrame frame = new JFrame("Basic GUI");
 
         // application exits when we close the window
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // size of the window
-        frame.setSize(600, 800);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // panel to hold components
         JPanel panel = new JPanel();
