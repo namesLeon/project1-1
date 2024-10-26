@@ -5,10 +5,12 @@ import App.Algorithms.ExactAlgorithm;
 import App.Algorithms.LowerBoundAlgorithm;
 import App.Algorithms.UpperBoundAlgorithm;
 import App.Txt.TxtInterpretation;
+import App.Main.Main;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.*;
+import java.awt.*;
 
 
 public class BasicGUI {
@@ -35,6 +37,8 @@ public class BasicGUI {
         // size of the window
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+        frame.setLayout(new BorderLayout());
+
         // panel to hold components
         JPanel panel = new JPanel();
 
@@ -43,22 +47,29 @@ public class BasicGUI {
         JButton exactButton = new JButton("Run Exact Algorithm");
         JButton upperBoundButton = new JButton("Run Upper Bound Algorithm");
         JButton lowerBoundButton = new JButton("Run Lower Bound Algorithm");
+        JButton backButton = new JButton("Back");
 
         // new text area to display the results
         resultArea = new JTextArea(15, 40);
         resultArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(resultArea);
 
+        JPanel buttonPanel = new JPanel();
+        JPanel backButtonPanel = new JPanel();
+
         
         // add buttons to panel
-        panel.add(loadGraphButton);
-        panel.add(exactButton);
-        panel.add(upperBoundButton);
-        panel.add(lowerBoundButton);
+        buttonPanel.add(loadGraphButton);
+        buttonPanel.add(exactButton);
+        buttonPanel.add(upperBoundButton);
+        buttonPanel.add(lowerBoundButton);
         panel.add(scrollPane);
+        backButtonPanel.add(backButton);
         
         // add the panel to the window
-        frame.add(panel);
+        frame.add(buttonPanel, BorderLayout.NORTH);
+        frame.add(panel, BorderLayout.CENTER);
+        frame.add(backButtonPanel, BorderLayout.SOUTH);
         
         // make the window visible
         frame.setVisible(true);
@@ -112,6 +123,15 @@ public class BasicGUI {
                 SoundFX.playSound("button.wav");
                 runLowerBoundAlgorithm();
                 System.out.println("lower bound algorithm button clicked.");
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
+                Main.mainMenu();
+                frame.dispose();
             }
         });
 
