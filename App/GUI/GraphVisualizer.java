@@ -79,6 +79,8 @@ public class GraphVisualizer extends JPanel {
         int radius = 20; // Radius of vertex circles
         for (String vertex : vertices) {
             Point pos = vertexPositions.get(vertex);
+            if (pos == null) continue;
+
             int x = pos.x - radius / 2;
             int y = pos.y - radius / 2;
 
@@ -94,6 +96,7 @@ public class GraphVisualizer extends JPanel {
 
     // Method to draw the edges
     private void drawEdges(Graphics2D g2d) {
+        if (edges == null) return;
         g2d.setColor(Color.BLACK);
         for (String[] edge : edges) {
             Point pos1 = vertexPositions.get(edge[0]);

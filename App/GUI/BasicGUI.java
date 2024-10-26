@@ -24,6 +24,7 @@ public class BasicGUI {
     private JTextArea resultArea;
     private JFrame frame;
     private GraphVisualizer graphPanel;
+
     
     // method to create and display the gui
     public void createShowGUI() {
@@ -40,7 +41,8 @@ public class BasicGUI {
         frame.setLayout(new BorderLayout());
 
         // panel to hold components
-        JPanel panel = new JPanel();
+        JPanel panel1 = new JPanel();
+        JPanel backButtonPanel = new JPanel();
 
         // button that does nothing for now 
         JButton loadGraphButton = new JButton("Load Graph");
@@ -53,22 +55,21 @@ public class BasicGUI {
         resultArea = new JTextArea(15, 40);
         resultArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(resultArea);
-
-        JPanel buttonPanel = new JPanel();
-        JPanel backButtonPanel = new JPanel();
-
         
         // add buttons to panel
-        buttonPanel.add(loadGraphButton);
-        buttonPanel.add(exactButton);
-        buttonPanel.add(upperBoundButton);
-        buttonPanel.add(lowerBoundButton);
-        panel.add(scrollPane);
+        panel1.add(loadGraphButton);
+        panel1.add(exactButton);
+        panel1.add(upperBoundButton);
+        panel1.add(lowerBoundButton);
+        panel1.add(scrollPane);
         backButtonPanel.add(backButton);
+
+        graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
+        graphPanel.setPreferredSize(new Dimension(600, 600));
         
         // add the panel to the window
-        frame.add(buttonPanel, BorderLayout.NORTH);
-        frame.add(panel, BorderLayout.CENTER);
+        frame.add(panel1, BorderLayout.NORTH);
+        frame.add(graphPanel, BorderLayout.CENTER);
         frame.add(backButtonPanel, BorderLayout.SOUTH);
         
         // make the window visible
@@ -154,15 +155,10 @@ public class BasicGUI {
             resultArea.append("number of vertices: " + vertices.length + "\n");
             resultArea.append("number of edges: " + edges.length + "\n\n");
 
-        } 
-        
-        if (vertices != null && edges != null) {
-            graphPanel = new GraphVisualizer(vertices, edges);
-            frame.add(graphPanel); // Add the visualizer to the frame
+            graphPanel.updateGraph(vertices, edges);
             frame.revalidate();    // Revalidate the frame to reflect the changes
             frame.repaint();       // Repaint the frame to show the graph
-        }
-        
+        } 
         else {
             resultArea.append("failed to load graph from file " + file.getName() + "\n");
         }
