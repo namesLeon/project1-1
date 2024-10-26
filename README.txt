@@ -1,1 +1,1 @@
-in an IDE run Main.java
+in an IDE run App/Main/Main.java
