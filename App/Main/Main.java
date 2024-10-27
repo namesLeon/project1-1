@@ -28,7 +28,7 @@ public class Main {
         JPanel buttonPanel = new JPanel();
         JPanel exitPanel = new JPanel();
 
-        JButton BasicGUI = new JButton("Basic GUI");
+        JButton BasicGUI = new JButton("SandBox");
         JButton ICMM = new JButton("I Changed My Mind");
         JButton RO = new JButton("Random Order");
         JButton TTBE = new JButton("To The Bitter End");
