@@ -193,8 +193,12 @@ public class BasicGUI {
         }
 
         ExactAlgorithm exactAlg = new ExactAlgorithm(vertices, edges);
-        upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
-        lowerBound = LowerBoundAlgorithm.LowerBound(vertices, edges);
+        if(upperBound == -1) {
+            upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
+        }
+        if(lowerBound == -1) {
+            lowerBound = LowerBoundAlgorithm.LowerBound(vertices, edges);
+        }
         int[] colors = new int[vertices.length];
 
         int exactChroNumber = exactAlg.branchAndBound(vertices, edges, colors, upperBound, lowerBound);
