@@ -1,6 +1,7 @@
 package App.Main;
 
 import App.GUI.*;
+import App.Games.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -75,8 +76,9 @@ public class Main {
         TTBE.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("fail.wav");
-                //TODO make ToTheBitterEnd.java
+                SoundFX.playSound("button.wav");
+                ToTheBitterEnd.game();
+                frame.dispose();
             }
         });
 
