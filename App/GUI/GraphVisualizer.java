@@ -35,6 +35,22 @@ public class GraphVisualizer extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 //todo: (ılgaz) update mousepressed so that it detects vertex clicks
+                // clicked point as a local variable
+                Point clickedPoint = e.getPoint();
+                for(Map.Entry<String, Point> entry : vertexPositions.entrySet()){
+                    String vertex = entry.getKey();
+                    Point position = entry.getValue();
+                    int radius = 20;
+
+                    // checking if clicks are within the radius of the vertex 
+
+                    if (clickedPoint.distance(position) < radius) {
+                        //todo: add the helper method later
+                        handleVertexClick(vertex);
+                        repaint(); // Repaint to show the updated color
+                        break;        
+                    }
+                }
                 lastMousePosition = e.getPoint();
             }
         });
@@ -51,6 +67,15 @@ public class GraphVisualizer extends JPanel {
                 repaint(); // Repaint to show the panned view
             }
         });
+    }
+
+    // new helper method to handle vertex clicks 
+
+    private void handleVertexClick(String vertex){
+        Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
+        String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Orange"};
+
+        //todo: (ılgaz) show dialog to choose color (can be changed later)
     }
 
     // Method to generate random positions for vertices, ensuring no overlap
