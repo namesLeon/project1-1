@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import App.GUI.GraphVisualizer;
 import App.GUI.SoundFX;
 import App.Main.Main;
 
@@ -13,6 +14,7 @@ public class ToTheBitterEnd {
     private static int lowerBoundVertices = 0;
     private static int upperBoundEdges = 100;
     private static int lowerBoundEdges = 0;
+    private static GraphVisualizer graphPanel;
 
     public static void game() {
         JFrame frame = new JFrame();
@@ -31,8 +33,12 @@ public class ToTheBitterEnd {
         buttonPanel.add(hint);
         buttonPanel.add(generateGraph);
 
+        graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
+        graphPanel.setPreferredSize(new Dimension(600, 600));
+
         frame.add(backPanel, BorderLayout.SOUTH);
         frame.add(buttonPanel, BorderLayout.NORTH);
+        frame.add(graphPanel, BorderLayout.CENTER);
 
         frame.setVisible(true);
 
@@ -58,6 +64,8 @@ public class ToTheBitterEnd {
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("button.wav");
                 generateGraph();
+                frame.revalidate();
+                frame.repaint();
             }
         });
     }
@@ -104,19 +112,27 @@ public class ToTheBitterEnd {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int vertices = Integer.parseInt(textField1.getText());
-                    int edges = Integer.parseInt(textField2.getText());
+                    int numOfVertices = Integer.parseInt(textField1.getText());
+                    int numOfEdges = Integer.parseInt(textField2.getText());
 
-                    if(((vertices < lowerBoundVertices) || (vertices > upperBoundVertices)) || ((edges < lowerBoundEdges) || (edges > upperBoundEdges))) {
+                    if(((numOfVertices < lowerBoundVertices) || (numOfVertices > upperBoundVertices)) || ((numOfEdges < lowerBoundEdges) || (numOfEdges > upperBoundEdges))) {
                         JOptionPane.showMessageDialog(frame2, "At least one of these entries is out of bounds.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                        frame2.dispose();
                     }
+                    else {
+                    //TODO call generateGraph to get String[] vertices and String[][] edges once it is written
+                    // String[] vertices = generateGraph.getVertices();
+                    // String[][] edges = generateGraph.getEdges();
 
-                    //TODO call generate graph
+                    String[] test = {"a", "b", "c", "d"};
+                    String[][] test2 = {{"a", "b"}, {"a", "c"}, {"b", "d"}, {"c", "d"}};
+
+                    graphPanel.updateGraph(test, test2); // to be replaced with vertices and edges
+
+                    frame2.dispose();
+                    }
 
                 } catch(NumberFormatException ex) {
                     JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                    frame2.dispose();
                 }
             }
         });
