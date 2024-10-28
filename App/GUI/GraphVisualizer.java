@@ -1,14 +1,15 @@
 package App.GUI;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import javax.swing.*;
 
 public class GraphVisualizer extends JPanel {
 
+    private Map<String, Color> vertexColors; // new hashmap to keep track of each vertex color
     private String[] vertices; // List of vertices
     private String[][] edges;  // List of edges
     private Map<String, Point> vertexPositions; // Map to store vertex positions to avoid overlap
@@ -20,6 +21,10 @@ public class GraphVisualizer extends JPanel {
 
     // Constructor to initialize the graph data
     public GraphVisualizer(String[] vertices, String[][] edges) {
+        this.vertexColors = new HashMap<>();
+        for(String vertex : vertices){
+            vertexColors.put(vertex, Color.WHITE); // start each vertex as white
+        }
         this.vertices = vertices;
         this.edges = edges;
         this.vertexPositions = new HashMap<>();
@@ -29,6 +34,7 @@ public class GraphVisualizer extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                //todo: (ılgaz) update mousepressed so that it detects vertex clicks
                 lastMousePosition = e.getPoint();
             }
         });
