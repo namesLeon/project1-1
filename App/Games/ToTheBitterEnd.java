@@ -3,10 +3,12 @@ package App.Games;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.List;
 
 import App.GUI.GraphVisualizer;
 import App.GUI.SoundFX;
 import App.Main.Main;
+
 
 public class ToTheBitterEnd {
 
@@ -28,10 +30,12 @@ public class ToTheBitterEnd {
         JButton hint = new JButton("hint");
         JButton generateGraph = new JButton("generate graph");
         JButton back = new JButton("back");
+        JButton leaderboard = new JButton("show leaderboard");
 
         backPanel.add(back);
         buttonPanel.add(hint);
         buttonPanel.add(generateGraph);
+        buttonPanel.add(leaderboard);
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
@@ -68,11 +72,51 @@ public class ToTheBitterEnd {
                 frame.repaint();
             }
         });
+
+        leaderboard.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
+                showLeaderboard();
+            }
+        });
     }
 
+    public static void showLeaderboard() {
+        List<Scoring.LeaderboardEntry> leaderboard = Scoring.getLeaderBoard("ToTheBitterEnd");
+    
+        JFrame frame3 = new JFrame();
+        frame3.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame3.setSize(new Dimension(800, 800));
+        frame3.setLayout(new BorderLayout());
+    
+        JLabel label = new JLabel("Leaderboard");
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+    
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+    
+        StringBuilder sb = new StringBuilder();
+        for (Scoring.LeaderboardEntry entry : leaderboard) {
+            sb.append(entry.getUserName()).append(": ").append(entry.getScore()).append("\n");
+        }
+    
+        textArea.setText(sb.toString());
+        JScrollPane scrollPane = new JScrollPane(textArea);
+    
+        JButton close = new JButton("Close");
+        close.addActionListener(e -> frame3.dispose());
+    
+        frame3.add(label, BorderLayout.NORTH);
+        frame3.add(scrollPane, BorderLayout.CENTER);
+        frame3.add(close, BorderLayout.SOUTH);
+    
+        frame3.setVisible(true);
+    }
+    
     public static void generateGraph() {
         JFrame frame2 = new JFrame();
-        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame2.setSize(new Dimension(400, 400));
         frame2.setLayout(new BorderLayout());
 
