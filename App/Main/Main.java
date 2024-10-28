@@ -40,7 +40,7 @@ public class Main {
         buttonPanel.add(TTBE);
         exitPanel.add(Exit);
 
-        frame.add(imageLabel, BorderLayout.NORTH);
+        //frame.add(imageLabel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.CENTER);
         frame.add(exitPanel, BorderLayout.SOUTH);
 
