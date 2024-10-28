@@ -116,8 +116,8 @@ public class ToTheBitterEnd {
 
                 } catch(NumberFormatException ex) {
                     JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    frame2.dispose();
                 }
-                frame2.dispose();
             }
         });
     }

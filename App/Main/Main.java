@@ -17,10 +17,13 @@ public class Main {
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLayout(new BorderLayout());
 
+        int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+        int targetDimension = (int) (2.0 / 3.0 * screenHeight);
         ImageIcon image = new ImageIcon("App/Images/graphColoring.png");
         Image img = image.getImage();
-        Image scaledImg = img.getScaledInstance(800, 800, Image.SCALE_SMOOTH);
+        Image scaledImg = img.getScaledInstance(targetDimension, targetDimension, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImg);
+
 
         JLabel imageLabel = new JLabel(scaledIcon);
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -41,7 +44,7 @@ public class Main {
         buttonPanel.add(TTBE);
         exitPanel.add(Exit);
 
-        //frame.add(imageLabel, BorderLayout.NORTH);
+        frame.add(imageLabel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.CENTER);
         frame.add(exitPanel, BorderLayout.SOUTH);
 
