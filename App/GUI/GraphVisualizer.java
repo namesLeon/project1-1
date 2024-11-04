@@ -50,7 +50,7 @@ public class GraphVisualizer extends JPanel {
                         draggedVertex = vertex;
                         lastMousePosition = e.getPoint();
                         handleVertexClick(vertex);
-                        repaint(); // Repaint to show the updated color
+                        repaint(); // repaint to show the updated color
                         break;        
                     }
                 }
@@ -58,7 +58,7 @@ public class GraphVisualizer extends JPanel {
             }
             @Override
             public void mouseReleased(MouseEvent e) {
-                draggedVertex = null; // Stop dragging when mouse is released
+                draggedVertex = null; // stop dragging when mouse is released
             }
         });
 
@@ -91,6 +91,28 @@ public class GraphVisualizer extends JPanel {
         String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Orange"};
 
         //todo: (ılgaz) show dialog to choose color (can be changed later)
+
+        String selectedColorName = (String) JOptionPane.showInputDialog(
+            this,
+            "Choose a color for vertex" + vertex + ":",
+            "Select Color",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            colorNames,
+            colorNames[0]
+        );
+
+        // find the color object corresponding to the selected color name
+
+        if (selectedColorName!=null) {
+            for (int i=0;i<colorNames.length;i++) {
+                if (selectedColorName.equals(colorNames[i])) {
+                    vertexColors.put(vertex, colors[i]);
+                    break;
+                }
+            }
+
+        }
     }
 
     // Method to generate random positions for vertices, ensuring no overlap
@@ -158,6 +180,9 @@ public class GraphVisualizer extends JPanel {
 
             int x = pos.x - radius / 2;
             int y = pos.y - radius / 2;
+
+            // get the color for the vertex
+            Color vertexColor = vertexColors.getOrDefault(vertex, Color.WHITE);
 
             // Draw the vertex as a filled circle
             g2d.setColor(Color.WHITE);
