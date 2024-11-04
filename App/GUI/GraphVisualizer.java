@@ -17,6 +17,7 @@ public class GraphVisualizer extends JPanel {
     private int panX = 0; // Horizontal pan offset
     private int panY = 0; // Vertical pan offset
     private Point lastMousePosition; // Tracks last mouse position for dragging
+    private String draggedVertex = null;
 
 
     // Constructor to initialize the graph data
@@ -46,6 +47,8 @@ public class GraphVisualizer extends JPanel {
 
                     if (clickedPoint.distance(position) < radius) {
                         //todo: add the helper method later
+                        draggedVertex = vertex;
+                        lastMousePosition = e.getPoint();
                         handleVertexClick(vertex);
                         repaint(); // Repaint to show the updated color
                         break;        
@@ -53,12 +56,23 @@ public class GraphVisualizer extends JPanel {
                 }
                 lastMousePosition = e.getPoint();
             }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                draggedVertex = null; // Stop dragging when mouse is released
+            }
         });
 
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                // Calculate the difference in mouse position and adjust pan
+
+                if(draggedVertex!= null){
+                    Point newPos = e.getPoint();
+                    vertexPositions.put(draggedVertex,newPos);
+                    repaint(); 
+                }
+
+                else{// Calculate the difference in mouse position and adjust pan
                 int dx = e.getX() - lastMousePosition.x;
                 int dy = e.getY() - lastMousePosition.y;
                 panX += dx;
@@ -66,6 +80,7 @@ public class GraphVisualizer extends JPanel {
                 lastMousePosition = e.getPoint();
                 repaint(); // Repaint to show the panned view
             }
+        }
         });
     }
 
@@ -188,4 +203,3 @@ public class GraphVisualizer extends JPanel {
         repaint();
     }
 }
-
