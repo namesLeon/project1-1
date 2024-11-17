@@ -65,7 +65,8 @@ public class GraphVisualizer extends JPanel {
         
             @Override
             public void mouseReleased(MouseEvent e) {
-                // I'll update this method next
+                // stop dragging when mouse is released
+                draggedVertex = null;
             }
         });
         
