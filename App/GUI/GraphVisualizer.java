@@ -19,6 +19,12 @@ public class GraphVisualizer extends JPanel {
     private Point lastMousePosition; // Tracks last mouse position for dragging
     private String draggedVertex = null;
 
+    // new instance variables added to fix the vertex coloring
+    private boolean isDragging = false;
+    private Point pressPoint; // to store the initial press point
+    private static final int DRAG_THRESHOLD = 5; // threshold to distinguish between click and drag
+
+
 
     // Constructor to initialize the graph data
     public GraphVisualizer(String[] vertices, String[][] edges) {
@@ -35,52 +41,62 @@ public class GraphVisualizer extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                //todo: (ılgaz) update mousepressed so that it detects vertex clicks
-                // clicked point as a local variable
-                Point clickedPoint = e.getPoint();
-                for(Map.Entry<String, Point> entry : vertexPositions.entrySet()){
+                isDragging = false; // Reset dragging flag
+                pressPoint = e.getPoint();
+                lastMousePosition = e.getPoint();
+        
+                boolean vertexFound = false;
+                for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
                     String vertex = entry.getKey();
                     Point position = entry.getValue();
                     int radius = 20;
-
-                    // checking if clicks are within the radius of the vertex 
-
-                    if (clickedPoint.distance(position) < radius) {
-                        //todo: add the helper method later
+        
+                    if (pressPoint.distance(position) < radius) {
                         draggedVertex = vertex;
-                        lastMousePosition = e.getPoint();
-                        handleVertexClick(vertex);
-                        repaint(); // repaint to show the updated color
-                        break;        
+                        vertexFound = true;
+                        break;
                     }
                 }
-                lastMousePosition = e.getPoint();
+        
+                if (!vertexFound) {
+                    draggedVertex = null;
+                }
             }
+        
             @Override
             public void mouseReleased(MouseEvent e) {
-                draggedVertex = null; // stop dragging when mouse is released
+                // I'll update this method next
             }
         });
+        
 
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
 
+                Point currentPoint = e.getPoint();
+                
                 if(draggedVertex!= null){
-                    Point newPos = e.getPoint();
-                    vertexPositions.put(draggedVertex,newPos);
-                    repaint(); 
-                }
+                    if(!isDragging && pressPoint.distance(currentPoint) > DRAG_THRESHOLD) {
+                        isDragging = true;
+                    }
 
-                else{// Calculate the difference in mouse position and adjust pan
-                int dx = e.getX() - lastMousePosition.x;
-                int dy = e.getY() - lastMousePosition.y;
-                panX += dx;
-                panY += dy;
-                lastMousePosition = e.getPoint();
-                repaint(); // Repaint to show the panned view
+                    if(isDragging) {
+                        // we need to update the position of the dragged vertex
+                        vertexPositions.put(draggedVertex, currentPoint);
+                        repaint();
+                    }
+                } else {
+                    // panning
+                    int dx = currentPoint.x - lastMousePosition.x;
+                    int dy = currentPoint.y - lastMousePosition.y;
+                    panX += dx;
+                    panY += dy;
+                    lastMousePosition = currentPoint;
+                    repaint(); // Repaint to show the panned view
+        
+                }
             }
-        }
         });
     }
 
@@ -177,22 +193,23 @@ public class GraphVisualizer extends JPanel {
         for (String vertex : vertices) {
             Point pos = vertexPositions.get(vertex);
             if (pos == null) continue;
-
+    
             int x = pos.x - radius / 2;
             int y = pos.y - radius / 2;
-
-            // get the color for the vertex
+    
+            // Get the color for the vertex
             Color vertexColor = vertexColors.getOrDefault(vertex, Color.WHITE);
-
-            // Draw the vertex as a filled circle
-            g2d.setColor(Color.WHITE);
+    
+            // Draw the vertex as a filled circle with the assigned color
+            g2d.setColor(vertexColor);
             g2d.fillOval(x, y, radius, radius);
-
+    
             // Draw the vertex label
             g2d.setColor(Color.BLACK);
             g2d.drawString(vertex, x + radius / 2 - 5, y + radius / 2 + 5);
         }
     }
+    
 
     // Method to draw the edges
     private void drawEdges(Graphics2D g2d) {
