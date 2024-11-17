@@ -134,7 +134,7 @@ public class GraphVisualizer extends JPanel {
                     break;
                 }
             }
-
+            repaint();
         }
     }
 
