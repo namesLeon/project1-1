@@ -62,4 +62,7 @@ public ColorChecker(int size){
 
 }
 
-//geen
+//generate random colors (an easy way would be using rgb numbers)
+//check whether or not these colors are to similar to already existing colors (looking at rgb values and checking to see if the minimum diference is met)
+//store the colors in a Color[]
+//return the color when your method is called with a number
