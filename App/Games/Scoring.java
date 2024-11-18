@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 public class Scoring {
 
-    private static final String LEADERBOARD_DIR = "App/Games/Leaderboards";
+    private static final String LEADERBOARD_DIR = "project-1.1/App/Games/Leaderboards";
 
     public static int scoreCalculator(String game, String userName, int chromaticNumber, int timeElapsed) {
         int score = chromaticNumber * timeElapsed;

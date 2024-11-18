@@ -88,7 +88,7 @@ public class BasicGUI {
                 //todo: create a load graph method and implement action listener later
                 JFileChooser fileChooser = new JFileChooser();
 
-                File defaultDirectory = new File("App/Txt/Graphs");
+                File defaultDirectory = new File("project-1.1/App/Txt/Graphs");
                 fileChooser.setCurrentDirectory(defaultDirectory);
 
                 int result = fileChooser.showOpenDialog(null);
