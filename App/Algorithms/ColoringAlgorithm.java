@@ -7,83 +7,74 @@ import java.util.Random;
 
 public class ColoringAlgorithm {
 
-    private static final int COLOR_DIFFERENCE_THRESHOLD = 50; // Minimum RGB difference to avoid similarity
-    private List<Color> colorList;
+    // Minimum color distance to ensure colors are not too similar
+    private static final int MIN_COLOR_DISTANCE = 50;
+    
+    // List to store the colors generated
+    private List<Color> colors;
 
+    // Constructor to initialize the list of colors
     public ColoringAlgorithm() {
-        this.colorList = new ArrayList<>();
+        colors = new ArrayList<>();
     }
 
-    /**
-     * Generates a random color, ensuring it's sufficiently different
-     * from existing colors in the list.
-     */
-    public Color generateRandomColor() {
-        Random random = new Random();
-        Color newColor;
-        boolean isTooSimilar;
+    // Method to generate a random color
+    private Color generateRandomColor() {
+        Random rand = new Random();
+        int r = rand.nextInt(256); // Red value between 0 and 255
+        int g = rand.nextInt(256); // Green value between 0 and 255
+        int b = rand.nextInt(256); // Blue value between 0 and 255
+        return new Color(r, g, b); // Return a new Color object
+    }
 
-        do {
-            // Generate a random color
-            int red = random.nextInt(256);
-            int green = random.nextInt(256);
-            int blue = random.nextInt(256);
-            newColor = new Color(red, green, blue);
+    // Method to calculate the Euclidean distance between two colors
+    private int calculateColorDistance(Color c1, Color c2) {
+        int rDiff = c1.getRed() - c2.getRed();
+        int gDiff = c1.getGreen() - c2.getGreen();
+        int bDiff = c1.getBlue() - c2.getBlue();
+        return (int) Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+    }
 
-            // Check similarity with existing colors
-            isTooSimilar = false;
-            for (Color existingColor : colorList) {
-                if (calculateColorDifference(existingColor, newColor) < COLOR_DIFFERENCE_THRESHOLD) {
-                    isTooSimilar = true;
+    // Method to generate and add a new color to the list, ensuring it's not too similar to existing ones
+    public Color addNewColor() {
+        Color newColor = null;  // Declare the newColor variable here
+        boolean isSimilar = true;
+
+        // Keep generating random colors until we find one that's sufficiently distinct
+        while (isSimilar) {
+            newColor = generateRandomColor();
+            isSimilar = false;
+            
+            // Check if the new color is too similar to any of the existing colors
+            for (Color existingColor : colors) {
+                if (calculateColorDistance(existingColor, newColor) < MIN_COLOR_DISTANCE) {
+                    isSimilar = true;  // If too similar, stop and regenerate
                     break;
                 }
             }
-
-        } while (isTooSimilar);
-
-        // Add the new color to the list and return it
-        colorList.add(newColor);
+        }
+        
+        // Add the valid color to the list and return it
+        colors.add(newColor);
         return newColor;
     }
 
-    /**
-     * Returns a color from the list by index.
-     * If the index is invalid, returns null.
-     */
+    // Method to get a color by its index in the list
     public Color getColor(int index) {
-        if (index >= 0 && index < colorList.size()) {
-            return colorList.get(index);
+        if (index >= 0 && index < colors.size()) {
+            return colors.get(index);
+        } else {
+            return null;  // Return null if index is out of bounds
         }
-        return null; // Invalid index
     }
 
-    /**
-     * Calculates the difference between two colors based on their RGB values.
-     */
-    private int calculateColorDifference(Color c1, Color c2) {
-        int redDiff = Math.abs(c1.getRed() - c2.getRed());
-        int greenDiff = Math.abs(c1.getGreen() - c2.getGreen());
-        int blueDiff = Math.abs(c1.getBlue() - c2.getBlue());
-        return redDiff + greenDiff + blueDiff;
-    }
-
-    /**
-     * Main method for testing the algorithm.
-     */
-    public static void main(String[] args) {
-        ColoringAlgorithm algorithm = new ColoringAlgorithm();
-
-        // Generate 10 random colors
-        for (int i = 0; i < 10; i++) {
-            Color color = algorithm.generateRandomColor();
-            System.out.println("Generated Color " + i + ": " + color);
-        }
-
-        // Retrieve colors by index
-        System.out.println("Color at index 2: " + algorithm.getColor(2));
-        System.out.println("Color at index 5: " + algorithm.getColor(5));
+    // Method to get the total number of colors generated
+    public int getColorCount() {
+        return colors.size();
     }
 }
+
+
 
 
 
