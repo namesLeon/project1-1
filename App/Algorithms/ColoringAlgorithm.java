@@ -1,126 +1,90 @@
 package App.Algorithms;
 
-
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class ColoringAlgorithm {
 
-    private Map<String, Color> vertexColors;  // Stores the assigned colors for each vertex
-    private String[] vertices;               // List of vertices
-    private String[][] edges;                // List of edges
-    private Color[] availableColors;         // Array of available colors for coloring
+    private static final int COLOR_DIFFERENCE_THRESHOLD = 50; // Minimum RGB difference to avoid similarity
+    private List<Color> colorList;
 
-    // Constructor
-    public ColoringAlgorithm(String[] vertices, String[][] edges) {
-        this.vertices = vertices;
-        this.edges = edges;
-
-        // Initialize vertexColors
-        this.vertexColors = new HashMap<>();
-
-        // Define a set of colors for use (you can extend this if needed)
-        this.availableColors = new Color[]{
-            Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE,
-            Color.CYAN, Color.MAGENTA, Color.PINK, Color.LIGHT_GRAY, Color.DARK_GRAY
-        };
+    public ColoringAlgorithm() {
+        this.colorList = new ArrayList<>();
     }
 
     /**
-     * Executes the graph coloring algorithm.
-     * Assigns colors to vertices such that no two adjacent vertices have the same color.
+     * Generates a random color, ensuring it's sufficiently different
+     * from existing colors in the list.
      */
-    public void executeColoring() {
-        for (String vertex : vertices) {
-            Set<Color> usedColors = getColorsOfAdjacentVertices(vertex); // Get colors used by adjacent vertices
-            Color chosenColor = chooseAvailableColor(usedColors);        // Choose a color not in the used set
-            vertexColors.put(vertex, chosenColor);                       // Assign the chosen color
-        }
-    }
+    public Color generateRandomColor() {
+        Random random = new Random();
+        Color newColor;
+        boolean isTooSimilar;
 
-    /**
-     * Retrieves the colors of all vertices adjacent to the given vertex.
-     *
-     * @param vertex The vertex for which to retrieve adjacent colors
-     * @return A set of colors used by adjacent vertices
-     */
-    private Set<Color> getColorsOfAdjacentVertices(String vertex) {
-        Set<Color> usedColors = new HashSet<>();
-        for (String[] edge : edges) {
-            if (edge[0].equals(vertex)) {
-                Color neighborColor = vertexColors.get(edge[1]);
-                if (neighborColor != null) {
-                    usedColors.add(neighborColor);
-                }
-            } else if (edge[1].equals(vertex)) {
-                Color neighborColor = vertexColors.get(edge[0]);
-                if (neighborColor != null) {
-                    usedColors.add(neighborColor);
+        do {
+            // Generate a random color
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256);
+            newColor = new Color(red, green, blue);
+
+            // Check similarity with existing colors
+            isTooSimilar = false;
+            for (Color existingColor : colorList) {
+                if (calculateColorDifference(existingColor, newColor) < COLOR_DIFFERENCE_THRESHOLD) {
+                    isTooSimilar = true;
+                    break;
                 }
             }
-        }
-        return usedColors;
+
+        } while (isTooSimilar);
+
+        // Add the new color to the list and return it
+        colorList.add(newColor);
+        return newColor;
     }
 
     /**
-     * Chooses an available color that is not in the set of used colors.
-     *
-     * @param usedColors A set of colors already used by adjacent vertices
-     * @return A color that can be used for the current vertex
+     * Returns a color from the list by index.
+     * If the index is invalid, returns null.
      */
-    private Color chooseAvailableColor(Set<Color> usedColors) {
-        for (Color color : availableColors) {
-            if (!usedColors.contains(color)) {
-                return color; // Return the first color that isn't already used
-            }
+    public Color getColor(int index) {
+        if (index >= 0 && index < colorList.size()) {
+            return colorList.get(index);
         }
-        // If all colors are used (unlikely given the size of availableColors), fallback to a default
-        return Color.BLACK; // Default color in case of unexpected issues
+        return null; // Invalid index
     }
 
     /**
-     * Returns the color assigned to a given vertex.
-     *
-     * @param vertex The vertex whose color is to be retrieved
-     * @return The color assigned to the vertex
+     * Calculates the difference between two colors based on their RGB values.
      */
-    public Color getVertexColor(String vertex) {
-        return vertexColors.getOrDefault(vertex, Color.WHITE); // Default to WHITE if not yet assigned
+    private int calculateColorDifference(Color c1, Color c2) {
+        int redDiff = Math.abs(c1.getRed() - c2.getRed());
+        int greenDiff = Math.abs(c1.getGreen() - c2.getGreen());
+        int blueDiff = Math.abs(c1.getBlue() - c2.getBlue());
+        return redDiff + greenDiff + blueDiff;
     }
 
     /**
-     * Main method for testing the coloring algorithm.
+     * Main method for testing the algorithm.
      */
     public static void main(String[] args) {
-        // Example graph: vertices and edges
-        String[] vertices = {"A", "B", "C", "D", "E"};
-        String[][] edges = {
-            {"A", "B"}, {"A", "C"}, {"B", "C"}, {"B", "D"}, {"C", "E"}
-        };
+        ColoringAlgorithm algorithm = new ColoringAlgorithm();
 
-        // Instantiate the algorithm and execute coloring
-        ColoringAlgorithm algorithm = new ColoringAlgorithm(vertices, edges);
-        algorithm.executeColoring();
-
-        // Output the colors assigned to each vertex
-        for (String vertex : vertices) {
-            Color color = algorithm.getVertexColor(vertex);
-            System.out.println("Vertex " + vertex + " is colored with: " + color.toString());
+        // Generate 10 random colors
+        for (int i = 0; i < 10; i++) {
+            Color color = algorithm.generateRandomColor();
+            System.out.println("Generated Color " + i + ": " + color);
         }
-    }
 
-    /**
-     * Returns the entire map of vertex-color assignments (for external use).
-     *
-     * @return A map of vertex-color assignments
-     */
-    public Map<String, Color> getVertexColors() {
-        return vertexColors;
+        // Retrieve colors by index
+        System.out.println("Color at index 2: " + algorithm.getColor(2));
+        System.out.println("Color at index 5: " + algorithm.getColor(5));
     }
 }
+
 
 
 
