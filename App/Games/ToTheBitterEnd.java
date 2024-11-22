@@ -8,6 +8,8 @@ import java.util.List;
 import App.GUI.GraphVisualizer;
 import App.GUI.SoundFX;
 import App.Main.Main;
+import App.Algorithms.RandomGraphGenerator;
+import App.Algorithms.ColoringAlgorithm;
 
 
 public class ToTheBitterEnd {
@@ -163,14 +165,15 @@ public class ToTheBitterEnd {
                         JOptionPane.showMessageDialog(frame2, "At least one of these entries is out of bounds.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     }
                     else {
-                    //TODO call generateGraph to get String[] vertices and String[][] edges once it is written
-                    // String[] vertices = generateGraph.getVertices();
-                    // String[][] edges = generateGraph.getEdges();
+                    RandomGraphGenerator generator = new RandomGraphGenerator(numOfVertices, numOfEdges);
+                    ColoringAlgorithm color = new ColoringAlgorithm();
+                    
+                    String[] vertices = generator.getVertices();
+                    String[][] edges = generator.getEdges();
 
-                    String[] test = {"a", "b", "c", "d"};
-                    String[][] test2 = {{"a", "b"}, {"a", "c"}, {"b", "d"}, {"c", "d"}};
+                    graphPanel.updateGraph(vertices, edges); // to be replaced with vertices and edges
 
-                    graphPanel.updateGraph(test, test2); // to be replaced with vertices and edges
+                    color.clearColors();
 
                     frame2.dispose();
                     }

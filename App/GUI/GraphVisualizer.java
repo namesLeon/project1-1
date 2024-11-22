@@ -2,10 +2,14 @@ package App.GUI;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.List;
 import javax.swing.*;
+
+import App.Algorithms.ColoringAlgorithm;
 
 public class GraphVisualizer extends JPanel {
 
@@ -108,35 +112,47 @@ public class GraphVisualizer extends JPanel {
     }
 
     // new helper method to handle vertex clicks 
+    private void handleVertexClick(String vertex) {
+        // Initialize available colors as hex strings
+        List<String> availableColors = new ArrayList<>(vertexColors.values().stream()
+            .map(color -> String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()))
+            .toList());
+        availableColors.add("NEW COLOR"); // Add the "NEW COLOR" option
 
-    private void handleVertexClick(String vertex){
-        Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
-        String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Orange"};
+        String[] colorOptions = availableColors.toArray(new String[0]); // Convert to array for JOptionPane
 
-        //todo: (ılgaz) show dialog to choose color (can be changed later)
-
-        String selectedColorName = (String) JOptionPane.showInputDialog(
+        // Show a dropdown dialog for the user to select a color
+        String selectedOption = (String) JOptionPane.showInputDialog(
             this,
-            "Choose a color for vertex" + vertex + ":",
+            "Choose a color for vertex " + vertex + ":",
             "Select Color",
             JOptionPane.PLAIN_MESSAGE,
             null,
-            colorNames,
-            colorNames[0]
+            colorOptions,
+            colorOptions[0]
         );
 
-        // find the color object corresponding to the selected color name
+        if (selectedOption != null) {
+            if (selectedOption.equals("NEW COLOR")) {
+                // Generate a new random color
+                ColoringAlgorithm colorGenerator = new ColoringAlgorithm();
+                Color newColor = colorGenerator.addNewRandomColor();
+                String newColorHex = String.format("#%02x%02x%02x", newColor.getRed(), newColor.getGreen(), newColor.getBlue());
+            
+                // Add the new color to the available options
+                availableColors.add(newColorHex);
 
-        if (selectedColorName!=null) {
-            for (int i=0;i<colorNames.length;i++) {
-                if (selectedColorName.equals(colorNames[i])) {
-                    vertexColors.put(vertex, colors[i]);
-                    break;
-                }
+                // Assign the new color to the vertex
+                vertexColors.put(vertex, newColor);
+            } else {
+                // Convert selected hex string back to Color
+                Color selectedColor = Color.decode(selectedOption);
+                vertexColors.put(vertex, selectedColor);
             }
             repaint();
         }
     }
+
 
     // Method to generate random positions for vertices, ensuring no overlap
     private void generateVertexPositions() {
