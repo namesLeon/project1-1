@@ -1,66 +1,68 @@
 package App.Algorithms;
 
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-import  current_color_place;// current_color_place is the put color vertex file
-import  Positions;// the file which makes radom position files
-import java.util.HashSet;
-import java.util.Set;
+public class ColoringAlgorithm {
 
-public class ColoringAlgorithm{
+    private static final int COLOR_DIFFERENCE_THRESHOLD = 50; // Minimum RGB difference for distinct colors
+    private List<Color> generatedColors; // List to store generated colors
 
-//Used to store the color in current_color_place into currentplace
-private current_color_place currentplace; 
-//Used to store the position in Positions into positions
-private Positions positions;
-
-public ColorChecker(int size){
-    currentplace = new current_color_place(size);//stores into currentplace the size it will be used later
-    Positions = new positions();
-
-}
-    // to get the color in the position
-    public String getColor(int point) {
-        if (point >= 0 && point < colors.length) { //colors is the array of the set of colors
-            return colors[point];
-        }
-        return null;
+    // Constructor
+    public ColoringAlgorithm() {
+        generatedColors = new ArrayList<>();
     }
 
+    // Method to generate a distinct random color
+    public Color generateDistinctColor() {
+        Random random = new Random();
+        Color newColor;
+        boolean isDistinct;
+        do {
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256);
+            newColor = new Color(red, green, blue);
 
-    //for the color which can not be used in this position
-    public Set<String> getUnavailableColors(int point) {
-        Set<String> unavailableColors = new HashSet<>();
-
-        // Get the color of the neighbor point through the current_color_place class method
-        for (int neighbor : currentplace.getNeighbors(point)) {
-            String neighborColor = currentplace.getColor(neighbor);
-            if (neighborColor != null) {
-                unavailableColors.add(neighborColor);
+            // Check if this color is distinct from the previously generated ones
+            isDistinct = true;
+            for (Color existingColor : generatedColors) {
+                if (calculateColorDifference(newColor, existingColor) < COLOR_DIFFERENCE_THRESHOLD) {
+                    isDistinct = false;
+                    break;
+                }
             }
-        }
+        } while (!isDistinct);
 
-        return unavailableColors;
+        // Add the new color to the list of generated colors
+        generatedColors.add(newColor);
+        return newColor;
     }
 
-    //Remind colors that cannot be placed and when placing the wrong color
-     public void attemptcurrentcolor(String color) {
-        int point = positions.generatePosition(currentplace.colors.length);
-
-        //Get unavailable colors in advance and remind the player
-        Set<String> unavailableColors = getUnavailableColors(point);
-        if (!unavailableColors.isEmpty()) {
-            System.out.println("warn: in this point " + point + " there could not put this color :" + unavailableColors);
-        }
-
-        //Checks whether the specified color is placeable
-        if (unavailableColors.contains(color)) {
-            System.out.println("warn: cannot put in this point " + point + " this color " + color + "; because there is the same color in the neighbor");
-        }
+    // Helper method to calculate the difference between two colors
+    private int calculateColorDifference(Color c1, Color c2) {
+        int redDiff = Math.abs(c1.getRed() - c2.getRed());
+        int greenDiff = Math.abs(c1.getGreen() - c2.getGreen());
+        int blueDiff = Math.abs(c1.getBlue() - c2.getBlue());
+        return redDiff + greenDiff + blueDiff;
     }
- 
+
+    // Method to get a color by index
+    public Color getColorByIndex(int index) {
+        // Generate new colors if the requested index exceeds the number of generated colors
+        while (index >= generatedColors.size()) {
+            generateDistinctColor();
+        }
+        return generatedColors.get(index);
+    }
+
 
 }
+
+
 
 //generate random colors (an easy way would be using rgb numbers)
 //check whether or not these colors are to similar to already existing colors (looking at rgb values and checking to see if the minimum diference is met)
