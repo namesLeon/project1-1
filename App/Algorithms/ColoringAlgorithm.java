@@ -7,6 +7,11 @@ import java.util.Random;
 
 public class ColoringAlgorithm {
 
+    // Predefined colors: Red, Green, Blue, Yellow, Orange
+    private static final Color[] PREDEFINED_COLORS = {
+        Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE
+    };
+
     // Minimum color distance to ensure random colors are not too similar to existing ones
     private static final int MIN_COLOR_DISTANCE = 50;
 
@@ -59,6 +64,17 @@ public class ColoringAlgorithm {
         return newColor;
     }
 
+    // Method to add a predefined color by index
+    public Color addPredefinedColor(int index) {
+        if (index >= 0 && index < PREDEFINED_COLORS.length) {
+            Color selectedColor = PREDEFINED_COLORS[index];
+            colors.add(selectedColor);
+            return selectedColor;
+        } else {
+            return null; // Return null if the index is out of bounds
+        }
+    }
+
     // Method to get a color by its index in the list
     public Color getColor(int index) {
         if (index >= 0 && index < colors.size()) {
@@ -73,6 +89,9 @@ public class ColoringAlgorithm {
         return colors.size();
     }
 }
+
+
+
 
 
 
