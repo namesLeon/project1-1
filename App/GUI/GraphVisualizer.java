@@ -1,15 +1,14 @@
 package App.GUI;
 
+import App.Algorithms.ColoringAlgorithm;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.List;
 import javax.swing.*;
-
-import App.Algorithms.ColoringAlgorithm;
 
 public class GraphVisualizer extends JPanel {
 
@@ -26,7 +25,7 @@ public class GraphVisualizer extends JPanel {
     // new instance variables added to fix the vertex coloring
     private boolean isDragging = false;
     private Point pressPoint; // to store the initial press point
-    private static final int DRAG_THRESHOLD = 5; // threshold to distinguish between click and drag
+    private static final int DRAG_THRESHOLD = 2; // threshold to distinguish between click and drag
 
 
 
@@ -55,10 +54,11 @@ public class GraphVisualizer extends JPanel {
                     Point position = entry.getValue();
                     int radius = 20;
         
-                    if (pressPoint.distance(position) < radius) {
+                    if (pressPoint.distance(position.x + panX, position.y + panY) < radius) {
                         draggedVertex = vertex;
                         vertexFound = true;
                         break;
+                        //adjusted the radius check for better hit chances
                     }
                 }
         
@@ -73,10 +73,11 @@ public class GraphVisualizer extends JPanel {
                 if(!isDragging && draggedVertex != null) {
                     // it was a click, not a drag
                     handleVertexClick(draggedVertex);
-                    repaint();
+                    
                 }
                 draggedVertex = null;
                 isDragging = false;
+                repaint();
             }
         });
         
@@ -94,7 +95,9 @@ public class GraphVisualizer extends JPanel {
 
                     if(isDragging) {
                         // we need to update the position of the dragged vertex
-                        vertexPositions.put(draggedVertex, currentPoint);
+                        int adjustedX = (int) ((currentPoint.x - panX)/zoomFactor);
+                        int adjustedY = (int) ((currentPoint.y - panY)/zoomFactor); //added new variables
+                        vertexPositions.put(draggedVertex, new Point(adjustedX, adjustedY));
                         repaint();
                     }
                 } else {
