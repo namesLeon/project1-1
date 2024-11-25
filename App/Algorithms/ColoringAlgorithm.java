@@ -14,6 +14,9 @@ private current_color_place currentplace;
 //Used to store the position in Positions into positions
 private Positions positions;
 
+public ColoringAlgorithm(int vertexCount) {
+    //TODO Auto-generated constructor stub
+}
 public ColorChecker(int size){
     currentplace = new current_color_place(size);//stores into currentplace the size it will be used later
     Positions = new positions();
