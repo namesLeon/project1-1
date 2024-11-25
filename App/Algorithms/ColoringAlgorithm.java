@@ -79,17 +79,6 @@ public class ColoringAlgorithm {
         }
     }
 
-    // Method to add a predefined color by index
-    public Color addPredefinedColor(int index) {
-        if (index >= 0 && index < PREDEFINED_COLORS.length) {
-            Color selectedColor = PREDEFINED_COLORS[index];
-            colors.add(selectedColor);
-            return selectedColor;
-        } else {
-            return null; // Return null if the index is out of bounds
-        }
-    }
-
     // Method to get a color by its index in the list
     public Color getColor(int index) {
         if (index < 0 || index >= colors.size()) {
@@ -103,13 +92,16 @@ public class ColoringAlgorithm {
     public int getColorCount() {
         return colors.size();
     }
+
+    public List<Color> getAllColors() {
+        return new ArrayList<>(colors); // Return a copy to prevent external modification
+    }
+
+    public void clearColors() {
+        colors.clear();
+    }
+
+    public String colorToHex(Color color) {
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+    }    
 }
-
-
-
-
-
-//generate random colors (an easy way would be using rgb numbers)
-//check whether or not these colors are to similar to already existing colors (looking at rgb values and checking to see if the minimum diference is met)
-//store the colors in a Color[]
-//return the color when your method is called with a number
