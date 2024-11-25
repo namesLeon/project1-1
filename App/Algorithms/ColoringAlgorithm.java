@@ -1,68 +1,107 @@
 package App.Algorithms;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
+public class ColoringAlgorithm {
 
-import  current_color_place;// current_color_place is the put color vertex file
-import  Positions;// the file which makes radom position files
-import java.util.HashSet;
-import java.util.Set;
+    // Predefined colors: Red, Green, Blue, Yellow, Orange
+    private static final Color[] PREDEFINED_COLORS = {
+        Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE
+    };
 
-public class ColoringAlgorithm{
+    // Minimum color distance to ensure random colors are not too similar to existing ones
+    private static final int MIN_COLOR_DISTANCE = 50;
 
-//Used to store the color in current_color_place into currentplace
-private current_color_place currentplace; 
-//Used to store the position in Positions into positions
-private Positions positions;
+    // List to store the colors generated
+    private List<Color> colors;
 
-public ColorChecker(int size){
-    currentplace = new current_color_place(size);//stores into currentplace the size it will be used later
-    Positions = new positions();
+    private int minColorDistance;
 
-}
-    // to get the color in the position
-    public String getColor(int point) {
-        if (point >= 0 && point < colors.length) { //colors is the array of the set of colors
-            return colors[point];
-        }
-        return null;
+    // Constructor to initialize the list of colors
+    public ColoringAlgorithm() {
+        this.minColorDistance = minColorDistance;
+        colors = new ArrayList<>();
     }
 
+    // Method to generate a random color
+    private Color generateRandomColor() {
+        Random rand = new Random();
+        int r = rand.nextInt(256); // Red value between 0 and 255
+        int g = rand.nextInt(256); // Green value between 0 and 255
+        int b = rand.nextInt(256); // Blue value between 0 and 255
+        return new Color(r, g, b); // Return a new Color object
+    }
 
-    //for the color which can not be used in this position
-    public Set<String> getUnavailableColors(int point) {
-        Set<String> unavailableColors = new HashSet<>();
+    // Method to calculate the Euclidean distance between two colors
+    private int calculateColorDistance(Color c1, Color c2) {
+        int rDiff = c1.getRed() - c2.getRed();
+        int gDiff = c1.getGreen() - c2.getGreen();
+        int bDiff = c1.getBlue() - c2.getBlue();
+        return (int) Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+    }
 
-        // Get the color of the neighbor point through the current_color_place class method
-        for (int neighbor : currentplace.getNeighbors(point)) {
-            String neighborColor = currentplace.getColor(neighbor);
-            if (neighborColor != null) {
-                unavailableColors.add(neighborColor);
+    // Method to generate and add a new random color to the list, ensuring it's not too similar to existing ones
+    public Color addNewRandomColor() {
+        int attempts = 0;
+        while (attempts < 1000) {
+            Color newColor = generateRandomColor(); // Declare inside the loop
+            boolean isSimilar = false;
+            
+            // Check if the new color is too similar to any of the existing colors
+            for (Color existingColor : colors) {
+                if (calculateColorDistance(existingColor, newColor) < MIN_COLOR_DISTANCE) {
+                    isSimilar = true;
+                    break;
+                }
             }
+            
+            if (!isSimilar) {
+                colors.add(newColor); // Add the valid color to the list
+                return newColor; // Return the new color
+            }
+            attempts++;
         }
+        throw new RuntimeException("Could not generate a sufficiently distinct color.");
+    }
+    
 
-        return unavailableColors;
+    // Method to add a predefined color by index
+    public Color addPredefinedColor(int index) {
+        if (index >= 0 && index < PREDEFINED_COLORS.length) {
+            Color selectedColor = PREDEFINED_COLORS[index];
+            colors.add(selectedColor);
+            return selectedColor;
+        } else {
+            return null; // Return null if the index is out of bounds
+        }
     }
 
-    //Remind colors that cannot be placed and when placing the wrong color
-     public void attemptcurrentcolor(String color) {
-        int point = positions.generatePosition(currentplace.colors.length);
-
-        //Get unavailable colors in advance and remind the player
-        Set<String> unavailableColors = getUnavailableColors(point);
-        if (!unavailableColors.isEmpty()) {
-            System.out.println("warn: in this point " + point + " there could not put this color :" + unavailableColors);
+    // Method to get a color by its index in the list
+    public Color getColor(int index) {
+        if (index < 0 || index >= colors.size()) {
+            throw new IllegalArgumentException("Index out of bounds: " + index);
         }
-
-        //Checks whether the specified color is placeable
-        if (unavailableColors.contains(color)) {
-            System.out.println("warn: cannot put in this point " + point + " this color " + color + "; because there is the same color in the neighbor");
-        }
+        return colors.get(index);
     }
- 
+    
 
+    // Method to get the total number of colors generated
+    public int getColorCount() {
+        return colors.size();
+    }
+
+    public List<Color> getAllColors() {
+        return new ArrayList<>(colors); // Return a copy to prevent external modification
+    }
+
+    public void clearColors() {
+        colors.clear();
+    }
+
+    public String colorToHex(Color color) {
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+    }    
 }
-
-//generate random colors (an easy way would be using rgb numbers)
-//check whether or not these colors are to similar to already existing colors (looking at rgb values and checking to see if the minimum diference is met)
-//store the colors in a Color[]
-//return the color when your method is called with a number
