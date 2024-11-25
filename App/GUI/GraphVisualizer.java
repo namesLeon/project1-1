@@ -1,15 +1,13 @@
 package App.GUI;
 
+import App.Algorithms.ColoringAlgorithm;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.List;
 import javax.swing.*;
-
-import App.Algorithms.ColoringAlgorithm;
 
 public class GraphVisualizer extends JPanel {
 
@@ -26,14 +24,12 @@ public class GraphVisualizer extends JPanel {
     // new instance variables added to fix the vertex coloring
     private boolean isDragging = false;
     private Point pressPoint; // to store the initial press point
-    private static final int DRAG_THRESHOLD = 5; // threshold to distinguish between click and drag
-
-
+    private static final int DRAG_THRESHOLD = 2; // threshold to distinguish between click and drag
 
     // Constructor to initialize the graph data
     public GraphVisualizer(String[] vertices, String[][] edges) {
         this.vertexColors = new HashMap<>();
-        for(String vertex : vertices){
+        for (String vertex : vertices) {
             vertexColors.put(vertex, Color.WHITE); // start each vertex as white
         }
         this.vertices = vertices;
@@ -48,53 +44,56 @@ public class GraphVisualizer extends JPanel {
                 isDragging = false; // Reset dragging flag
                 pressPoint = e.getPoint();
                 lastMousePosition = e.getPoint();
-        
+
                 boolean vertexFound = false;
                 for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
                     String vertex = entry.getKey();
                     Point position = entry.getValue();
                     int radius = 20;
-        
+
                     if (pressPoint.distance(position) < radius) {
                         draggedVertex = vertex;
                         vertexFound = true;
                         break;
+                        //adjusted the radius check for better hit chances
                     }
                 }
-        
+
                 if (!vertexFound) {
                     draggedVertex = null;
                 }
             }
-        
+
             @Override
             public void mouseReleased(MouseEvent e) {
                 // stop dragging when mouse is released
-                if(!isDragging && draggedVertex != null) {
+                if (!isDragging && draggedVertex != null) {
                     // it was a click, not a drag
                     handleVertexClick(draggedVertex);
-                    repaint();
+                    
                 }
                 draggedVertex = null;
                 isDragging = false;
+                repaint();
             }
         });
-        
 
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
 
                 Point currentPoint = e.getPoint();
-                
-                if(draggedVertex!= null){
-                    if(!isDragging && pressPoint.distance(currentPoint) > DRAG_THRESHOLD) {
+
+                if (draggedVertex != null) {
+                    if (!isDragging && pressPoint.distance(currentPoint) > DRAG_THRESHOLD) {
                         isDragging = true;
                     }
 
-                    if(isDragging) {
+                    if (isDragging) {
                         // we need to update the position of the dragged vertex
-                        vertexPositions.put(draggedVertex, currentPoint);
+                        int adjustedX = (int) ((currentPoint.x - panX)/zoomFactor);
+                        int adjustedY = (int) ((currentPoint.y - panY)/zoomFactor); //added new variables
+                        vertexPositions.put(draggedVertex, new Point(adjustedX, adjustedY));
                         repaint();
                     }
                 } else {
@@ -105,54 +104,37 @@ public class GraphVisualizer extends JPanel {
                     panY += dy;
                     lastMousePosition = currentPoint;
                     repaint(); // Repaint to show the panned view
-        
+
                 }
             }
         });
     }
 
-    // new helper method to handle vertex clicks 
+    // Helper method to handle vertex clicks
     private void handleVertexClick(String vertex) {
-        // Initialize available colors as hex strings
-        List<String> availableColors = new ArrayList<>(vertexColors.values().stream()
-            .map(color -> String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()))
-            .toList());
-        availableColors.add("NEW COLOR"); // Add the "NEW COLOR" option
+        Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
+        String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Orange"};
 
-        String[] colorOptions = availableColors.toArray(new String[0]); // Convert to array for JOptionPane
-
-        // Show a dropdown dialog for the user to select a color
-        String selectedOption = (String) JOptionPane.showInputDialog(
-            this,
-            "Choose a color for vertex " + vertex + ":",
-            "Select Color",
-            JOptionPane.PLAIN_MESSAGE,
-            null,
-            colorOptions,
-            colorOptions[0]
+        String selectedColorName = (String) JOptionPane.showInputDialog(
+                this,
+                "Choose a color for vertex " + vertex + ":",
+                "Select Color",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                colorNames,
+                colorNames[0]
         );
 
-        if (selectedOption != null) {
-            if (selectedOption.equals("NEW COLOR")) {
-                // Generate a new random color
-                ColoringAlgorithm colorGenerator = new ColoringAlgorithm();
-                Color newColor = colorGenerator.addNewRandomColor();
-                String newColorHex = String.format("#%02x%02x%02x", newColor.getRed(), newColor.getGreen(), newColor.getBlue());
-            
-                // Add the new color to the available options
-                availableColors.add(newColorHex);
-
-                // Assign the new color to the vertex
-                vertexColors.put(vertex, newColor);
-            } else {
-                // Convert selected hex string back to Color
-                Color selectedColor = Color.decode(selectedOption);
-                vertexColors.put(vertex, selectedColor);
+        if (selectedColorName != null) {
+            for (int i = 0; i < colorNames.length; i++) {
+                if (selectedColorName.equals(colorNames[i])) {
+                    vertexColors.put(vertex, colors[i]);
+                    break;
+                }
             }
             repaint();
         }
     }
-
 
     // Method to generate random positions for vertices, ensuring no overlap
     private void generateVertexPositions() {
@@ -169,7 +151,6 @@ public class GraphVisualizer extends JPanel {
                 int y = margin + rand.nextInt(getHeight() - 2 * margin - radius);
                 Point newPosition = new Point(x, y);
 
-                // Ensure no overlap with existing vertices
                 boolean overlaps = false;
                 for (Point p : vertexPositions.values()) {
                     if (p.distance(newPosition) < 2 * radius) {
@@ -185,7 +166,6 @@ public class GraphVisualizer extends JPanel {
                 attempts++;
             }
 
-            // If no valid position was found, default to (0, 0)
             if (!positionFound) {
                 vertexPositions.put(vertex, new Point(0, 0));
             }
@@ -203,38 +183,29 @@ public class GraphVisualizer extends JPanel {
         g2d.translate(panX, panY);
         g2d.scale(zoomFactor, zoomFactor);
 
-        // First draw edges
         drawEdges(g2d);
-
-        // Then draw vertices
         drawVertices(g2d);
     }
 
-    // Method to draw the vertices
     private void drawVertices(Graphics2D g2d) {
-        int radius = 20; // Radius of vertex circles
+        int radius = 20;
         for (String vertex : vertices) {
             Point pos = vertexPositions.get(vertex);
             if (pos == null) continue;
-    
+
             int x = pos.x - radius / 2;
             int y = pos.y - radius / 2;
-    
-            // Get the color for the vertex
+
             Color vertexColor = vertexColors.getOrDefault(vertex, Color.WHITE);
-    
-            // Draw the vertex as a filled circle with the assigned color
+
             g2d.setColor(vertexColor);
             g2d.fillOval(x, y, radius, radius);
-    
-            // Draw the vertex label
+
             g2d.setColor(Color.BLACK);
             g2d.drawString(vertex, x + radius / 2 - 5, y + radius / 2 + 5);
         }
     }
-    
 
-    // Method to draw the edges
     private void drawEdges(Graphics2D g2d) {
         if (edges == null) return;
         g2d.setColor(Color.BLACK);
@@ -242,20 +213,18 @@ public class GraphVisualizer extends JPanel {
             Point pos1 = vertexPositions.get(edge[0]);
             Point pos2 = vertexPositions.get(edge[1]);
 
-            // Draw a line between the two vertices
             if (pos1 != null && pos2 != null) {
                 g2d.drawLine(pos1.x, pos1.y, pos2.x, pos2.y);
             }
         }
     }
 
-    // Method to update vertices and edges dynamically
     public void updateGraph(String[] vertices, String[][] edges) {
         this.vertices = vertices;
         this.edges = edges;
-        this.vertexPositions.clear(); // Clear old positions
-        generateVertexPositions();    // Generate new positions
-        repaint();                    // Repaint the component to reflect changes
+        this.vertexPositions.clear();
+        generateVertexPositions();
+        repaint();
     }
 
     public void zoomIn() {
@@ -266,5 +235,10 @@ public class GraphVisualizer extends JPanel {
     public void zoomOut() {
         zoomFactor /= 1.2;
         repaint();
+    }
+
+    // New method to get vertex count
+    public int getVertexCount() {
+        return vertices != null ? vertices.length : 0;
     }
 }
