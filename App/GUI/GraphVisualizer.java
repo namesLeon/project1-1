@@ -1,10 +1,8 @@
 package App.GUI;
 
-import App.Algorithms.ColoringAlgorithm;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.swing.*;
@@ -20,6 +18,7 @@ public class GraphVisualizer extends JPanel {
     private int panY = 0; // Vertical pan offset
     private Point lastMousePosition; // Tracks last mouse position for dragging
     private String draggedVertex = null;
+    private String[] vertexOrder;
 
     // new instance variables added to fix the vertex coloring
     private boolean isDragging = false;
@@ -133,6 +132,20 @@ public class GraphVisualizer extends JPanel {
                 }
             }
             repaint();
+        }
+    }
+
+
+    public void setVertexOrder(String[] order){
+        this.vertexOrder = order;
+    }
+
+    
+
+    public void uncolorVertex(String vertex){
+        if (vertexColors.containsKey(vertex)) {
+            vertexColors.remove(vertex); 
+            repaint(); 
         }
     }
 
