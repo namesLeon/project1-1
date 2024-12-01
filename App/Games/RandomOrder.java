@@ -1,177 +1,299 @@
 package App.Games;
 
+import App.GUI.*;
+import App.Algorithms.*;
+import App.Main.Main;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.Arrays;
-
-import App.GUI.GraphVisualizer;
-import App.GUI.SoundFX;
-import App.Main.Main;
-import App.Algorithms.RandomGraphGenerator;
-import App.Algorithms.ColoringAlgorithm;
 
 public class RandomOrder {
 
-    private static int upperBoundVertices = 100;
-    private static int lowerBoundVertices = 1;
-    private static int upperBoundEdges = 100;
-    private static int lowerBoundEdges = 0;
-    private static GraphVisualizer graphPanel;
-
-    // Variables specific to Random Order mode
-    private static String[] vertexOrder; // The random order of vertices
-    private static int currentVertexIndex; // Tracks the current vertex to color
+    private JFrame frame;
+    private GraphVisualizer graphPanel;
+    private ColoringAlgorithm coloringAlgorithm;
+    private List<String> vertexOrder;
+    private int currentVertexIndex;
+    private Instant startTime;
 
     public static void game() {
-        JFrame frame = new JFrame("Random Order");
+        RandomOrder randomOrderGame = new RandomOrder();
+        randomOrderGame.initializeGame();
+    }
+
+    private void initializeGame() {
+        frame = new JFrame("Random Order Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLayout(new BorderLayout());
 
-        JPanel backPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
+        JButton generateGraphButton = new JButton("Generate Graph");
+        JButton backButton = new JButton("Back");
 
-        JButton hint = new JButton("Hint");
-        JButton generateGraph = new JButton("Generate Graph");
-        JButton back = new JButton("Back");
-        JButton leaderboard = new JButton("Show Leaderboard");
-
-        backPanel.add(back);
-        buttonPanel.add(hint);
-        buttonPanel.add(generateGraph);
-        buttonPanel.add(leaderboard);
+        buttonPanel.add(generateGraphButton);
+        buttonPanel.add(backButton);
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
+        
 
-        frame.add(backPanel, BorderLayout.SOUTH);
+        graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
+            @Override
+            public void vertexClicked(String vertex) {
+                handleVertexClick(vertex);
+            }
+        });
+
+        // Set the vertex click listener
+        graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
+            @Override
+            public void vertexClicked(String vertex) {
+                handleVertexClick(vertex);
+            }
+        });
+
         frame.add(buttonPanel, BorderLayout.NORTH);
         frame.add(graphPanel, BorderLayout.CENTER);
-
         frame.setVisible(true);
 
-        back.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("button.wav");
-                Main.mainMenu();
-                frame.dispose();
-            }
+        // Action Listeners
+        backButton.addActionListener(e -> {
+            SoundFX.playSound("button.wav");
+            Main.mainMenu();
+            frame.dispose();
         });
 
-        hint.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("fail.wav");
-                // TODO: Implement hint functionality
-            }
-        });
-
-        generateGraph.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("button.wav");
-                generateGraph();
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
-
-        leaderboard.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("button.wav");
-                showLeaderboard();
-            }
+        generateGraphButton.addActionListener(e -> {
+            SoundFX.playSound("button.wav");
+            generateGraph();
         });
     }
 
-    public static void showLeaderboard() {
-        // Implement leaderboard functionality if needed
-    }
-
-    public static void generateGraph() {
-        JFrame frame2 = new JFrame();
+    private void generateGraph() {
+        JFrame frame2 = new JFrame("Generate Graph");
         frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame2.setSize(new Dimension(400, 400));
+        frame2.setSize(new Dimension(300, 200));
         frame2.setLayout(new BorderLayout());
 
-        JPanel confirmPanel = new JPanel();
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2));
+        JLabel verticesLabel = new JLabel("Number of Vertices:");
+        JTextField verticesField = new JTextField();
+        JLabel edgesLabel = new JLabel("Number of Edges:");
+        JTextField edgesField = new JTextField();
 
-        JButton confirm = new JButton("Confirm");
+        inputPanel.add(verticesLabel);
+        inputPanel.add(verticesField);
+        inputPanel.add(edgesLabel);
+        inputPanel.add(edgesField);
 
-        confirmPanel.add(confirm);
+        JButton confirmButton = new JButton("Confirm");
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(confirmButton);
 
-        JLabel topLabel = new JLabel("Enter number of vertices and edges", JLabel.CENTER);
-
-        JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayout(2, 2, 1, 5));
-
-        panel2.add(new JLabel("Vertices:"));
-        JTextField textField1 = new JTextField(1);
-        panel2.add(textField1);
-
-        panel2.add(new JLabel("Edges:"));
-        JTextField textField2 = new JTextField(1);
-        panel2.add(textField2);
-
-        frame2.add(confirmPanel, BorderLayout.SOUTH);
-        frame2.add(topLabel, BorderLayout.NORTH);
-        frame2.add(panel2, BorderLayout.CENTER);
-
+        frame2.add(inputPanel, BorderLayout.CENTER);
+        frame2.add(buttonPanel, BorderLayout.SOUTH);
         frame2.setVisible(true);
 
-        confirm.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    int numOfVertices = Integer.parseInt(textField1.getText());
-                    int numOfEdges = Integer.parseInt(textField2.getText());
+        coloringAlgorithm = new ColoringAlgorithm();
 
-                    if (((numOfVertices < lowerBoundVertices) || (numOfVertices > upperBoundVertices))
-                            || ((numOfEdges < lowerBoundEdges) || (numOfEdges > upperBoundEdges))) {
-                        JOptionPane.showMessageDialog(frame2, "Entries are out of bounds.", "Input Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        RandomGraphGenerator generator = new RandomGraphGenerator(numOfVertices, numOfEdges);
-                        ColoringAlgorithm color = new ColoringAlgorithm();
+        confirmButton.addActionListener(e -> {
+            try {
+                int numOfVertices = Integer.parseInt(verticesField.getText());
+                int numOfEdges = Integer.parseInt(edgesField.getText());
 
-                        String[] vertices = generator.getVertices();
-                        String[][] edges = generator.getEdges();
-
-                        // Generate a random order of vertices
-                        vertexOrder = vertices.clone();
-                        shuffleArray(vertexOrder);
-                        currentVertexIndex = 0;
-
-                        graphPanel.updateGraph(vertices, edges);
-                        graphPanel.setVertexOrder(vertexOrder); // Set the order in GraphVisualizer
-
-                        color.clearColors();
-
-                        frame2.dispose();
-                    }
-
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error",
-                            JOptionPane.ERROR_MESSAGE);
+                if (numOfVertices <= 0) {
+                    JOptionPane.showMessageDialog(frame2, "Number of vertices must be positive.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
+
+                if (numOfEdges < numOfVertices - 1) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (numOfVertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (numOfEdges < 0) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int maxEdges = numOfVertices * (numOfVertices - 1) / 2;
+                if (numOfEdges > maxEdges) {
+                    JOptionPane.showMessageDialog(frame2, "Too many edges for the number of vertices. Maximum possible edges: " + maxEdges, "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                RandomGraphGenerator generator = new RandomGraphGenerator(numOfVertices, numOfEdges);
+                String[] vertices = generator.getVertices();
+                String[][] edges = generator.getEdges();
+
+                graphPanel.updateGraph(vertices, edges);
+
+                // Initialize the coloring algorithm
+                coloringAlgorithm = new ColoringAlgorithm();
+
+                // Randomly shuffle the vertex order
+                vertexOrder = new ArrayList<>(Arrays.asList(vertices));
+                Collections.shuffle(vertexOrder);
+                currentVertexIndex = 0;
+
+                // Start the timer
+                startTime = Instant.now();
+
+                // Highlight the first vertex
+                highlightCurrentVertex();
+
+                frame2.dispose();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
 
-    // Fisher–Yates shuffle algorithm to randomize the vertex order
-    private static void shuffleArray(String[] array) {
-        Random rand = new Random();
-        for (int i = array.length - 1; i > 0; i--) {
-            int index = rand.nextInt(i + 1);
-            // Simple swap
-            String temp = array[index];
-            array[index] = array[i];
-            array[i] = temp;
+    private void highlightCurrentVertex() {
+        if (currentVertexIndex < vertexOrder.size()) {
+            String currentVertex = vertexOrder.get(currentVertexIndex);
+            graphPanel.highlightVertex(currentVertex);
+        }
+    }
+
+    private void handleVertexClick(String vertex) {
+        // Get colors of adjacent vertices
+        Set<Color> invalidColors = getAdjacentColors(vertex);
+
+        // Present color options, excluding invalid colors
+        Color selectedColor = showColorSelectionDialog(invalidColors, vertex);
+
+        if (selectedColor != null) {
+            // Update the color
+            graphPanel.setVertexColor(vertex, selectedColor);
+
+            // Move to the next vertex
+            currentVertexIndex++;
+            if (currentVertexIndex < vertexOrder.size()) {
+                highlightCurrentVertex();
+            } else {
+                endGame();
+            }
+        }
+    }
+
+    private Set<Color> getAdjacentColors(String vertex) {
+        Set<Color> colors = new HashSet<>();
+        for (String[] edge : graphPanel.getEdges()) {
+            if (edge[0].equals(vertex)) {
+                Color color = graphPanel.getVertexColor(edge[1]);
+                if (color != null) colors.add(color);
+            } else if (edge[1].equals(vertex)) {
+                Color color = graphPanel.getVertexColor(edge[0]);
+                if (color != null) colors.add(color);
+            }
+        }
+        return colors;
+    }
+
+    private Color showColorSelectionDialog(Set<Color> invalidColors, String vertex) {
+        // Define available colors
+        Map<String, Color> colorOptions = new LinkedHashMap<>();
+        colorOptions.put("Red", Color.RED);
+        colorOptions.put("Green", Color.GREEN);
+        colorOptions.put("Blue", Color.BLUE);
+        colorOptions.put("Yellow", Color.YELLOW);
+        colorOptions.put("Orange", Color.ORANGE);
+
+        // Remove invalid colors
+        colorOptions.values().removeAll(invalidColors);
+
+        if (colorOptions.isEmpty()) {
+            // Allow player to pick a new color
+            int option = JOptionPane.showConfirmDialog(
+                    frame,
+                    "No available colors left. Would you like to use a new color?",
+                    "No Colors Available",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (option == JOptionPane.YES_OPTION) {
+                Color newColor = coloringAlgorithm.addNewRandomColor();
+                return newColor;
+            } else {
+                // Player chose not to use a new color
+                return null;
+            }
+        }
+
+        // Show color selection dialog
+        Object[] options = colorOptions.keySet().toArray();
+        String selectedColorName = (String) JOptionPane.showInputDialog(
+                frame,
+                "Select a color for vertex " + vertex + ":",
+                "Color Selection",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (selectedColorName != null) {
+            return colorOptions.get(selectedColorName);
+        }
+        return null;
+    }
+
+    private void endGame() {
+        // Stop the timer
+        Instant endTime = Instant.now();
+        Duration duration = Duration.between(startTime, endTime);
+        int timeElapsed = (int) duration.getSeconds();
+
+        // Calculate the chromatic number (number of unique colors used)
+        Set<Color> usedColors = new HashSet<>();
+        for (String vertex : vertexOrder) {
+            Color color = graphPanel.getVertexColor(vertex);
+            if (color != null) {
+                usedColors.add(color);
+            }
+        }
+        int chromaticNumber = usedColors.size();
+
+        // Prompt for username
+        String userName = JOptionPane.showInputDialog(frame, "Enter your username for the leaderboard:");
+
+        if (userName != null && !userName.trim().isEmpty()) {
+            // Calculate the score
+            int score = Scoring.scoreCalculator("RandomOrder", userName, chromaticNumber, timeElapsed);
+
+            // Congratulate the player
+            JOptionPane.showMessageDialog(frame,
+                    "Congratulations, " + userName + "!\nYour score: " + score,
+                    "Game Over",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            // Store the score
+            Scoring.storeInLeaderboard("RandomOrder", userName, score);
+        }
+
+        // Ask to play again or exit
+        int option = JOptionPane.showOptionDialog(frame,
+                "Would you like to play again?",
+                "Play Again",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                null,
+                null);
+
+        if (option == JOptionPane.YES_OPTION) {
+            // Restart the game
+            generateGraph();
+        } else {
+            Main.mainMenu();
+            frame.dispose();
         }
     }
 }

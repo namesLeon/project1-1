@@ -63,7 +63,7 @@ public class Main {
         RO.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("fail.wav");
+                SoundFX.playSound("button.wav");
                 RandomOrder.game();
                 frame.dispose();
             }
