@@ -11,8 +11,6 @@ public class Scoring {
     public static int scoreCalculator(String game, String userName, int chromaticNumber, int timeElapsed) {
         int score = chromaticNumber * timeElapsed;
 
-        storeInLeaderboard(game, userName, score);
-
         return score;
     }
 
@@ -70,7 +68,7 @@ public class Scoring {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             for (LeaderboardEntry entry : leaderboard) {
-                writer.write(entry.getUserName() + "," + entry.getScore());
+                writer.write(entry.getUserName() + ": " + entry.getScore());
                 writer.newLine();
             }
         }
