@@ -4,11 +4,13 @@ import App.Algorithms.ColoringAlgorithm;
 import App.Algorithms.RandomGraphGenerator;
 import App.GUI.GraphVisualizer;
 import App.GUI.SoundFX;
+import App.Games.Leaderboards.*;
 import App.Main.Main;
 import java.awt.*;
 import java.util.Random;
 import java.util.Stack;
 import javax.swing.*;
+
 
 public class IChangedMyMind {
     private static int upperBoundVertices = 100;
@@ -89,8 +91,11 @@ public class IChangedMyMind {
         });
     }
 
-    public static void showLeaderboard() {
-        
+    public static void showLeaderboard() {//jieke add this any questions ask me
+        //Loading leaderboard data
+        Leaderboard.loadLeaderboard();
+        //Display the ranking interface
+        Leaderboard.showLeaderboard();
     }
 
     public static void generateGraph() {
