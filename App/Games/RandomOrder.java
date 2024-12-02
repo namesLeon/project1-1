@@ -73,14 +73,6 @@ public class RandomOrder {
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
         
-
-        graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
-            @Override
-            public void vertexClicked(String vertex) {
-                handleVertexClick(vertex);
-            }
-        });
-
         // Set the vertex click listener
         graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
             @Override
