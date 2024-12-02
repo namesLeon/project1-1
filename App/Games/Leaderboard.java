@@ -36,9 +36,9 @@ public class Leaderboard {
 
         leaderboardFrame.setVisible(true);
     }
-    
+
     public static void loadLeaderboard() {
-        // 示例数据加载
+        // Sample data loading
         addScore("Alice", 100);
         addScore("Bob", 90);
         addScore("Charlie", 85);
