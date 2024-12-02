@@ -9,6 +9,7 @@ import App.Main.Main;
 import java.awt.*;
 import java.util.Random;
 import java.util.Stack;
+import java.util.List;
 import javax.swing.*;
 
 
@@ -92,10 +93,35 @@ public class IChangedMyMind {
     }
 
     public static void showLeaderboard() {//jieke add this any questions ask me
-        //Loading leaderboard data
-        Leaderboard.loadLeaderboard();
-        //Display the ranking interface
-        Leaderboard.showLeaderboard();
+        List<Scoring.LeaderboardEntry> leaderboard = Scoring.getLeaderBoard("IChangedMyMind");
+
+        JFrame frame3 = new JFrame();
+        frame3.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame3.setSize(new Dimension(800, 800));
+        frame3.setLayout(new BorderLayout());
+
+        JLabel label = new JLabel("Leaderboard");
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+
+        StringBuilder sb = new StringBuilder();
+        for (Scoring.LeaderboardEntry entry : leaderboard) {
+            sb.append(entry.getUserName()).append(": ").append(entry.getScore()).append("\n");
+        }
+
+        textArea.setText(sb.toString());
+        JScrollPane scrollPane = new JScrollPane(textArea);
+
+        JButton close = new JButton("Close");
+        close.addActionListener(e -> frame3.dispose());
+
+        frame3.add(label, BorderLayout.NORTH);
+        frame3.add(scrollPane, BorderLayout.CENTER);
+        frame3.add(close, BorderLayout.SOUTH);
+
+        frame3.setVisible(true);
     }
 
     public static void generateGraph() {
