@@ -4,12 +4,11 @@ import App.Algorithms.ColoringAlgorithm;
 import App.Algorithms.RandomGraphGenerator;
 import App.GUI.GraphVisualizer;
 import App.GUI.SoundFX;
-import App.Games.Leaderboards.*;
 import App.Main.Main;
 import java.awt.*;
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
-import java.util.List;
 import javax.swing.*;
 
 
