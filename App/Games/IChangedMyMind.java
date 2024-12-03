@@ -99,7 +99,7 @@ public class IChangedMyMind {
         });
     }
 
-    public static void showLeaderboard() {//jieke add this any questions ask me
+    public static void showLeaderboard() {
         List<Scoring.LeaderboardEntry> leaderboard = Scoring.getLeaderBoard("IChangedMyMind");
 
         JFrame frame3 = new JFrame();

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import App.GUI.GraphVisualizer;
+
 public class ColoringAlgorithm {
 
     // Predefined colors and their names
