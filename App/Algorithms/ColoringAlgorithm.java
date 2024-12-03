@@ -86,9 +86,5 @@ public class ColoringAlgorithm {
         }
         return colors.get(index);
     }
-        // Method to assign a new color to a vertex (assuming GraphVisualizer calls this)
-    public void assignColorToVertex(String vertex, GraphVisualizer visualizer) {
-        Color newColor = addNewRandomColor();
-        visualizer.setVertexColor(vertex, newColor); // Set the color for the vertex
-    }
+
 }
