@@ -74,6 +74,7 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("button.wav"); // Play success sound instead of fail
                 IChangedMyMind.game(); // Launch the "I Changed My Mind" game mode
+                frame.dispose();
             }
         });
         
