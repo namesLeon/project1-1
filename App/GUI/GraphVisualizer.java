@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import javax.swing.*;
 
+
 public class GraphVisualizer extends JPanel {
 
     private Map<String, Color> vertexColors; // new hashmap to keep track of each vertex color
@@ -72,6 +73,8 @@ public class GraphVisualizer extends JPanel {
                 isDraggingVertex = false;
             }
 
+   
+
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (!isDraggingVertex && draggedVertex != null) {
@@ -84,6 +87,9 @@ public class GraphVisualizer extends JPanel {
                 isDraggingVertex = false;
             }
         });
+
+        
+
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -105,6 +111,15 @@ public class GraphVisualizer extends JPanel {
                 }
             }
         });
+    }
+
+    public void recolorVertex(String vertex, Color color) {
+        if (vertexColors.containsKey(vertex) || true) {  // Add to ensure vertex exists or add new
+            vertexColors.put(vertex, color);
+            repaint();  // Refresh visual representation
+        } else {
+            throw new IllegalArgumentException("Vertex " + vertex + " not found.");
+        }
     }
 
     // Method to set a highlighted vertex
@@ -144,14 +159,6 @@ public class GraphVisualizer extends JPanel {
         this.vertexOrder = order;
     }
 
-    
-
-    public void uncolorVertex(String vertex){
-        if (vertexColors.containsKey(vertex)) {
-            vertexColors.remove(vertex); 
-            repaint(); 
-        }
-    }
 
     // Method to generate random positions for vertices, ensuring no overlap
     private void generateVertexPositions() {

@@ -21,8 +21,8 @@ public class IChangedMyMind {
     private static GraphVisualizer graphPanel;
 
     private static String[] vertexOrder; 
-    private static int currentVertexIndex; 
-    private static Stack<Integer> undoStack = new Stack<>(); 
+    private static int currentVertexIndex;  
+    private static Stack<UndoStep> UndoStack = new Stack<>();
     
 
     public static void game() {
@@ -74,10 +74,17 @@ public class IChangedMyMind {
         });
 
         undoButton.addActionListener(e -> {
-            if (!undoStack.isEmpty()) {
-                int lastColoredVertex = undoStack.pop();
-                graphPanel.uncolorVertex(vertexOrder[lastColoredVertex]);
-
+            if (!UndoStack.isEmpty()) {
+                UndoStep lastStep = UndoStack.pop();
+                // Uncolor the vertex; 
+                graphPanel.recolorVertex(vertexOrder[lastStep.vertexIndex], Color.WHITE); 
+        
+                // If needed, recolor it back to its previous state
+                if (!UndoStack.isEmpty()) {
+                    UndoStep previousStep = UndoStack.peek();
+                    graphPanel.recolorVertex(vertexOrder[previousStep.vertexIndex], previousStep.color);
+                }
+                
                 currentVertexIndex--;
                 SoundFX.playSound("undo.wav");
             } else {
@@ -174,7 +181,7 @@ public class IChangedMyMind {
                     vertexOrder = vertices.clone();
                     shuffleArray(vertexOrder);
                     currentVertexIndex = 0;
-                    undoStack.clear();
+                    UndoStack.clear();
 
                     graphPanel.updateGraph(vertices, edges);
                     graphPanel.setVertexOrder(vertexOrder);
@@ -200,4 +207,20 @@ public class IChangedMyMind {
             array[i] = temp;
         }
     }
+
+
+    private static class UndoStep {
+        int vertexIndex;
+        Color color;
+    
+        UndoStep(int vertexIndex, Color color) {
+            this.vertexIndex = vertexIndex;
+            this.color = color;
+        }
+    }
+    
+
+
 }
+
+
