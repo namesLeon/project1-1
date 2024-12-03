@@ -51,6 +51,8 @@ public class RandomOrder {
     private List<String> vertexOrder;
     private int currentVertexIndex;
     private Instant startTime;
+    private Instant endTime;
+    private int hintPenaltySeconds = 0;
 
     public static void game() {
         RandomOrder randomOrderGame = new RandomOrder();
@@ -177,6 +179,7 @@ public class RandomOrder {
 
                 // Highlight the first vertex
                 highlightCurrentVertex();
+                graphPanel.clearVertexColors();
 
                 frame2.dispose();
 
@@ -194,25 +197,42 @@ public class RandomOrder {
     }
 
     private void handleVertexClick(String vertex) {
-        // Get colors of adjacent vertices
-        Set<Color> invalidColors = getAdjacentColors(vertex);
-
-        // Present color options, excluding invalid colors
-        Color selectedColor = showColorSelectionDialog(invalidColors, vertex);
-
-        if (selectedColor != null) {
-            // Update the color
-            graphPanel.setVertexColor(vertex, selectedColor);
-
-            // Move to the next vertex
-            currentVertexIndex++;
-            if (currentVertexIndex < vertexOrder.size()) {
-                highlightCurrentVertex();
+        while (true) {
+            // Show all color options
+            Color selectedColor = showColorSelectionDialog(vertex);
+    
+            if (selectedColor == null) {
+                // Player canceled the dialog
+                break;
+            }
+    
+            // Validate the selected color
+            Set<Color> invalidColors = getAdjacentColors(vertex);
+            if (invalidColors.contains(selectedColor)) {
+                // Show warning message
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "This color is unavailable. Check the colors of the neighbouring vertices.",
+                        "Invalid Color",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                // Loop again to let the player select another color
             } else {
-                endGame();
+                // Valid color selected
+                graphPanel.setVertexColor(vertex, selectedColor);
+    
+                // Move to the next vertex
+                currentVertexIndex++;
+                if (currentVertexIndex < vertexOrder.size()) {
+                    highlightCurrentVertex();
+                } else {
+                    endGame();
+                }
+                break; // Exit the loop
             }
         }
     }
+    
 
     private Set<Color> getAdjacentColors(String vertex) {
         Set<Color> colors = new HashSet<>();
@@ -228,82 +248,135 @@ public class RandomOrder {
         return colors;
     }
 
-    private Color showColorSelectionDialog(Set<Color> invalidColors, String vertex) {
-        // Define available colors
-        Map<String, Color> colorOptions = new LinkedHashMap<>();
-        colorOptions.put("Red", Color.RED);
-        colorOptions.put("Green", Color.GREEN);
-        colorOptions.put("Blue", Color.BLUE);
-        colorOptions.put("Yellow", Color.YELLOW);
-        colorOptions.put("Orange", Color.ORANGE);
-
-        // Remove invalid colors
-        colorOptions.values().removeAll(invalidColors);
-
-        if (colorOptions.isEmpty()) {
-            // Allow player to pick a new color
-            int option = JOptionPane.showConfirmDialog(
+    private Color showColorSelectionDialog(String vertex) {
+        while (true) {
+            // Get all colors and their names from coloringAlgorithm
+            List<Color> allColors = coloringAlgorithm.getAllColors();
+            List<String> colorNames = coloringAlgorithm.getColorNames();
+    
+            // Create a mapping from color names to Color objects
+            Map<String, Color> colorOptions = new LinkedHashMap<>();
+    
+            // Add the "Get Computer Suggestion" option first
+            colorOptions.put("💡 Get Computer Suggestion", null);
+    
+            // Add the "Generate New Color" option
+            colorOptions.put("Generate New Color", null);
+    
+            // Add the rest of the color options
+            for (int i = 0; i < allColors.size(); i++) {
+                Color color = allColors.get(i);
+                String colorName = colorNames.get(i);
+                colorOptions.put(colorName, color);
+            }
+    
+            // Show color selection dialog
+            Object[] options = colorOptions.keySet().toArray();
+            String selectedOption = (String) JOptionPane.showInputDialog(
                     frame,
-                    "No available colors left. Would you like to use a new color?",
-                    "No Colors Available",
-                    JOptionPane.YES_NO_OPTION
+                    "Select a color for vertex " + vertex + ":",
+                    "Color Selection",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    options,
+                    options[0]
             );
-
-            if (option == JOptionPane.YES_OPTION) {
-                Color newColor = coloringAlgorithm.addNewRandomColor();
-                return newColor;
-            } else {
-                // Player chose not to use a new color
+    
+            if (selectedOption == null) {
+                // Player canceled the dialog
                 return null;
             }
+    
+            if (selectedOption.equals("Generate New Color")) {
+                // Generate a new color and add it to coloringAlgorithm
+                Color newColor = coloringAlgorithm.addNewRandomColor();
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "New color generated and added to the selection list.",
+                        "New Color Added",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                // Loop again to refresh the selection list with the new color
+            } else if (selectedOption.equals("💡 Get Computer Suggestion")) {
+                // Get the suggested color
+                Color suggestedColor = getComputerSuggestion(vertex);
+                String colorName = coloringAlgorithm.getColorName(suggestedColor);
+    
+                // Ask the player if they want to use the suggested color
+                int applySuggestion = JOptionPane.showConfirmDialog(
+                        frame,
+                        "Suggested color: " + colorName + "\nDo you want to use this color?",
+                        "Computer Suggestion",
+                        JOptionPane.YES_NO_OPTION
+                );
+    
+                if (applySuggestion == JOptionPane.YES_OPTION) {
+                    // Apply the suggested color and apply penalty
+                    applyHintPenalty();
+                    return suggestedColor;
+                }
+                // Otherwise, loop again to let the player choose
+            } else {
+                // Return the selected color
+                return colorOptions.get(selectedOption);
+            }
         }
-
-        // Show color selection dialog
-        Object[] options = colorOptions.keySet().toArray();
-        String selectedColorName = (String) JOptionPane.showInputDialog(
-                frame,
-                "Select a color for vertex " + vertex + ":",
-                "Color Selection",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
-
-        if (selectedColorName != null) {
-            return colorOptions.get(selectedColorName);
-        }
-        return null;
     }
+    
+
+    private Color getComputerSuggestion(String vertex) {
+        // Get colors of adjacent vertices
+        Set<Color> invalidColors = getAdjacentColors(vertex);
+    
+        // Try to use existing colors to minimize the number of colors used
+        List<Color> allColors = coloringAlgorithm.getAllColors();
+    
+        for (Color color : allColors) {
+            if (!invalidColors.contains(color)) {
+                // Found a valid color
+                return color;
+            }
+        }
+    
+        // If no existing color is valid, generate a new color
+        Color newColor = coloringAlgorithm.addNewRandomColor();
+        return newColor;
+    }
+    
+    private void applyHintPenalty() {
+        // Apply a small penalty for using the hint
+        // For example, add a fixed time penalty
+        hintPenaltySeconds += 10; // Adds 10 seconds penalty to the final time
+    }
+    
 
     private void endGame() {
         // Stop the timer
-        Instant endTime = Instant.now();
+        endTime = Instant.now();
         Duration duration = Duration.between(startTime, endTime);
-        int timeElapsed = (int) duration.getSeconds();
+        int totalTimeSeconds = (int)duration.getSeconds() + hintPenaltySeconds;
 
         // Calculate the chromatic number (number of unique colors used)
-        Set<Color> usedColors = new HashSet<>();
-        for (String vertex : vertexOrder) {
-            Color color = graphPanel.getVertexColor(vertex);
-            if (color != null) {
-                usedColors.add(color);
-            }
-        }
-        int chromaticNumber = usedColors.size();
+        int chromaticNumber = coloringAlgorithm.getColorCount();
 
         // Prompt for username
         String userName = JOptionPane.showInputDialog(frame, "Enter your username for the leaderboard:");
 
         if (userName != null && !userName.trim().isEmpty()) {
             // Calculate the score
-            int score = Scoring.scoreCalculator("RandomOrder", userName, chromaticNumber, timeElapsed);
+            int score = Scoring.scoreCalculator("RandomOrder", userName, chromaticNumber, totalTimeSeconds);
 
             // Congratulate the player
-            JOptionPane.showMessageDialog(frame,
-                    "Congratulations, " + userName + "!\nYour score: " + score,
-                    "Game Over",
-                    JOptionPane.INFORMATION_MESSAGE);
+            String message = String.format("Congratulations! You've colored all vertices.\n" +
+            "Time taken: %d seconds\n" +
+            "Colors used: %d\n" +
+            "Hint penalty: %d seconds\n" +
+            "Total time (with penalty): %d seconds",
+            duration.getSeconds(),
+            chromaticNumber,
+            hintPenaltySeconds,
+            totalTimeSeconds);
+            JOptionPane.showMessageDialog(frame, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
             // Store the score
             Scoring.storeInLeaderboard("RandomOrder", userName, score);
