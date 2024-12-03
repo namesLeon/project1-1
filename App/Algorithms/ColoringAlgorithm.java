@@ -123,14 +123,6 @@ public class ColoringAlgorithm {
         return colors.size();
     }
 
-    public List<Color> getAllColors() {
-        return new ArrayList<>(colors); // Return a copy to prevent external modification
-    }
-
-    public void clearColors() {
-        colors.clear();
-    }
-
     public String colorToHex(Color color) {
         return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
     }    

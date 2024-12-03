@@ -11,37 +11,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.List;
 
-/*
-Random Order is now playable;
-TODO: Implement hint system (Have to figure that one yet)
-DISCLAIMER: If I messed someone's code up, hmu and we'll figure something out. (I tried my best to not do so :/)
-Change Log:
 
-Main.java: Changed the button sound when pressing Random Order game mode;
-
-RandomOrder.java: Implemented game logic;
-The order of the vertices in which the player has to color is randomly generated and then fixed;
-The current vertex that has to be colored is highlighted with a cyan thick border;
-The player can drag all vertices regardless of whether it's highlighted or not (dragging is prioritized over clicking);
-When choosing a color, the player can make the following choices:
-1) If they are available, choose one of the six predetermined colors
-2) If not, generate a new color;
-In that sense, the game automatically checks the colors of the neighboring vertices and blocks the player from using them;
-Upon coloring the last vertex, the player is prompted to write their username;
-The player's username and score are displayed and then stored into the leaderboard file;
-After that, the player is asked whether they want to play again;
-
-GraphVisualizer.java: Added support for vertex highlighting;
-Implemented vertex click listener interface (to enable communication from GraphVisualizer back to the RandomOrder game logic when a vertex is clicked);
-Restricted player interaction to the highlighted vertex (to enforce the rule that the player must color vertices in a specific order);
-Minor changes to vertex dragging functionality;
-Some other minor changes;
-
-RandomGraphGenerator.java: Ensured that the generated graph is connected (this is a requirement in the project manual);
-Added an error prompt for an edge case;
-
-ColoringAlgorithm.java: Fixed the algorithm to properly create and add new colors. (I remember this was working fine but somehow it got broken, idk)
-*/
 
 public class RandomOrder {
 
