@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import App.GUI.GraphVisualizer;
+
 public class ColoringAlgorithm {
 
     // Predefined colors
@@ -83,5 +85,10 @@ public class ColoringAlgorithm {
             throw new IllegalArgumentException("Index out of bounds: " + index);
         }
         return colors.get(index);
+    }
+        // Method to assign a new color to a vertex (assuming GraphVisualizer calls this)
+    public void assignColorToVertex(String vertex, GraphVisualizer visualizer) {
+        Color newColor = addNewRandomColor();
+        visualizer.setVertexColor(vertex, newColor); // Set the color for the vertex
     }
 }
