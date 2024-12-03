@@ -1,105 +1,422 @@
 package App.Games;
 
-import App.Algorithms.ColoringAlgorithm;
-import App.Algorithms.RandomGraphGenerator;
-import App.GUI.GraphVisualizer;
-import App.GUI.SoundFX;
+import App.Algorithms.*;
+import App.GUI.*;
 import App.Main.Main;
 import java.awt.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.Stack;
 import javax.swing.*;
 
+/*
+Random Order is now playable;
+TODO: Implement hint system (Have to figure that one yet)
+DISCLAIMER: If I messed someone's code up, hmu and we'll figure something out. (I tried my best to not do so :/)
+Change Log:
+
+Main.java: Changed the button sound when pressing Random Order game mode;
+
+RandomOrder.java: Implemented game logic;
+The order of the vertices in which the player has to color is randomly generated and then fixed;
+The current vertex that has to be colored is highlighted with a cyan thick border;
+The player can drag all vertices regardless of whether it's highlighted or not (dragging is prioritized over clicking);
+When choosing a color, the player can make the following choices:
+1) If they are available, choose one of the six predetermined colors
+2) If not, generate a new color;
+In that sense, the game automatically checks the colors of the neighboring vertices and blocks the player from using them;
+Upon coloring the last vertex, the player is prompted to write their username;
+The player's username and score are displayed and then stored into the leaderboard file;
+After that, the player is asked whether they want to play again;
+
+GraphVisualizer.java: Added support for vertex highlighting;
+Implemented vertex click listener interface (to enable communication from GraphVisualizer back to the RandomOrder game logic when a vertex is clicked);
+Restricted player interaction to the highlighted vertex (to enforce the rule that the player must color vertices in a specific order);
+Minor changes to vertex dragging functionality;
+Some other minor changes;
+
+RandomGraphGenerator.java: Ensured that the generated graph is connected (this is a requirement in the project manual);
+Added an error prompt for an edge case;
+
+ColoringAlgorithm.java: Fixed the algorithm to properly create and add new colors. (I remember this was working fine but somehow it got broken, idk)
+*/
 
 public class IChangedMyMind {
-    private static int upperBoundVertices = 100;
-    private static int lowerBoundVertices = 1;
-    private static int upperBoundEdges = 100;
-    private static int lowerBoundEdges = 0;
-    private static GraphVisualizer graphPanel;
 
-    private static String[] vertexOrder; 
-    private static int currentVertexIndex;  
+    private JFrame frame;
+    private GraphVisualizer graphPanel;
+    private ColoringAlgorithm coloringAlgorithm;
+    private List<String> vertexOrder;
+    private int currentVertexIndex;
+    private Instant startTime;
+    private Instant endTime;
+    private int hintPenaltySeconds = 0;
     private static Stack<UndoStep> UndoStack = new Stack<>();
-    
 
     public static void game() {
-        JFrame frame = new JFrame("I Changed My Mind");
+        
+        IChangedMyMind ICMM = new IChangedMyMind();
+        ICMM.initializeGame();
+    }
+
+    private void initializeGame() {
+        frame = new JFrame("I Changed My Mind Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLayout(new BorderLayout());
 
-        JPanel backPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
+        JButton generateGraphButton = new JButton("Generate Graph");
+        JButton backButton = new JButton("Back");
+        JButton showleaderboard = new JButton("Show Leaderboard");
+        JButton undoButton= new JButton("Undo");
 
-        JButton hint = new JButton("Hint");
-        JButton generateGraph = new JButton("Generate Graph");
-        JButton undoButton = new JButton("Undo");
-        JButton back = new JButton("Back");
-        JButton leaderboard = new JButton("Show Leaderboard");
-
-        backPanel.add(back);
-        buttonPanel.add(hint);
-        buttonPanel.add(generateGraph);
+        buttonPanel.add(generateGraphButton);
+        buttonPanel.add(backButton);
+        buttonPanel.add(showleaderboard);
         buttonPanel.add(undoButton);
-        buttonPanel.add(leaderboard);
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
+        
+        // Set the vertex click listener
+        graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
+            @Override
+            public void vertexClicked(String vertex) {
+                handleVertexClick(vertex);
+            }
+        });
 
-        frame.add(backPanel, BorderLayout.SOUTH);
         frame.add(buttonPanel, BorderLayout.NORTH);
-
         frame.add(graphPanel, BorderLayout.CENTER);
-
         frame.setVisible(true);
 
-        back.addActionListener(e -> {
+        // Action Listeners
+        backButton.addActionListener(e -> {
             SoundFX.playSound("button.wav");
             Main.mainMenu();
             frame.dispose();
         });
 
-        hint.addActionListener(e -> {
-            SoundFX.playSound("fail.wav");
-        });
-
-        generateGraph.addActionListener(e -> {
+        generateGraphButton.addActionListener(e -> {
             SoundFX.playSound("button.wav");
             generateGraph();
-            frame.revalidate();
-            frame.repaint();
         });
 
         undoButton.addActionListener(e -> {
             if (!UndoStack.isEmpty()) {
                 UndoStep lastStep = UndoStack.pop();
-                // Uncolor the vertex; 
-                graphPanel.recolorVertex(vertexOrder[lastStep.vertexIndex], Color.WHITE); 
-        
-                // If needed, recolor it back to its previous state
-                if (!UndoStack.isEmpty()) {
-                    UndoStep previousStep = UndoStack.peek();
-                    graphPanel.recolorVertex(vertexOrder[previousStep.vertexIndex], previousStep.color);
-                }
                 
+                // Restore the previous color of the vertex
+                graphPanel.recolorVertex(vertexOrder.get(lastStep.vertexIndex), lastStep.previousColor);
+                
+                // Move back to the previous vertex
                 currentVertexIndex--;
+        
+                // Highlight the vertex to ensure proper interaction
+                if (currentVertexIndex >= 0) {
+                    highlightCurrentVertex();
+                }
+        
                 SoundFX.playSound("undo.wav");
             } else {
                 JOptionPane.showMessageDialog(frame, "No more moves to undo!", "Undo Error", JOptionPane.WARNING_MESSAGE);
             }
         });
 
-        leaderboard.addActionListener(e -> {
-            SoundFX.playSound("button.wav");
 
+        showleaderboard.addActionListener(e -> {
+            SoundFX.playSound("button.wav");
             showLeaderboard();
         });
     }
 
+    private void generateGraph() {
+        JFrame frame2 = new JFrame("Generate Graph");
+        frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame2.setSize(new Dimension(300, 200));
+        frame2.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2));
+        JLabel verticesLabel = new JLabel("Number of Vertices:");
+        JTextField verticesField = new JTextField();
+        JLabel edgesLabel = new JLabel("Number of Edges:");
+        JTextField edgesField = new JTextField();
+
+        inputPanel.add(verticesLabel);
+        inputPanel.add(verticesField);
+        inputPanel.add(edgesLabel);
+        inputPanel.add(edgesField);
+
+        JButton confirmButton = new JButton("Confirm");
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(confirmButton);
+
+        frame2.add(inputPanel, BorderLayout.CENTER);
+        frame2.add(buttonPanel, BorderLayout.SOUTH);
+        frame2.setVisible(true);
+
+        coloringAlgorithm = new ColoringAlgorithm();
+
+        confirmButton.addActionListener(e -> {
+            try {
+                int numOfVertices = Integer.parseInt(verticesField.getText());
+                int numOfEdges = Integer.parseInt(edgesField.getText());
+
+                if (numOfVertices <= 0) {
+                    JOptionPane.showMessageDialog(frame2, "Number of vertices must be positive.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (numOfEdges < numOfVertices - 1) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (numOfVertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (numOfEdges < 0) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int maxEdges = numOfVertices * (numOfVertices - 1) / 2;
+                if (numOfEdges > maxEdges) {
+                    JOptionPane.showMessageDialog(frame2, "Too many edges for the number of vertices. Maximum possible edges: " + maxEdges, "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                RandomGraphGenerator generator = new RandomGraphGenerator(numOfVertices, numOfEdges);
+                String[] vertices = generator.getVertices();
+                String[][] edges = generator.getEdges();
+
+                graphPanel.updateGraph(vertices, edges);
+
+                // Initialize the coloring algorithm
+                coloringAlgorithm = new ColoringAlgorithm();
+
+                // Randomly shuffle the vertex order
+                vertexOrder = new ArrayList<>(Arrays.asList(vertices));
+                Collections.shuffle(vertexOrder);
+                currentVertexIndex = 0;
+
+                // Start the timer
+                startTime = Instant.now();
+
+                // Highlight the first vertex
+                highlightCurrentVertex();
+                graphPanel.clearVertexColors();
+
+                frame2.dispose();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    private void highlightCurrentVertex() {
+        if (currentVertexIndex < vertexOrder.size()) {
+            String currentVertex = vertexOrder.get(currentVertexIndex);
+            graphPanel.highlightVertex(currentVertex);
+        }
+    }
+
+    private void handleVertexClick(String vertex) {
+        while (true) {
+            Color selectedColor = showColorSelectionDialog(vertex);
+            if (selectedColor == null) break;
+    
+            Set<Color> invalidColors = getAdjacentColors(vertex);
+            if (invalidColors.contains(selectedColor)) {
+                JOptionPane.showMessageDialog(frame, "This color is unavailable. Check neighboring vertices.", "Invalid Color", JOptionPane.WARNING_MESSAGE);
+            } else {
+                Color previousColor = graphPanel.getVertexColor(vertex);
+                graphPanel.setVertexColor(vertex, selectedColor);
+    
+                // Add undo step
+                UndoStack.push(new UndoStep(vertexOrder.indexOf(vertex), previousColor, selectedColor));
+    
+                currentVertexIndex++;
+                if (currentVertexIndex < vertexOrder.size()) {
+                    highlightCurrentVertex();
+                } else {
+                    endGame();
+                }
+                break;
+            }
+        }
+    }
+    
+
+    private Set<Color> getAdjacentColors(String vertex) {
+        Set<Color> colors = new HashSet<>();
+        for (String[] edge : graphPanel.getEdges()) {
+            if (edge[0].equals(vertex)) {
+                Color color = graphPanel.getVertexColor(edge[1]);
+                if (color != null) colors.add(color);
+            } else if (edge[1].equals(vertex)) {
+                Color color = graphPanel.getVertexColor(edge[0]);
+                if (color != null) colors.add(color);
+            }
+        }
+        return colors;
+    }
+
+    private Color showColorSelectionDialog(String vertex) {
+        while (true) {
+            // Get all colors and their names from coloringAlgorithm
+            List<Color> allColors = coloringAlgorithm.getAllColors();
+            List<String> colorNames = coloringAlgorithm.getColorNames();
+    
+            // Create a mapping from color names to Color objects
+            Map<String, Color> colorOptions = new LinkedHashMap<>();
+    
+            // Add the "Get Computer Suggestion" option first
+            colorOptions.put("💡 Get Computer Suggestion", null);
+    
+            // Add the "Generate New Color" option
+            colorOptions.put("Generate New Color", null);
+    
+            // Add the rest of the color options
+            for (int i = 0; i < allColors.size(); i++) {
+                Color color = allColors.get(i);
+                String colorName = colorNames.get(i);
+                colorOptions.put(colorName, color);
+            }
+    
+            // Show color selection dialog
+            Object[] options = colorOptions.keySet().toArray();
+            String selectedOption = (String) JOptionPane.showInputDialog(
+                    frame,
+                    "Select a color for vertex " + vertex + ":",
+                    "Color Selection",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
+    
+            if (selectedOption == null) {
+                // Player canceled the dialog
+                return null;
+            }
+    
+            if (selectedOption.equals("Generate New Color")) {
+                // Generate a new color and add it to coloringAlgorithm
+                Color newColor = coloringAlgorithm.addNewRandomColor();
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "New color generated and added to the selection list.",
+                        "New Color Added",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                // Loop again to refresh the selection list with the new color
+            } else if (selectedOption.equals("💡 Get Computer Suggestion")) {
+                // Get the suggested color
+                Color suggestedColor = getComputerSuggestion(vertex);
+                String colorName = coloringAlgorithm.getColorName(suggestedColor);
+    
+                // Ask the player if they want to use the suggested color
+                int applySuggestion = JOptionPane.showConfirmDialog(
+                        frame,
+                        "Suggested color: " + colorName + "\nDo you want to use this color?",
+                        "Computer Suggestion",
+                        JOptionPane.YES_NO_OPTION
+                );
+    
+                if (applySuggestion == JOptionPane.YES_OPTION) {
+                    // Apply the suggested color and apply penalty
+                    applyHintPenalty();
+                    return suggestedColor;
+                }
+                // Otherwise, loop again to let the player choose
+            } else {
+                // Return the selected color
+                return colorOptions.get(selectedOption);
+            }
+        }
+    }
+    
+
+    private Color getComputerSuggestion(String vertex) {
+        // Get colors of adjacent vertices
+        Set<Color> invalidColors = getAdjacentColors(vertex);
+    
+        // Try to use existing colors to minimize the number of colors used
+        List<Color> allColors = coloringAlgorithm.getAllColors();
+    
+        for (Color color : allColors) {
+            if (!invalidColors.contains(color)) {
+                // Found a valid color
+                return color;
+            }
+        }
+    
+        // If no existing color is valid, generate a new color
+        Color newColor = coloringAlgorithm.addNewRandomColor();
+        return newColor;
+    }
+    
+    private void applyHintPenalty() {
+        // Apply a small penalty for using the hint
+        // For example, add a fixed time penalty
+        hintPenaltySeconds += 10; // Adds 10 seconds penalty to the final time
+    }
+    
+
+    private void endGame() {
+        // Stop the timer
+        endTime = Instant.now();
+        Duration duration = Duration.between(startTime, endTime);
+        int totalTimeSeconds = (int)duration.getSeconds() + hintPenaltySeconds;
+
+        // Calculate the chromatic number (number of unique colors used)
+        int chromaticNumber = coloringAlgorithm.getColorCount();
+
+        // Prompt for username
+        String userName = JOptionPane.showInputDialog(frame, "Enter your username for the leaderboard:");
+
+        if (userName != null && !userName.trim().isEmpty()) {
+            // Calculate the score
+            int score = Scoring.scoreCalculator("I Changed My Mind", userName, chromaticNumber, totalTimeSeconds);
+
+            // Congratulate the player
+            String message = String.format("Congratulations! You've colored all vertices.\n" +
+            "Time taken: %d seconds\n" +
+            "Colors used: %d\n" +
+            "Hint penalty: %d seconds\n" +
+            "Total time (with penalty): %d seconds",
+            duration.getSeconds(),
+            chromaticNumber,
+            hintPenaltySeconds,
+            totalTimeSeconds);
+            JOptionPane.showMessageDialog(frame, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+
+            // Store the score
+            Scoring.storeInLeaderboard("RandomOrder", userName, score);
+        }
+
+        // Ask to play again or exit
+        int option = JOptionPane.showOptionDialog(frame,
+                "Would you like to play again?",
+                "Play Again",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                null,
+                null);
+
+        if (option == JOptionPane.YES_OPTION) {
+            // Restart the game
+            generateGraph();
+        } else {
+            Main.mainMenu();
+            frame.dispose();
+        }
+    }
+
     public static void showLeaderboard() {
-        List<Scoring.LeaderboardEntry> leaderboard = Scoring.getLeaderBoard("IChangedMyMind");
+        List<Scoring.LeaderboardEntry> leaderboard = Scoring.getLeaderBoard("RandomOrder");
 
         JFrame frame3 = new JFrame();
         frame3.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -130,96 +447,17 @@ public class IChangedMyMind {
         frame3.setVisible(true);
     }
 
-    public static void generateGraph() {
-        JFrame frame2 = new JFrame();
-
-        frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame2.setSize(new Dimension(400, 400));
-        frame2.setLayout(new BorderLayout());
-
-        JPanel confirmPanel = new JPanel();
-
-        JButton confirm = new JButton("Confirm");
-        confirmPanel.add(confirm);
-
-        JLabel topLabel = new JLabel("Enter number of vertices and edges", JLabel.CENTER);
-
-
-        JPanel panel2 = new JPanel(new GridLayout(2, 2, 1, 5));
-        panel2.add(new JLabel("Vertices:"));
-        JTextField textField1 = new JTextField(1);
-        panel2.add(textField1);
-
-        panel2.add(new JLabel("Edges:"));
-        JTextField textField2 = new JTextField(1);
-        panel2.add(textField2);
-
-        frame2.add(confirmPanel, BorderLayout.SOUTH);
-        frame2.add(topLabel, BorderLayout.NORTH);
-
-
-        frame2.add(panel2, BorderLayout.CENTER);
-        frame2.setVisible(true);
-
-        confirm.addActionListener(e -> {
-            try {
-                int numOfVertices = Integer.parseInt(textField1.getText());
-                int numOfEdges = Integer.parseInt(textField2.getText());
-
-                if (((numOfVertices < lowerBoundVertices) || (numOfVertices > upperBoundVertices)) || ((numOfEdges < lowerBoundEdges) || (numOfEdges > upperBoundEdges))) {
-                    JOptionPane.showMessageDialog(frame2, "Entries are out of bounds.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    RandomGraphGenerator generator = new RandomGraphGenerator(numOfVertices, numOfEdges);
-                    ColoringAlgorithm color = new ColoringAlgorithm();
-
-                    String[] vertices = generator.getVertices();
-
-                    String[][] edges = generator.getEdges();
-
-
-                    vertexOrder = vertices.clone();
-                    shuffleArray(vertexOrder);
-                    currentVertexIndex = 0;
-                    UndoStack.clear();
-
-                    graphPanel.updateGraph(vertices, edges);
-                    graphPanel.setVertexOrder(vertexOrder);
-
-                    color.clearColors();
-
-
-                    frame2.dispose();
-                }
-
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-    }
-
-    private static void shuffleArray(String[] array) {
-        Random rand = new Random();
-        for (int i = array.length - 1; i > 0; i--) {
-            int index = rand.nextInt(i + 1);
-            String temp = array[index];
-            array[index] = array[i];
-            array[i] = temp;
-        }
-    }
-
-
     private static class UndoStep {
         int vertexIndex;
-        Color color;
+        Color previousColor;
+        Color newColor;
     
-        UndoStep(int vertexIndex, Color color) {
+        UndoStep(int vertexIndex, Color previousColor, Color newColor) {
             this.vertexIndex = vertexIndex;
-            this.color = color;
+            this.previousColor = previousColor;
+            this.newColor = newColor;
         }
     }
-    
 
 
 }
-
-

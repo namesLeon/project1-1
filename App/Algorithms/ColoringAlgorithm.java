@@ -23,6 +23,7 @@ public class ColoringAlgorithm {
     // Lists to store the colors and their names
     private List<Color> colors;
     private List<String> colorNames;
+    
 
     // Constructor
     public ColoringAlgorithm() {
