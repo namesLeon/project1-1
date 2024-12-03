@@ -66,9 +66,11 @@ public class RandomOrder {
         JPanel buttonPanel = new JPanel();
         JButton generateGraphButton = new JButton("Generate Graph");
         JButton backButton = new JButton("Back");
+        JButton showleaderboard = new JButton("Show Leaderboard");
 
         buttonPanel.add(generateGraphButton);
         buttonPanel.add(backButton);
+        buttonPanel.add(showleaderboard);
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
@@ -95,6 +97,11 @@ public class RandomOrder {
         generateGraphButton.addActionListener(e -> {
             SoundFX.playSound("button.wav");
             generateGraph();
+        });
+
+        showleaderboard.addActionListener(e -> {
+            SoundFX.playSound("button.wav");
+            showLeaderboard();
         });
     }
 
@@ -319,5 +326,37 @@ public class RandomOrder {
             Main.mainMenu();
             frame.dispose();
         }
+    }
+
+    public static void showLeaderboard() {
+        List<Scoring.LeaderboardEntry> leaderboard = Scoring.getLeaderBoard("RandomOrder");
+
+        JFrame frame3 = new JFrame();
+        frame3.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame3.setSize(new Dimension(800, 800));
+        frame3.setLayout(new BorderLayout());
+
+        JLabel label = new JLabel("Leaderboard");
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+
+        StringBuilder sb = new StringBuilder();
+        for (Scoring.LeaderboardEntry entry : leaderboard) {
+            sb.append(entry.getUserName()).append(": ").append(entry.getScore()).append("\n");
+        }
+
+        textArea.setText(sb.toString());
+        JScrollPane scrollPane = new JScrollPane(textArea);
+
+        JButton close = new JButton("Close");
+        close.addActionListener(e -> frame3.dispose());
+
+        frame3.add(label, BorderLayout.NORTH);
+        frame3.add(scrollPane, BorderLayout.CENTER);
+        frame3.add(close, BorderLayout.SOUTH);
+
+        frame3.setVisible(true);
     }
 }
