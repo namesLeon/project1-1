@@ -3,7 +3,9 @@ package App.GUI;
 import App.Algorithms.ColoringAlgorithm;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -240,5 +242,15 @@ public class GraphVisualizer extends JPanel {
     // New method to get vertex count
     public int getVertexCount() {
         return vertices != null ? vertices.length : 0;
+    }
+
+    // Retrieve the color of a vertex
+    public Color getVertexColor(String vertex) {
+    return vertexColors.getOrDefault(vertex, Color.WHITE);
+    }
+
+    // Retrieve all distinct colors used in the graph
+    public List<Color> getAllUsedColors() {
+    return new ArrayList<>(new HashSet<>(vertexColors.values()));
     }
 }

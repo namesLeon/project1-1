@@ -64,7 +64,8 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("fail.wav");
-                //TODO make RandomOrder.java
+                RandomOrder.game();
+                frame.dispose();
             }
         });
 
