@@ -7,23 +7,29 @@ import java.util.Random;
 
 public class ColoringAlgorithm {
 
-    // Predefined colors
+    // Predefined colors and their names
     private static final Color[] PREDEFINED_COLORS = {
         Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE
+    };
+    private static final String[] PREDEFINED_COLOR_NAMES = {
+        "Red", "Green", "Blue", "Yellow", "Orange"
     };
 
     // Minimum color distance to ensure new colors are distinct
     private static final int MIN_COLOR_DISTANCE = 50;
 
-    // List to store the colors generated
+    // Lists to store the colors and their names
     private List<Color> colors;
+    private List<String> colorNames;
 
     // Constructor
     public ColoringAlgorithm() {
         colors = new ArrayList<>();
-        // Initialize with predefined colors
-        for (Color color : PREDEFINED_COLORS) {
-            colors.add(color);
+        colorNames = new ArrayList<>();
+        // Initialize with predefined colors and their names
+        for (int i = 0; i < PREDEFINED_COLORS.length; i++) {
+            colors.add(PREDEFINED_COLORS[i]);
+            colorNames.add(PREDEFINED_COLOR_NAMES[i]);
         }
     }
 
@@ -47,13 +53,20 @@ public class ColoringAlgorithm {
 
             if (isDistinct) {
                 colors.add(newColor);
+                // Assign a name to the new color
+                int generatedColorCount = getGeneratedColorCount() + 1;
+                String colorName = "Generated Color " + generatedColorCount;
+                colorNames.add(colorName);
                 return newColor;
             }
             attempts++;
         }
-        // If a distinct color wasn't found, return a random color anyway
+        // Fallback in case no distinct color is found
         Color fallbackColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
         colors.add(fallbackColor);
+        int generatedColorCount = getGeneratedColorCount() + 1;
+        String colorName = "Generated Color " + generatedColorCount;
+        colorNames.add(colorName);
         return fallbackColor;
     }
 
@@ -65,23 +78,38 @@ public class ColoringAlgorithm {
         return (int) Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
     }
 
-    // Method to get the number of colors used
-    public int getColorCount() {
-        return colors.size();
+    // Method to get the number of generated colors
+    private int getGeneratedColorCount() {
+        return colorNames.size() - PREDEFINED_COLOR_NAMES.length;
     }
 
     // Method to get all colors
     public List<Color> getAllColors() {
         return new ArrayList<>(colors);
     }
+
+    // Method to get all color names
+    public List<String> getColorNames() {
+        return new ArrayList<>(colorNames);
+    }
+
+    public String getColorName(Color color) {
+        int index = colors.indexOf(color);
+        if (index != -1) {
+            return colorNames.get(index);
+        }
+        return "Unknown Color";
+    }
     public void clearColors() {
         colors.clear();
-    }
-    // Method to get a color by its index in the list
+    }    
     public Color getColor(int index) {
         if (index < 0 || index >= colors.size()) {
             throw new IllegalArgumentException("Index out of bounds: " + index);
         }
         return colors.get(index);
+    }
+    public int getColorCount() {
+        return colors.size();
     }
 }

@@ -122,6 +122,13 @@ public class GraphVisualizer extends JPanel {
         }
     }
 
+    public void clearVertexColors() {
+        for (String vertex : vertices) {
+            vertexColors.put(vertex, Color.WHITE); // Reset each vertex to the default color
+        }
+        repaint();
+    }
+    
     // Method to set a highlighted vertex
     public void highlightVertex(String vertex) {
         this.highlightedVertex = vertex;
