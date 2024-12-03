@@ -1,6 +1,5 @@
 package App.GUI;
 
-import App.Algorithms.ColoringAlgorithm;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -11,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import javax.swing.*;
 
+
 public class GraphVisualizer extends JPanel {
 
     private Map<String, Color> vertexColors; // new hashmap to keep track of each vertex color
@@ -20,96 +20,115 @@ public class GraphVisualizer extends JPanel {
     private double zoomFactor = 1.0; // Default zoom level
     private int panX = 0; // Horizontal pan offset
     private int panY = 0; // Vertical pan offset
-    private Point lastMousePosition; // Tracks last mouse position for dragging
-    private String draggedVertex = null;
+    private String[] vertexOrder;
+    private String highlightedVertex; // Added for highlighting
 
-    // new instance variables added to fix the vertex coloring
-    private boolean isDragging = false;
-    private Point pressPoint; // to store the initial press point
-    private static final int DRAG_THRESHOLD = 2; // threshold to distinguish between click and drag
+    // Variables for dragging
+    private String draggedVertex = null;
+    private Point lastMousePosition;
+    private boolean isDraggingVertex = false;
+    private final int DRAG_THRESHOLD = 5; // Pixels
+
+    private VertexClickListener vertexClickListener;
+
+    public interface VertexClickListener {
+        void vertexClicked(String vertex);
+    }
+
+    public void setVertexClickListener(VertexClickListener listener) {
+        this.vertexClickListener = listener;
+    }
 
     // Constructor to initialize the graph data
     public GraphVisualizer(String[] vertices, String[][] edges) {
         this.vertexColors = new HashMap<>();
         for (String vertex : vertices) {
-            vertexColors.put(vertex, Color.WHITE); // start each vertex as white
+            vertexColors.put(vertex, Color.WHITE);
         }
         this.vertices = vertices;
         this.edges = edges;
         this.vertexPositions = new HashMap<>();
-        setPreferredSize(new Dimension(600, 600)); // Set panel size
-        generateVertexPositions(); // Generate random non-overlapping positions for vertices
+        setPreferredSize(new Dimension(600, 600));
+        generateVertexPositions();
 
+        // Mouse listeners for dragging and clicking
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                isDragging = false; // Reset dragging flag
-                pressPoint = e.getPoint();
-                lastMousePosition = e.getPoint();
+                Point clickPoint = e.getPoint();
+                int adjustedX = (int) ((clickPoint.x - panX) / zoomFactor);
+                int adjustedY = (int) ((clickPoint.y - panY) / zoomFactor);
+                Point adjustedClickPoint = new Point(adjustedX, adjustedY);
 
-                boolean vertexFound = false;
+                draggedVertex = null;
                 for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
                     String vertex = entry.getKey();
-                    Point position = entry.getValue();
+                    Point vertexPos = entry.getValue();
                     int radius = 20;
 
-                    if (pressPoint.distance(position) < radius) {
+                    if (vertexPos.distance(adjustedClickPoint) < radius) {
                         draggedVertex = vertex;
-                        vertexFound = true;
                         break;
-                        //adjusted the radius check for better hit chances
                     }
                 }
 
-                if (!vertexFound) {
-                    draggedVertex = null;
-                }
+                lastMousePosition = adjustedClickPoint;
+                isDraggingVertex = false;
             }
+
+   
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                // stop dragging when mouse is released
-                if (!isDragging && draggedVertex != null) {
-                    // it was a click, not a drag
-                    handleVertexClick(draggedVertex);
-                    
+                if (!isDraggingVertex && draggedVertex != null) {
+                    // It's a click, not a drag
+                    if (vertexClickListener != null && draggedVertex.equals(highlightedVertex)) {
+                        vertexClickListener.vertexClicked(highlightedVertex);
+                    }
                 }
                 draggedVertex = null;
-                isDragging = false;
-                repaint();
+                isDraggingVertex = false;
             }
         });
 
-        addMouseMotionListener(new MouseAdapter() {
+        
+
+        addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-
-                Point currentPoint = e.getPoint();
-
                 if (draggedVertex != null) {
-                    if (!isDragging && pressPoint.distance(currentPoint) > DRAG_THRESHOLD) {
-                        isDragging = true;
+                    Point currentPoint = e.getPoint();
+                    int adjustedX = (int) ((currentPoint.x - panX) / zoomFactor);
+                    int adjustedY = (int) ((currentPoint.y - panY) / zoomFactor);
+                    Point adjustedCurrentPoint = new Point(adjustedX, adjustedY);
+
+                    if (!isDraggingVertex && lastMousePosition.distance(adjustedCurrentPoint) > DRAG_THRESHOLD) {
+                        isDraggingVertex = true;
                     }
 
-                    if (isDragging) {
-                        // we need to update the position of the dragged vertex
-                        int adjustedX = (int) ((currentPoint.x - panX)/zoomFactor);
-                        int adjustedY = (int) ((currentPoint.y - panY)/zoomFactor); //added new variables
-                        vertexPositions.put(draggedVertex, new Point(adjustedX, adjustedY));
+                    if (isDraggingVertex) {
+                        vertexPositions.put(draggedVertex, adjustedCurrentPoint);
+                        lastMousePosition = adjustedCurrentPoint;
                         repaint();
                     }
-                } else {
-                    // panning
-                    int dx = currentPoint.x - lastMousePosition.x;
-                    int dy = currentPoint.y - lastMousePosition.y;
-                    panX += dx;
-                    panY += dy;
-                    lastMousePosition = currentPoint;
-                    repaint(); // Repaint to show the panned view
-
                 }
             }
         });
+    }
+
+    public void recolorVertex(String vertex, Color color) {
+        if (vertexColors.containsKey(vertex) || true) {  // Add to ensure vertex exists or add new
+            vertexColors.put(vertex, color);
+            repaint();  // Refresh visual representation
+        } else {
+            throw new IllegalArgumentException("Vertex " + vertex + " not found.");
+        }
+    }
+
+    // Method to set a highlighted vertex
+    public void highlightVertex(String vertex) {
+        this.highlightedVertex = vertex;
+        repaint();
     }
 
     // Helper method to handle vertex clicks
@@ -137,6 +156,12 @@ public class GraphVisualizer extends JPanel {
             repaint();
         }
     }
+
+
+    public void setVertexOrder(String[] order){
+        this.vertexOrder = order;
+    }
+
 
     // Method to generate random positions for vertices, ensuring no overlap
     private void generateVertexPositions() {
@@ -200,12 +225,34 @@ public class GraphVisualizer extends JPanel {
 
             Color vertexColor = vertexColors.getOrDefault(vertex, Color.WHITE);
 
+            if (vertex.equals(highlightedVertex)) {
+                // Draw a larger circle to highlight
+                g2d.setColor(Color.CYAN);
+                g2d.fillOval(x - 5, y - 5, radius + 10, radius + 10);
+            }
+
             g2d.setColor(vertexColor);
             g2d.fillOval(x, y, radius, radius);
 
             g2d.setColor(Color.BLACK);
             g2d.drawString(vertex, x + radius / 2 - 5, y + radius / 2 + 5);
         }
+    }
+
+    // Method to set a vertex's color
+    public void setVertexColor(String vertex, Color color) {
+        vertexColors.put(vertex, color);
+        repaint();
+    }
+
+    // Method to get a vertex's color
+    public Color getVertexColor(String vertex) {
+        return vertexColors.get(vertex);
+    }
+
+    // Method to get the edges
+    public String[][] getEdges() {
+        return edges;
     }
 
     private void drawEdges(Graphics2D g2d) {

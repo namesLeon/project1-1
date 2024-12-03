@@ -2,9 +2,9 @@ package App.Main;
 
 import App.GUI.*;
 import App.Games.*;
-import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -63,7 +63,7 @@ public class Main {
         RO.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("fail.wav");
+                SoundFX.playSound("button.wav");
                 RandomOrder.game();
                 frame.dispose();
             }
@@ -72,10 +72,11 @@ public class Main {
         ICMM.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("fail.wav");
-                //TODO make IChangedMyMind.java
+                SoundFX.playSound("button.wav"); // Play success sound instead of fail
+                IChangedMyMind.game(); // Launch the "I Changed My Mind" game mode
             }
         });
+        
 
         TTBE.addActionListener(new ActionListener() {
             @Override
