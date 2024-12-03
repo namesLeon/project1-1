@@ -297,12 +297,7 @@ public class GraphVisualizer extends JPanel {
     public int getVertexCount() {
         return vertices != null ? vertices.length : 0;
     }
-
-    // Retrieve the color of a vertex
-    public Color getVertexColor(String vertex) {
-    return vertexColors.getOrDefault(vertex, Color.WHITE);
-    }
-
+    
     // Retrieve all distinct colors used in the graph
     public List<Color> getAllUsedColors() {
     return new ArrayList<>(new HashSet<>(vertexColors.values()));

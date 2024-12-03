@@ -10,7 +10,6 @@ import java.util.Set;
 
 public class ColoringAlgorithm {
 
-    // Predefined colors and their names
     private static final Color[] PREDEFINED_COLORS = {
         Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE
     };
@@ -18,28 +17,23 @@ public class ColoringAlgorithm {
         "Red", "Green", "Blue", "Yellow", "Orange"
     };
 
-    // Minimum color distance to ensure new colors are distinct
     private static final int MIN_COLOR_DISTANCE = 50;
 
-    // Lists to store the colors and their names
     private List<Color> colors;
     private List<String> colorNames;
     
 
     private int minColorDistance;
 
-    // Constructor to initialize the list of colors
     public ColoringAlgorithm() {
         colors = new ArrayList<>();
         colorNames = new ArrayList<>();
-        // Initialize with predefined colors and their names
         for (int i = 0; i < PREDEFINED_COLORS.length; i++) {
             colors.add(PREDEFINED_COLORS[i]);
             colorNames.add(PREDEFINED_COLOR_NAMES[i]);
         }
     }
 
-    // Method to generate a new random color
     public Color addNewRandomColor() {
         Random rand = new Random();
         int attempts = 0;
@@ -59,7 +53,6 @@ public class ColoringAlgorithm {
 
             if (isDistinct) {
                 colors.add(newColor);
-                // Assign a name to the new color
                 int generatedColorCount = getGeneratedColorCount() + 1;
                 String colorName = "Generated Color " + generatedColorCount;
                 colorNames.add(colorName);
@@ -67,7 +60,6 @@ public class ColoringAlgorithm {
             }
             attempts++;
         }
-        // Fallback in case no distinct color is found
         Color fallbackColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
         colors.add(fallbackColor);
         int generatedColorCount = getGeneratedColorCount() + 1;
@@ -76,7 +68,6 @@ public class ColoringAlgorithm {
         return fallbackColor;
     }
 
-    // Method to calculate color distance
     private int calculateColorDistance(Color c1, Color c2) {
         int rDiff = c1.getRed() - c2.getRed();
         int gDiff = c1.getGreen() - c2.getGreen();
@@ -84,17 +75,14 @@ public class ColoringAlgorithm {
         return (int) Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
     }
 
-    // Method to get the number of generated colors
     private int getGeneratedColorCount() {
         return colorNames.size() - PREDEFINED_COLOR_NAMES.length;
     }
 
-    // Method to get all colors
     public List<Color> getAllColors() {
         return new ArrayList<>(colors);
     }
 
-    // Method to get all color names
     public List<String> getColorNames() {
         return new ArrayList<>(colorNames);
     }
@@ -109,7 +97,7 @@ public class ColoringAlgorithm {
     public void clearColors() {
         colors.clear();
     }
-    // Method to get a color by its index in the list
+
     public String getColor(int index) {
         if (index < 0 || index >= colors.size()) {
             throw new IllegalArgumentException("Index out of bounds: " + index);
@@ -117,18 +105,8 @@ public class ColoringAlgorithm {
         return colors.get(index);
     }
     
-
-    // Method to get the total number of colors generated
     public int getColorCount() {
         return colors.size();
-    }
-
-    public List<Color> getAllColors() {
-        return new ArrayList<>(colors); // Return a copy to prevent external modification
-    }
-
-    public void clearColors() {
-        colors.clear();
     }
 
     public String colorToHex(Color color) {

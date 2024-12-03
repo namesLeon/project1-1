@@ -191,18 +191,14 @@ public class IChangedMyMind {
 
                 graphPanel.updateGraph(vertices, edges);
 
-                // Initialize the coloring algorithm
                 coloringAlgorithm = new ColoringAlgorithm();
 
-                // Randomly shuffle the vertex order
                 vertexOrder = new ArrayList<>(Arrays.asList(vertices));
                 Collections.shuffle(vertexOrder);
                 currentVertexIndex = 0;
 
-                // Start the timer
                 startTime = Instant.now();
 
-                // Highlight the first vertex
                 highlightCurrentVertex();
                 graphPanel.clearVertexColors();
 
@@ -264,27 +260,20 @@ public class IChangedMyMind {
 
     private Color showColorSelectionDialog(String vertex) {
         while (true) {
-            // Get all colors and their names from coloringAlgorithm
             List<Color> allColors = coloringAlgorithm.getAllColors();
             List<String> colorNames = coloringAlgorithm.getColorNames();
-    
-            // Create a mapping from color names to Color objects
             Map<String, Color> colorOptions = new LinkedHashMap<>();
     
-            // Add the "Get Computer Suggestion" option first
             colorOptions.put("💡 Get Computer Suggestion", null);
     
-            // Add the "Generate New Color" option
             colorOptions.put("Generate New Color", null);
     
-            // Add the rest of the color options
             for (int i = 0; i < allColors.size(); i++) {
                 Color color = allColors.get(i);
                 String colorName = colorNames.get(i);
                 colorOptions.put(colorName, color);
             }
     
-            // Show color selection dialog
             Object[] options = colorOptions.keySet().toArray();
             String selectedOption = (String) JOptionPane.showInputDialog(
                     frame,
@@ -297,12 +286,10 @@ public class IChangedMyMind {
             );
     
             if (selectedOption == null) {
-                // Player canceled the dialog
                 return null;
             }
     
             if (selectedOption.equals("Generate New Color")) {
-                // Generate a new color and add it to coloringAlgorithm
                 Color newColor = coloringAlgorithm.addNewRandomColor();
                 JOptionPane.showMessageDialog(
                         frame,
@@ -310,13 +297,10 @@ public class IChangedMyMind {
                         "New Color Added",
                         JOptionPane.INFORMATION_MESSAGE
                 );
-                // Loop again to refresh the selection list with the new color
             } else if (selectedOption.equals("💡 Get Computer Suggestion")) {
-                // Get the suggested color
                 Color suggestedColor = getComputerSuggestion(vertex);
                 String colorName = coloringAlgorithm.getColorName(suggestedColor);
     
-                // Ask the player if they want to use the suggested color
                 int applySuggestion = JOptionPane.showConfirmDialog(
                         frame,
                         "Suggested color: " + colorName + "\nDo you want to use this color?",
@@ -325,13 +309,10 @@ public class IChangedMyMind {
                 );
     
                 if (applySuggestion == JOptionPane.YES_OPTION) {
-                    // Apply the suggested color and apply penalty
                     applyHintPenalty();
                     return suggestedColor;
                 }
-                // Otherwise, loop again to let the player choose
             } else {
-                // Return the selected color
                 return colorOptions.get(selectedOption);
             }
         }
@@ -339,48 +320,37 @@ public class IChangedMyMind {
     
 
     private Color getComputerSuggestion(String vertex) {
-        // Get colors of adjacent vertices
         Set<Color> invalidColors = getAdjacentColors(vertex);
     
-        // Try to use existing colors to minimize the number of colors used
         List<Color> allColors = coloringAlgorithm.getAllColors();
     
         for (Color color : allColors) {
             if (!invalidColors.contains(color)) {
-                // Found a valid color
                 return color;
             }
         }
     
-        // If no existing color is valid, generate a new color
         Color newColor = coloringAlgorithm.addNewRandomColor();
         return newColor;
     }
     
     private void applyHintPenalty() {
-        // Apply a small penalty for using the hint
-        // For example, add a fixed time penalty
-        hintPenaltySeconds += 10; // Adds 10 seconds penalty to the final time
+        hintPenaltySeconds += 10;
     }
     
 
     private void endGame() {
-        // Stop the timer
         endTime = Instant.now();
         Duration duration = Duration.between(startTime, endTime);
         int totalTimeSeconds = (int)duration.getSeconds() + hintPenaltySeconds;
 
-        // Calculate the chromatic number (number of unique colors used)
         int chromaticNumber = coloringAlgorithm.getColorCount();
 
-        // Prompt for username
         String userName = JOptionPane.showInputDialog(frame, "Enter your username for the leaderboard:");
 
         if (userName != null && !userName.trim().isEmpty()) {
-            // Calculate the score
             int score = Scoring.scoreCalculator("I Changed My Mind", userName, chromaticNumber, totalTimeSeconds);
 
-            // Congratulate the player
             String message = String.format("Congratulations! You've colored all vertices.\n" +
             "Time taken: %d seconds\n" +
             "Colors used: %d\n" +
@@ -392,11 +362,9 @@ public class IChangedMyMind {
             totalTimeSeconds);
             JOptionPane.showMessageDialog(frame, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
-            // Store the score
             Scoring.storeInLeaderboard("RandomOrder", userName, score);
         }
 
-        // Ask to play again or exit
         int option = JOptionPane.showOptionDialog(frame,
                 "Would you like to play again?",
                 "Play Again",
@@ -407,7 +375,6 @@ public class IChangedMyMind {
                 null);
 
         if (option == JOptionPane.YES_OPTION) {
-            // Restart the game
             generateGraph();
         } else {
             Main.mainMenu();
