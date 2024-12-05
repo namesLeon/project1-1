@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import App.GUI.GraphVisualizer;
-import java.util.Set;
-
 public class ColoringAlgorithm {
 
     private static final Color[] PREDEFINED_COLORS = {
@@ -21,9 +18,6 @@ public class ColoringAlgorithm {
 
     private List<Color> colors;
     private List<String> colorNames;
-    
-
-    private int minColorDistance;
 
     public ColoringAlgorithm() {
         colors = new ArrayList<>();
@@ -94,22 +88,8 @@ public class ColoringAlgorithm {
         }
         return "Unknown Color";
     }
-    public void clearColors() {
-        colors.clear();
-    }
 
-    public String getColor(int index) {
-        if (index < 0 || index >= colors.size()) {
-            throw new IllegalArgumentException("Index out of bounds: " + index);
-        }
-        return colors.get(index);
-    }
-    
     public int getColorCount() {
         return colors.size();
     }
-
-    public String colorToHex(Color color) {
-        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
-    }    
 }
