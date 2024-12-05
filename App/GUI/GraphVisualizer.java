@@ -29,6 +29,12 @@ public class GraphVisualizer extends JPanel {
     private boolean isDraggingVertex = false;
     private final int DRAG_THRESHOLD = 5; // Pixels
 
+    private boolean restrictClicksToHighlightedVertex = false;
+
+    public void setRestrictClicksToHighlightedVertex(boolean restrict) {
+        this.restrictClicksToHighlightedVertex = restrict;
+    }
+
     private VertexClickListener vertexClickListener;
 
     public interface VertexClickListener {
@@ -51,7 +57,6 @@ public class GraphVisualizer extends JPanel {
         setPreferredSize(new Dimension(600, 600));
         generateVertexPositions();
 
-        // Mouse listeners for dragging and clicking
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -69,12 +74,6 @@ public class GraphVisualizer extends JPanel {
         
                     if (vertexPos.distance(adjustedClickPoint) < radius) {
                         draggedVertex = vertex;
-        
-                        // Only highlight if no vertex is already highlighted
-                        if (highlightedVertex == null) {
-                            highlightedVertex = vertex;
-                            repaint(); // Refresh to show highlight
-                        }
                         break;
                     }
                 }
@@ -85,28 +84,17 @@ public class GraphVisualizer extends JPanel {
         
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (!isDraggingVertex && draggedVertex != null) {
-                    if (highlightedVertex != null && draggedVertex.equals(highlightedVertex)) {
-                        // Open color menu only if no other vertex is highlighted
-                        if (vertexClickListener != null) {
-                            vertexClickListener.vertexClicked(draggedVertex);
-                        }
-        
-                        // Clear the highlight after choosing a color
-                        highlightedVertex = null;
-                        repaint();
-                    }
+                // It's a click, not a drag
+                if (vertexClickListener != null) {
+                    if (!restrictClicksToHighlightedVertex || (draggedVertex.equals(highlightedVertex))) {
+                        vertexClickListener.vertexClicked(draggedVertex);
+                    } 
                 }
-        
                 draggedVertex = null;
                 isDraggingVertex = false;
             }
         });
         
-        
-
-        
-
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {

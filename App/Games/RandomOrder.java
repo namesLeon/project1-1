@@ -46,6 +46,7 @@ public class RandomOrder {
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
+        graphPanel.setRestrictClicksToHighlightedVertex(true);
         
         // Set the vertex click listener
         graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
@@ -167,16 +168,6 @@ public class RandomOrder {
     }
 
     private void handleVertexClick(String vertex) {
-        if (!vertex.equals(vertexOrder.get(currentVertexIndex))) {
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "Please select the next vertex: " + vertexOrder.get(currentVertexIndex),
-                    "Invalid Selection",
-                    JOptionPane.WARNING_MESSAGE
-            );
-            return;
-        }
-    
         while (true) {
             // Show all color options
             Color selectedColor = showColorSelectionDialog(vertex);
