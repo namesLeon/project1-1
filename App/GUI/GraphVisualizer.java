@@ -59,37 +59,51 @@ public class GraphVisualizer extends JPanel {
                 int adjustedX = (int) ((clickPoint.x - panX) / zoomFactor);
                 int adjustedY = (int) ((clickPoint.y - panY) / zoomFactor);
                 Point adjustedClickPoint = new Point(adjustedX, adjustedY);
-
+        
                 draggedVertex = null;
+        
                 for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
                     String vertex = entry.getKey();
                     Point vertexPos = entry.getValue();
                     int radius = 20;
-
+        
                     if (vertexPos.distance(adjustedClickPoint) < radius) {
                         draggedVertex = vertex;
+        
+                        // Only highlight if no vertex is already highlighted
+                        if (highlightedVertex == null) {
+                            highlightedVertex = vertex;
+                            repaint(); // Refresh to show highlight
+                        }
                         break;
                     }
                 }
-
+        
                 lastMousePosition = adjustedClickPoint;
                 isDraggingVertex = false;
             }
-
-   
-
+        
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (!isDraggingVertex && draggedVertex != null) {
-                    // It's a click, not a drag
-                    if (vertexClickListener != null && draggedVertex.equals(highlightedVertex)) {
-                        vertexClickListener.vertexClicked(highlightedVertex);
+                    if (highlightedVertex != null && draggedVertex.equals(highlightedVertex)) {
+                        // Open color menu only if no other vertex is highlighted
+                        if (vertexClickListener != null) {
+                            vertexClickListener.vertexClicked(draggedVertex);
+                        }
+        
+                        // Clear the highlight after choosing a color
+                        highlightedVertex = null;
+                        repaint();
                     }
                 }
+        
                 draggedVertex = null;
                 isDraggingVertex = false;
             }
         });
+        
+        
 
         
 
@@ -301,5 +315,15 @@ public class GraphVisualizer extends JPanel {
     // Retrieve all distinct colors used in the graph
     public List<Color> getAllUsedColors() {
     return new ArrayList<>(new HashSet<>(vertexColors.values()));
+    }
+
+    public boolean areAllVerticesColored() {
+        for (String vertex : vertices) {
+            Color color = vertexColors.getOrDefault(vertex, Color.WHITE);
+            if (color.equals(Color.WHITE)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

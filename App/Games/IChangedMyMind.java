@@ -218,30 +218,53 @@ public class IChangedMyMind {
     }
 
     private void handleVertexClick(String vertex) {
-        while (true) {
-            Color selectedColor = showColorSelectionDialog(vertex);
-            if (selectedColor == null) break;
+        if (!vertex.equals(vertexOrder.get(currentVertexIndex))) {
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Please select the next vertex: " + vertexOrder.get(currentVertexIndex),
+                    "Invalid Selection",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
     
+        while (true) {
+            // Show all color options
+            Color selectedColor = showColorSelectionDialog(vertex);
+    
+            if (selectedColor == null) {
+                // Player canceled the dialog
+                break;
+            }
+    
+            // Validate the selected color
             Set<Color> invalidColors = getAdjacentColors(vertex);
             if (invalidColors.contains(selectedColor)) {
-                JOptionPane.showMessageDialog(frame, "This color is unavailable. Check neighboring vertices.", "Invalid Color", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "This color is unavailable. Check the colors of the neighboring vertices.",
+                        "Invalid Color",
+                        JOptionPane.WARNING_MESSAGE
+                );
             } else {
+                // Push the current state to UndoStack before changing the color
                 Color previousColor = graphPanel.getVertexColor(vertex);
+                UndoStack.push(new UndoStep(currentVertexIndex, previousColor, selectedColor));
+    
                 graphPanel.setVertexColor(vertex, selectedColor);
     
-                // Add undo step
-                UndoStack.push(new UndoStep(vertexOrder.indexOf(vertex), previousColor, selectedColor));
-    
+                // Progress to the next vertex
                 currentVertexIndex++;
                 if (currentVertexIndex < vertexOrder.size()) {
                     highlightCurrentVertex();
                 } else {
                     endGame();
                 }
-                break;
+                break; // Exit the loop
             }
         }
     }
+    
     
 
     private Set<Color> getAdjacentColors(String vertex) {

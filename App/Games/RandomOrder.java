@@ -167,6 +167,16 @@ public class RandomOrder {
     }
 
     private void handleVertexClick(String vertex) {
+        if (!vertex.equals(vertexOrder.get(currentVertexIndex))) {
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Please select the next vertex: " + vertexOrder.get(currentVertexIndex),
+                    "Invalid Selection",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+    
         while (true) {
             // Show all color options
             Color selectedColor = showColorSelectionDialog(vertex);
@@ -179,19 +189,16 @@ public class RandomOrder {
             // Validate the selected color
             Set<Color> invalidColors = getAdjacentColors(vertex);
             if (invalidColors.contains(selectedColor)) {
-                // Show warning message
                 JOptionPane.showMessageDialog(
                         frame,
-                        "This color is unavailable. Check the colors of the neighbouring vertices.",
+                        "This color is unavailable. Check the colors of the neighboring vertices.",
                         "Invalid Color",
                         JOptionPane.WARNING_MESSAGE
                 );
-                // Loop again to let the player select another color
             } else {
-                // Valid color selected
                 graphPanel.setVertexColor(vertex, selectedColor);
     
-                // Move to the next vertex
+                // Progress to the next vertex
                 currentVertexIndex++;
                 if (currentVertexIndex < vertexOrder.size()) {
                     highlightCurrentVertex();
@@ -202,6 +209,7 @@ public class RandomOrder {
             }
         }
     }
+    
     
 
     private Set<Color> getAdjacentColors(String vertex) {
