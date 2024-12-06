@@ -5,7 +5,6 @@ import App.Algorithms.*;
 import App.Main.Main;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -345,7 +344,6 @@ public class ToTheBitterEnd {
     
     private void applyHintPenalty() {
         // Apply a small penalty for using the hint
-        // For example, add a fixed time penalty
-        hintPenaltySeconds += 10; // Adds 10 seconds penalty to the final time
+        hintPenaltySeconds += 10; 
     }
 }
