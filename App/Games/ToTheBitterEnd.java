@@ -18,6 +18,8 @@ public class ToTheBitterEnd {
     private Instant startTime;
     private Instant endTime;
     private int hintPenaltySeconds = 0;
+    private int vertices;
+    private int edges;
 
     public static void game() {
         ToTheBitterEnd ToTheBitterEndGame = new ToTheBitterEnd();
@@ -25,7 +27,7 @@ public class ToTheBitterEnd {
     }
 
     private void initializeGame() {
-        frame = new JFrame("Free Order Game");
+        frame = new JFrame("To The Bitter End");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLayout(new BorderLayout());
@@ -102,35 +104,35 @@ public class ToTheBitterEnd {
 
         confirmButton.addActionListener(e -> {
             try {
-                int numOfVertices = Integer.parseInt(verticesField.getText());
-                int numOfEdges = Integer.parseInt(edgesField.getText());
+                vertices = Integer.parseInt(verticesField.getText());
+                edges = Integer.parseInt(edgesField.getText());
 
-                if (numOfVertices <= 0) {
+                if (vertices <= 0) {
                     JOptionPane.showMessageDialog(frame2, "Number of vertices must be positive.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (numOfEdges < numOfVertices - 1) {
-                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (numOfVertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                if (edges < vertices - 1) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (vertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (numOfEdges < 0) {
+                if (edges < 0) {
                     JOptionPane.showMessageDialog(frame2, "Number of edges cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                int maxEdges = numOfVertices * (numOfVertices - 1) / 2;
-                if (numOfEdges > maxEdges) {
+                int maxEdges = vertices * (vertices - 1) / 2;
+                if (edges > maxEdges) {
                     JOptionPane.showMessageDialog(frame2, "Too many edges for the number of vertices. Maximum possible edges: " + maxEdges, "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                RandomGraphGenerator generator = new RandomGraphGenerator(numOfVertices, numOfEdges);
-                String[] vertices = generator.getVertices();
-                String[][] edges = generator.getEdges();
+                RandomGraphGenerator generator = new RandomGraphGenerator(vertices, edges);
+                String[] Vertices = generator.getVertices();
+                String[][] Edges = generator.getEdges();
 
-                graphPanel.updateGraph(vertices, edges);
+                graphPanel.updateGraph(Vertices, Edges);
 
                 // Initialize the coloring algorithm
                 coloringAlgorithm = new ColoringAlgorithm();
@@ -270,7 +272,7 @@ public class ToTheBitterEnd {
 
         String userName = JOptionPane.showInputDialog(frame, "Enter your username for the leaderboard:");
         if (userName != null && !userName.trim().isEmpty()) {
-            int score = Scoring.scoreCalculator("ToTheBitterEnd", userName, chromaticNumber, totalTimeSeconds);
+            int score = Scoring.scoreCalculator(chromaticNumber, totalTimeSeconds, vertices, edges);
             JOptionPane.showMessageDialog(frame, String.format(
                 "Game Over!\nTime: %d seconds\nColors: %d\nTotal Time: %d seconds", 
                 duration.getSeconds(), chromaticNumber, totalTimeSeconds), 

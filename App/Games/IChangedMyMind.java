@@ -21,6 +21,8 @@ public class IChangedMyMind {
     private Instant endTime;
     private int hintPenaltySeconds = 0;
     private static Stack<UndoStep> UndoStack = new Stack<>();
+    private int vertices;
+    private int edges;
 
     public static void game() {
         
@@ -29,7 +31,7 @@ public class IChangedMyMind {
     }
 
     private void initializeGame() {
-        frame = new JFrame("I Changed My Mind Game");
+        frame = new JFrame("I Changed My Mind");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLayout(new BorderLayout());
@@ -130,39 +132,39 @@ public class IChangedMyMind {
 
         confirmButton.addActionListener(e -> {
             try {
-                int numOfVertices = Integer.parseInt(verticesField.getText());
-                int numOfEdges = Integer.parseInt(edgesField.getText());
+                int vertices = Integer.parseInt(verticesField.getText());
+                int edges = Integer.parseInt(edgesField.getText());
 
-                if (numOfVertices <= 0) {
+                if (vertices <= 0) {
                     JOptionPane.showMessageDialog(frame2, "Number of vertices must be positive.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (numOfEdges < numOfVertices - 1) {
-                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (numOfVertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                if (edges < vertices - 1) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (vertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (numOfEdges < 0) {
+                if (edges < 0) {
                     JOptionPane.showMessageDialog(frame2, "Number of edges cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                int maxEdges = numOfVertices * (numOfVertices - 1) / 2;
-                if (numOfEdges > maxEdges) {
+                int maxEdges = vertices * (vertices - 1) / 2;
+                if (edges > maxEdges) {
                     JOptionPane.showMessageDialog(frame2, "Too many edges for the number of vertices. Maximum possible edges: " + maxEdges, "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                RandomGraphGenerator generator = new RandomGraphGenerator(numOfVertices, numOfEdges);
-                String[] vertices = generator.getVertices();
-                String[][] edges = generator.getEdges();
+                RandomGraphGenerator generator = new RandomGraphGenerator(vertices, edges);
+                String[] Vertices = generator.getVertices();
+                String[][] Edges = generator.getEdges();
 
-                graphPanel.updateGraph(vertices, edges);
+                graphPanel.updateGraph(Vertices, Edges);
 
                 coloringAlgorithm = new ColoringAlgorithm();
 
-                vertexOrder = new ArrayList<>(Arrays.asList(vertices));
+                vertexOrder = new ArrayList<>(Arrays.asList(Vertices));
                 Collections.shuffle(vertexOrder);
                 currentVertexIndex = 0;
 
@@ -331,7 +333,7 @@ public class IChangedMyMind {
         String userName = JOptionPane.showInputDialog(frame, "Enter your username for the leaderboard:");
 
         if (userName != null && !userName.trim().isEmpty()) {
-            int score = Scoring.scoreCalculator("I Changed My Mind", userName, chromaticNumber, totalTimeSeconds);
+            int score = Scoring.scoreCalculator(chromaticNumber, totalTimeSeconds, vertices, edges);
 
             String message = String.format("Congratulations! You've colored all vertices.\n" +
             "Time taken: %d seconds\n" +

@@ -8,10 +8,14 @@ public class Scoring {
 
     private static final String LEADERBOARD_DIR = "project-1.1/App/Games/Leaderboards";
 
-    public static int scoreCalculator(String game, String userName, int chromaticNumber, int timeElapsed) {
-        int score = chromaticNumber * timeElapsed;
+    public static int scoreCalculator(int chromaticNumber, int timeElapsed, int vertices, int edges) {
+        double V = vertices;
+        double E = edges;
 
-        return score;
+        double complexityFactor = V * Math.log(1 + E);
+        double score = (chromaticNumber * timeElapsed) / complexityFactor;
+
+        return (int) score;
     }
 
     public static void storeInLeaderboard(String game, String userName, int score) {
