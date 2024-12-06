@@ -27,7 +27,18 @@ public class Scoring {
 
             List<LeaderboardEntry> leaderboard = loadLeaderboard(game);
 
-            leaderboard.add(new LeaderboardEntry(userName, score));
+                boolean userExists = false;
+            for (LeaderboardEntry entry : leaderboard) {
+                if ((entry.getUserName().equals(userName)) && (entry.getScore() > score)) {
+                    leaderboard.set(leaderboard.indexOf(entry), new LeaderboardEntry(userName, score));
+                    userExists = true;
+                    break;
+                }
+            }
+
+            if (!userExists) {
+                leaderboard.add(new LeaderboardEntry(userName, score));
+            }
 
             leaderboard.sort(Comparator.comparingInt(LeaderboardEntry::getScore));
 
