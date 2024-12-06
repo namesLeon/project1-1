@@ -19,7 +19,7 @@ public class Main {
 
         int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
         int targetDimension = (int) (2.0 / 3.0 * screenHeight);
-        ImageIcon image = new ImageIcon("App/Images/graphColoring.png");
+        ImageIcon image = new ImageIcon("project-1.1/App/Images/graphColoring.png");
         Image img = image.getImage();
         Image scaledImg = img.getScaledInstance(targetDimension, targetDimension, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImg);
