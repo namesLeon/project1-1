@@ -26,6 +26,7 @@ public class IChangedMyMind {
     private static Stack<UndoStep> UndoStack = new Stack<>();
     private int vertices;
     private int edges;
+    private String[] Vertices;
 
     public static void game() { 
         JFrame frame = new JFrame("infoText");
@@ -70,11 +71,13 @@ public class IChangedMyMind {
         JButton backButton = new JButton("Back");
         JButton showleaderboard = new JButton("Show Leaderboard");
         JButton undoButton= new JButton("Undo");
+        JButton giveUpButton = new JButton("Give Up");
 
         buttonPanel.add(generateGraphButton);
         buttonPanel.add(backButton);
         buttonPanel.add(showleaderboard);
         buttonPanel.add(undoButton);
+        buttonPanel.add(giveUpButton);
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
@@ -129,6 +132,11 @@ public class IChangedMyMind {
         showleaderboard.addActionListener(e -> {
             SoundFX.playSound("button.wav");
             showLeaderboard();
+        });
+
+        giveUpButton.addActionListener(e -> {
+            SoundFX.playSound("button.wav");
+            giveUp();
         });
     }
 
@@ -186,7 +194,7 @@ public class IChangedMyMind {
                 }
 
                 RandomGraphGenerator generator = new RandomGraphGenerator(vertices, edges);
-                String[] Vertices = generator.getVertices();
+                Vertices = generator.getVertices();
                 String[][] Edges = generator.getEdges();
 
                 graphPanel.updateGraph(Vertices, Edges);
@@ -439,5 +447,49 @@ public class IChangedMyMind {
         }
     }
 
+    private void giveUp() {
+        for(int i = 0; i < Vertices.length; i++) {
+            Color suggestedColor = getComputerSuggestion(Vertices[i]);
+            graphPanel.setVertexColor(Vertices[i], suggestedColor);
+        }
 
+        JFrame frame2 = new JFrame("Give Up?");
+        frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame2.setSize(new Dimension(300, 200));
+        frame2.setLayout(new BorderLayout());
+
+        JTextPane text = new JTextPane();
+        text.setText("Do you want to play again?");
+        text.setEditable(false);
+
+        StyledDocument doc = text.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+
+        JButton yes = new JButton("Yes");
+        JButton no = new JButton("No");
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(yes);
+        buttonPanel.add(no);
+
+        frame2.add(buttonPanel, BorderLayout.SOUTH);
+        frame2.add(text, BorderLayout.CENTER);
+
+        frame2.setVisible(true);
+
+        yes.addActionListener(e -> {
+            SoundFX.playSound("button.wav");
+            frame2.dispose();
+            generateGraph();
+        });
+
+        no.addActionListener(e -> {
+            SoundFX.playSound("button.wav");
+            Main.mainMenu();
+            frame2.dispose();
+            frame.dispose();
+        });
+    }
 }
