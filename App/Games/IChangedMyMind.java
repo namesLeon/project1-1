@@ -27,6 +27,7 @@ public class IChangedMyMind {
     private int vertices;
     private int edges;
     private String[] Vertices;
+    private boolean interactable = true;
 
     public static void game() { 
         JFrame frame = new JFrame("infoText");
@@ -87,7 +88,7 @@ public class IChangedMyMind {
         graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
             @Override
             public void vertexClicked(String vertex) {
-                handleVertexClick(vertex);
+                if(interactable) {handleVertexClick(vertex);}
             }
         });
 
@@ -209,6 +210,8 @@ public class IChangedMyMind {
 
                 highlightCurrentVertex();
                 graphPanel.clearVertexColors();
+
+                interactable = true;
 
                 frame2.dispose();
 
@@ -448,6 +451,8 @@ public class IChangedMyMind {
     }
 
     private void giveUp() {
+        interactable = false;
+
         for(int i = 0; i < Vertices.length; i++) {
             Color suggestedColor = getComputerSuggestion(Vertices[i]);
             graphPanel.setVertexColor(Vertices[i], suggestedColor);
