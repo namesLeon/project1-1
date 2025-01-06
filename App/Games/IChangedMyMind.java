@@ -365,6 +365,7 @@ public class IChangedMyMind {
 
     private void endGame() {
         endTime = Instant.now();
+        SoundFX.playSound("win.wav");
         Duration duration = Duration.between(startTime, endTime);
         int totalTimeSeconds = (int)duration.getSeconds() + hintPenaltySeconds;
 

@@ -362,6 +362,7 @@ public class RandomOrder {
     private void endGame() {
         // Stop the timer
         endTime = Instant.now();
+        SoundFX.playSound("win.wav");
         Duration duration = Duration.between(startTime, endTime);
         int totalTimeSeconds = (int)duration.getSeconds() + hintPenaltySeconds;
 
