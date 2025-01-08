@@ -12,9 +12,9 @@ import java.util.Set;
 * HOW TO USE:
 *   int result = SpecialCaseChecker.detectSpecialCase(vertices, edges);
 *   if (result != -1) {
-*       // 'result' is the chromatic number for this special case
+*       'result' is the chromatic number for this special case
 *   } else {
-*       // It's not a special case. Use your expensive algorithm.
+*        It's not a special case. Use your expensive algorithm.
 *   }
 */
 public class SpecialCases {
@@ -27,10 +27,8 @@ public class SpecialCases {
      *   otherwise, the exact chromatic number for that special case
      */
 
-    //todo: will complete this method later
 
      private static boolean isComplete(String[] vertices, String[][] edges) {
-
 
         /**
          * A complete graph is essentially a graph where every vertex
