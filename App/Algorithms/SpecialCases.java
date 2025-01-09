@@ -1,6 +1,11 @@
 package App.Algorithms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -28,7 +33,7 @@ public class SpecialCases {
      */
 
 
-     private static boolean isComplete(String[] vertices, String[][] edges) {
+    private static boolean isComplete(String[] vertices, String[][] edges) {
 
         /**
          * A complete graph is essentially a graph where every vertex
@@ -96,14 +101,44 @@ public class SpecialCases {
 
     }
 
-
-     //todo: will complete this method later
-     public static int detectSpecialCase(String[] vertices, String[][] edges) {
-
-        if() {
-
+    public static boolean isBipartite(String[] vertices, String[][] edges) {
+        int n = vertices.length;
+        int[] color = new int[n];
+        Arrays.fill(color, -1); // -1 means "uncolored"
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < vertices.length; i++) {
+            adj.add(new ArrayList<>());
         }
 
-     }
+        for (String[] edge : edges) {
+            int u = Integer.parseInt(edge[0]) - 1;
+            int v = Integer.parseInt(edge[1]) - 1;
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+        }
 
+        // Attempt coloring from each unvisited vertex.
+        for (int start = 0; start < n; start++) {
+            if (color[start] == -1) {
+                color[start] = 0; // Assign first color arbitrarily
+                Queue<Integer> queue = new LinkedList<>();
+                queue.add(start);
+
+                while (!queue.isEmpty()) {
+                    int u = queue.poll();
+                    for (int v : adj.get(u)) {
+                        if (color[v] == -1) {
+                            // Assign opposite color to the neighbor
+                            color[v] = 1 - color[u];
+                            queue.add(v);
+                        } else if (color[v] == color[u]) {
+                            // same color on 2 neighbours
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }

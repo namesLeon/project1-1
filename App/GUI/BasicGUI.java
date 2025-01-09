@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.*;
-
+import App.Algorithms.SpecialCases;
 
 public class BasicGUI {
 
@@ -202,7 +202,10 @@ public class BasicGUI {
             resultArea.append("please load a graph first \n.");
             return;
         }
-
+        if(SpecialCases.isBipartite(vertices, edges)){
+            resultArea.append("Graph is bipartite. Chromatic number is 2");
+            return;
+        }
         ExactAlgorithm exactAlg = new ExactAlgorithm(vertices, edges);
         if(upperBound == -1) {
             upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
