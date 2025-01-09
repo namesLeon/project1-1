@@ -204,7 +204,7 @@ public class BasicGUI {
         }
         if(SpecialCases.isComplete(vertices, edges)){
             int ans = vertices.length;
-            resultArea.append("Graph is complete. Chromatic number is " + ans*(ans-1)/2);
+            resultArea.append("Graph is complete. Chromatic number is " + ans);
             return;
         }
         if(SpecialCases.isBipartite(vertices, edges)){
