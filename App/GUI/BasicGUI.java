@@ -4,13 +4,13 @@ package App.GUI;
 import App.Algorithms.ExactAlgorithm;
 import App.Algorithms.LowerBoundAlgorithm;
 import App.Algorithms.UpperBoundAlgorithm;
-import App.Txt.TxtInterpretation;
 import App.Main.Main;
+import App.Txt.TxtInterpretation;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.*;
-import java.awt.*;
 
 
 public class BasicGUI {
@@ -52,6 +52,7 @@ public class BasicGUI {
         JButton backButton = new JButton("Back");
         JButton zoomInButton = new JButton("Zoom In");
         JButton zoomOutButton = new JButton("Zoom Out");
+        JButton toggleColorButton = new JButton("Toggle Graph Coloring");
 
         // new text area to display the results
         resultArea = new JTextArea(15, 40);
@@ -67,6 +68,7 @@ public class BasicGUI {
         panel2.add(zoomInButton);
         panel2.add(backButton);
         panel2.add(zoomOutButton);
+        panel1.add(toggleColorButton);
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
@@ -108,6 +110,15 @@ public class BasicGUI {
                 SoundFX.playSound("button.wav");
                 runExactAlgorithm();
                 System.out.println("exact Algorithm 2 button clicked.");
+            }
+        });
+
+        toggleColorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Toggle button clicked"); // added this for debugging the toggle button
+                SoundFX.playSound("button.wav");
+                graphPanel.toggleGraphColoring(); // Toggle between colored and uncolored views
             }
         });
         

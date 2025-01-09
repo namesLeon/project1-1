@@ -22,6 +22,8 @@ public class GraphVisualizer extends JPanel {
     private int panY = 0; // Vertical pan offset
     private String[] vertexOrder;
     private String highlightedVertex; // Added for highlighting
+    private boolean showColoredGraph = false; // Default of the graph is uncolored
+
 
     // Variables for dragging
     private String draggedVertex = null;
@@ -232,7 +234,7 @@ public class GraphVisualizer extends JPanel {
             int x = pos.x - radius / 2;
             int y = pos.y - radius / 2;
 
-            Color vertexColor = vertexColors.getOrDefault(vertex, Color.WHITE);
+            Color vertexColor = showColoredGraph ? vertexColors.getOrDefault(vertex, Color.WHITE) : Color.WHITE;
 
             if (vertex.equals(highlightedVertex)) {
                 // Draw a larger circle to highlight
@@ -248,9 +250,17 @@ public class GraphVisualizer extends JPanel {
         }
     }
 
+
+
+
     // Method to set a vertex's color
     public void setVertexColor(String vertex, Color color) {
         vertexColors.put(vertex, color);
+        repaint();
+    }
+
+    public void toggleGraphColoring(){
+        showColoredGraph = !showColoredGraph; // Toggle the flag
         repaint();
     }
 
