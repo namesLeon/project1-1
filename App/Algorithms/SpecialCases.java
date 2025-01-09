@@ -33,7 +33,7 @@ public class SpecialCases {
      */
 
 
-    private static boolean isComplete(String[] vertices, String[][] edges) {
+    public static boolean isComplete(String[] vertices, String[][] edges) {
 
         /**
          * A complete graph is essentially a graph where every vertex

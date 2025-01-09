@@ -202,6 +202,11 @@ public class BasicGUI {
             resultArea.append("please load a graph first \n.");
             return;
         }
+        if(SpecialCases.isComplete(vertices, edges)){
+            int ans = vertices.length;
+            resultArea.append("Graph is complete. Chromatic number is " + ans*(ans-1)/2);
+            return;
+        }
         if(SpecialCases.isBipartite(vertices, edges)){
             resultArea.append("Graph is bipartite. Chromatic number is 2");
             return;
