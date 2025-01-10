@@ -4,7 +4,6 @@ package App.GUI;
 import App.Algorithms.ExactAlgorithm;
 import App.Algorithms.LowerBoundAlgorithm;
 import App.Algorithms.UpperBoundAlgorithm;
-import App.Games.BasicGUI;
 import App.Main.Main;
 import App.Txt.TxtInterpretation;
 import java.awt.*;
