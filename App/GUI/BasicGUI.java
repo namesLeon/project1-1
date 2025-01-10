@@ -31,26 +31,27 @@ public class BasicGUI {
 
     public void infoScreen() {
         JFrame frame = new JFrame("infoText");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(400, 300);
         frame.setLayout(new BorderLayout());
 
         JButton startButton = new JButton("Start Game");
 
         JTextPane infoDump = new JTextPane();
         infoDump.setEditable(false);
-        infoDump.setText("Welcome to the SandBox! \n \n This is an explanation of the game.\n Enjoy!");
+        infoDump.setText("Welcome to the SandBox! \n \n Here you can create graphs and colour or drag them around as you wish, without pesky timers or orders to bother you. At the top of the screen there will be a couple buttons; there is the load graph button to load a graph from a special type of file, the generate graph button the generate a random graph with a by you specified numbers of vertices and edges and lastly the exact, upper bound and lower bound algorithm buttons which show you the exact chromatic number, the upper bound or the lower bound for the currently loaded graph. Finally there are the result area and the graph box which show the afore mentioned numbers and graphs.");
 
         StyledDocument doc = infoDump.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+        doc.setParagraphAttributes(10, doc.getLength(), center, false);
 
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.add(infoDump);
+        int height = infoDump.getHeight();
+        int width = frame.getWidth();
+        infoDump.setSize(width,height);
 
         frame.add(startButton, BorderLayout.SOUTH);
-        frame.add(centerPanel, BorderLayout.CENTER);
+        frame.add(infoDump, BorderLayout.CENTER);
 
         BasicGUI BasicGUI = new BasicGUI();
         BasicGUI.createShowGUI();
