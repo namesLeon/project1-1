@@ -74,8 +74,14 @@ public class SpecialCases {
             // building a unique string so that the order doesn't matter
             // like edge (1,2) => "1-2"
 
-            int a = Integer.parseInt(v1);
-            int b = Integer.parseInt(v2);
+            try{
+                
+                int a = Integer.parseInt(v1);
+                int b = Integer.parseInt(v2);
+            } catch(NumberFormatException ex){
+                System.out.println("The graph input is malformed.");
+                return false;
+            } 
 
             if (a > b) {
                 int tmp = a; 
