@@ -3,8 +3,9 @@ package App.GUI;
 import App.Algorithms.ColoringAlgorithm;
 import App.Algorithms.ExactAlgorithm;
 import App.Algorithms.LowerBoundAlgorithm;
+import App.Algorithms.RandomGraphGenerator;
+import App.Algorithms.SpecialCases;  // Added import
 import App.Algorithms.UpperBoundAlgorithm;
-import App.Algorithms.RandomGraphGenerator;  // Added import
 import App.Main.Main;
 import App.Txt.TxtInterpretation;
 import java.awt.*;
@@ -14,22 +15,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
-
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-
-import App.Algorithms.SpecialCases;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class BasicGUI {
 
@@ -155,7 +148,7 @@ public class BasicGUI {
                 resultArea.setText("");
                 SoundFX.playSound("button.wav");
                                 //todo: create a load graph method and implement action listener later
-                generateRandomGraph();
+
                 JFileChooser fileChooser = new JFileChooser();
 
                 File defaultDirectory = new File("project-1.1/App/Txt/Graphs");
