@@ -51,12 +51,14 @@ public class RandomOrder {
 
         frame.add(startButton, BorderLayout.SOUTH);
         frame.add(centerPanel, BorderLayout.CENTER);
+
+        RandomOrder RandomOrder = new RandomOrder();
+        RandomOrder.initializeGame();
+        
         frame.setVisible(true);
 
         startButton.addActionListener(e -> {
             SoundFX.playSound("button.wav");
-            RandomOrder RandomOrder = new RandomOrder();
-            RandomOrder.initializeGame();
             frame.dispose();
         });
     }

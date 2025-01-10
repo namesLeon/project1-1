@@ -53,8 +53,6 @@ public class ToTheBitterEnd {
 
         startButton.addActionListener(e -> {
             SoundFX.playSound("button.wav");
-            ToTheBitterEnd ToTheBitterEndGame = new ToTheBitterEnd();
-            ToTheBitterEndGame.initializeGame();
             frame.dispose();
         });
     }
