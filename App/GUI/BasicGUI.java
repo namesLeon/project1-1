@@ -1,25 +1,39 @@
 package App.GUI;
 
-// necessary imports
+import App.Algorithms.ColoringAlgorithm;
 import App.Algorithms.ExactAlgorithm;
 import App.Algorithms.LowerBoundAlgorithm;
 import App.Algorithms.UpperBoundAlgorithm;
+import App.Algorithms.RandomGraphGenerator;  // Added import
 import App.Main.Main;
 import App.Txt.TxtInterpretation;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.File;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import App.Algorithms.SpecialCases;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class BasicGUI {
 
-    // instance variables for graph data (optional at this point)
+    // Instance variables for graph data
     private String[] vertices;
     private String[][] edges;
     private int upperBound;
@@ -28,7 +42,16 @@ public class BasicGUI {
     private JTextArea resultArea;
     private JFrame frame;
     private GraphVisualizer graphPanel;
-
+    
+    // Added for dragging
+    private boolean isDraggingVertex = false;
+    private String draggedVertex = null;
+    private Point lastMousePosition = null;
+    private double zoomFactor = 1.0;
+    private int panX = 0;
+    private int panY = 0;
+    private static final int DRAG_THRESHOLD = 5; // Adjust this value as needed
+    private Map<String, Point> vertexPositions = new HashMap<>();
     public void infoScreen() {
         JFrame frame = new JFrame("infoText");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -64,7 +87,7 @@ public class BasicGUI {
         });
     }
 
-    // method to create and display the gui
+    // Method to create and display the GUI
     public void createShowGUI() {
 
         // create a new window
@@ -75,14 +98,14 @@ public class BasicGUI {
 
         // size of the window
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
         frame.setLayout(new BorderLayout());
 
-        // panel to hold components
+         // panel to hold components
+
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
 
-        // button that does nothing for now 
+        // Added button for generating random graph 
         JButton loadGraphButton = new JButton("Load Graph");
         JButton exactButton = new JButton("Run Exact Algorithm");
         JButton upperBoundButton = new JButton("Run Upper Bound Algorithm");
@@ -91,12 +114,14 @@ public class BasicGUI {
         JButton zoomInButton = new JButton("Zoom In");
         JButton zoomOutButton = new JButton("Zoom Out");
         JButton toggleColorButton = new JButton("Toggle Graph Coloring");
+        JButton randomGraphButton = new JButton("Generate Random Graph"); 
+
 
         // new text area to display the results
         resultArea = new JTextArea(15, 40);
         resultArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(resultArea);
-        
+
         // add buttons to panel
         panel1.add(loadGraphButton);
         panel1.add(exactButton);
@@ -107,10 +132,11 @@ public class BasicGUI {
         panel2.add(backButton);
         panel2.add(zoomOutButton);
         panel1.add(toggleColorButton);
+        panel1.add(randomGraphButton);  // Added button to panel
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
-        
+
         // add the panel to the window
         frame.add(panel1, BorderLayout.NORTH);
         frame.add(graphPanel, BorderLayout.CENTER);
@@ -119,13 +145,16 @@ public class BasicGUI {
         // make the window visible
         frame.setVisible(true);
 
-        // action listener for load graph button
+        
+
+        // Action listener for load graph button
         loadGraphButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 resultArea.setText("");
                 SoundFX.playSound("button.wav");
-                //todo: create a load graph method and implement action listener later
+                                //todo: create a load graph method and implement action listener later
+                generateRandomGraph();
                 JFileChooser fileChooser = new JFileChooser();
 
                 File defaultDirectory = new File("project-1.1/App/Txt/Graphs");
@@ -140,8 +169,8 @@ public class BasicGUI {
                 }
             }
         });
-
-        // action listener for exact alg. button
+        
+        // Action listener for exact algorithm button
         exactButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -151,26 +180,28 @@ public class BasicGUI {
             }
         });
 
+        // Action listener for toggle color button
         toggleColorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Toggle button clicked"); // added this for debugging the toggle button
+                System.out.println("Toggle button clicked");// added this for debugging the toggle button
                 SoundFX.playSound("button.wav");
-                graphPanel.toggleGraphColoring(); // Toggle between colored and uncolored views
+                graphPanel.toggleGraphColoring();// Toggle between colored and uncolored views
             }
         });
-        
-        // action listener for upper bound alg. button
+
+        // Action listener for upper bound algorithm button
         upperBoundButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("button.wav");
+               
                 runUpperBoundAlgorithm();
                 System.out.println("upper bound algorithm button clicked.");
             }
         });
 
-        // action listener for lower bound alg. button
+        // Action listener for lower bound algorithm button
         lowerBoundButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -180,6 +211,7 @@ public class BasicGUI {
             }
         });
 
+        // Action listener for back button
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -189,6 +221,7 @@ public class BasicGUI {
             }
         });
 
+        // Action listener for zoom in button
         zoomInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -196,7 +229,8 @@ public class BasicGUI {
                 graphPanel.zoomIn();
             }
         });
-        
+
+        // Action listener for zoom out button
         zoomOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -205,47 +239,109 @@ public class BasicGUI {
             }
         });
 
+        // Action listener for random graph button
+        randomGraphButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
+                generateGraph();  // Added action listener for random graph generation
+            }
+        });
+
+        // Mouse listener for dragging
+        graphPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Point clickPoint = e.getPoint();
+                int adjustedX = (int) ((clickPoint.x - panX) / zoomFactor);
+                int adjustedY = (int) ((clickPoint.y - panY) / zoomFactor);
+                Point adjustedClickPoint = new Point(adjustedX, adjustedY);
+
+                draggedVertex = null;
+
+                for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
+                    String vertex = entry.getKey();
+                    Point vertexPos = entry.getValue();
+                    int radius = 20;
+
+                    if (vertexPos.distance(adjustedClickPoint) < radius) {
+                        draggedVertex = vertex;
+                        break;
+                    }
+                }
+
+                lastMousePosition = adjustedClickPoint;
+                isDraggingVertex = false;
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                draggedVertex = null;
+                isDraggingVertex = false;
+            }
+        });
+
+        // Mouse motion listener for dragging
+        graphPanel.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (draggedVertex != null) {
+                    Point currentPoint = e.getPoint();
+                    int adjustedX = (int) ((currentPoint.x - panX) / zoomFactor);
+                    int adjustedY = (int) ((currentPoint.y - panY) / zoomFactor);
+                    Point adjustedCurrentPoint = new Point(adjustedX, adjustedY);
+
+                    if (!isDraggingVertex && lastMousePosition.distance(adjustedCurrentPoint) > DRAG_THRESHOLD) {
+                        isDraggingVertex = true;
+                    }
+
+                    if (isDraggingVertex) {
+                        vertexPositions.put(draggedVertex, adjustedCurrentPoint);
+                        lastMousePosition = adjustedCurrentPoint;
+                        graphPanel.repaint();  // Repaint the graph to reflect the new positions
+                    }
+                }
+            }
+        });
     }
 
-    // helper methods
-
+    // Helper methods
     private void loadGraphFromFile(File file) {
-        // logic to read graph from file
+                // logic to read graph from file
+
         TxtInterpretation txtInt = new TxtInterpretation();
         // getting vertices and edges
         vertices = txtInt.getVertices(file.getAbsolutePath());
         edges = txtInt.getEdges(file.getAbsolutePath());
 
-        if(vertices!=null && edges!=null){
-            upperBound=-1; // reset
-            
+        if(vertices != null && edges != null) {
+            upperBound = -1; // reset
+
+
             // display in result area
             resultArea.append("graph loaded from file: " + file.getName() + "\n");
             resultArea.append("number of vertices: " + vertices.length + "\n");
             resultArea.append("number of edges: " + edges.length + "\n\n");
 
             graphPanel.updateGraph(vertices, edges);
-            frame.revalidate();    // Revalidate the frame to reflect the changes
-            frame.repaint();       // Repaint the frame to show the graph
-        } 
-        else {
+            frame.revalidate();
+            frame.repaint();
+        } else {
             resultArea.append("failed to load graph from file " + file.getName() + "\n");
         }
-
-
     }
 
-    private void runExactAlgorithm(){
+    private void runExactAlgorithm() {
         if(vertices == null || edges == null) {
             resultArea.append("please load a graph first \n.");
             return;
         }
-        if(SpecialCases.isComplete(vertices, edges)){
+        if(SpecialCases.isComplete(vertices, edges)) {
             int ans = vertices.length;
             resultArea.append("Graph is complete. Chromatic number is " + ans);
             return;
         }
-        if(SpecialCases.isBipartite(vertices, edges)){
+        if(SpecialCases.isBipartite(vertices, edges)) {
             resultArea.append("Graph is bipartite. Chromatic number is 2");
             return;
         }
@@ -268,6 +364,28 @@ public class BasicGUI {
         }
     }
 
+
+private void generateRandomGraph() { 
+    Scanner scanner = new Scanner(System.in);
+    int numVertices = scanner.nextInt(); 
+    int numEdges = scanner.nextInt(); 
+    scanner.close();
+    RandomGraphGenerator randomGraphGenerator = new RandomGraphGenerator(numVertices, numEdges); 
+    vertices = randomGraphGenerator.getVertices(); 
+    edges = randomGraphGenerator.getEdges(); 
+    
+    vertexPositions.clear(); 
+    Random rand = new Random(); 
+    for (String vertex : vertices) { 
+        int x = rand.nextInt(graphPanel.getWidth()); 
+        int y = rand.nextInt(graphPanel.getHeight()); 
+        vertexPositions.put(vertex, new Point(x, y)); } 
+        
+    resultArea.append("Random graph generated with " + numVertices + " vertices and " + numEdges + " edges.\n"); 
+    graphPanel.updateGraph(vertices, edges); frame.revalidate(); // Revalidate the frame to reflect the changes 
+    frame.repaint(); // Repaint the frame to show the graph 
+    }
+
     private void runUpperBoundAlgorithm(){
         if(vertices == null || edges == null) {
             resultArea.append("load a graph first \n");
@@ -288,5 +406,72 @@ public class BasicGUI {
         resultArea.append("lower bound: " + lowerBound + "\n");
     }
 
+
+    private void generateGraph() {
+        JFrame frame2 = new JFrame("Generate Graph");
+        frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame2.setSize(new Dimension(300, 200));
+        frame2.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2));
+        JLabel verticesLabel = new JLabel("Number of Vertices:");
+        JTextField verticesField = new JTextField();
+        JLabel edgesLabel = new JLabel("Number of Edges:");
+        JTextField edgesField = new JTextField();
+
+        inputPanel.add(verticesLabel);
+        inputPanel.add(verticesField);
+        inputPanel.add(edgesLabel);
+        inputPanel.add(edgesField);
+
+        JButton confirmButton = new JButton("Confirm");
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(confirmButton);
+
+        frame2.add(inputPanel, BorderLayout.CENTER);
+        frame2.add(buttonPanel, BorderLayout.SOUTH);
+        frame2.setVisible(true);
+
+        ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
+
+        confirmButton.addActionListener(e -> {
+            try {
+                int vertices = Integer.parseInt(verticesField.getText());
+                int edges = Integer.parseInt(edgesField.getText());
+
+                if (vertices <= 0) {
+                    JOptionPane.showMessageDialog(frame2, "Number of vertices must be positive.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (edges < vertices - 1) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (vertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (edges < 0) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int maxEdges = vertices * (vertices - 1) / 2;
+                if (edges > maxEdges) {
+                    JOptionPane.showMessageDialog(frame2, "Too many edges for the number of vertices. Maximum possible edges: " + maxEdges, "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                RandomGraphGenerator generator = new RandomGraphGenerator(vertices, edges);
+                String[] Vertices = generator.getVertices();
+                String[][] Edges = generator.getEdges();
+
+                graphPanel.updateGraph(Vertices, Edges);
+
+                frame2.dispose();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
 }
 
