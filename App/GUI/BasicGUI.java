@@ -21,6 +21,10 @@ import java.util.Random;
 import java.util.Scanner;
 
 import javax.swing.*;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+
 import App.Algorithms.SpecialCases;
 import java.util.List;
 import java.util.ArrayList;
@@ -48,7 +52,40 @@ public class BasicGUI {
     private int panY = 0;
     private static final int DRAG_THRESHOLD = 5; // Adjust this value as needed
     private Map<String, Point> vertexPositions = new HashMap<>();
-    
+    public void infoScreen() {
+        JFrame frame = new JFrame("infoText");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setLayout(new BorderLayout());
+
+        JButton startButton = new JButton("Start Game");
+
+        JTextPane infoDump = new JTextPane();
+        infoDump.setEditable(false);
+        infoDump.setText("Welcome to the SandBox! \n \n This is an explanation of the game.\n Enjoy!");
+
+        StyledDocument doc = infoDump.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.add(infoDump);
+
+        frame.add(startButton, BorderLayout.SOUTH);
+        frame.add(centerPanel, BorderLayout.CENTER);
+
+        BasicGUI BasicGUI = new BasicGUI();
+        BasicGUI.createShowGUI();
+
+        frame.setVisible(true);
+
+        startButton.addActionListener(e -> {
+            SoundFX.playSound("button.wav");
+            frame.dispose();
+        });
+    }
+
     // Method to create and display the GUI
     public void createShowGUI() {
 

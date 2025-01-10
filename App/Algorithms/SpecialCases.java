@@ -74,15 +74,20 @@ public class SpecialCases {
             // building a unique string so that the order doesn't matter
             // like edge (1,2) => "1-2"
 
-            int a = Integer.parseInt(v1);
-            int b = Integer.parseInt(v2);
+            int a = 0;
+            int b = 0;
 
-            if (a > b) {
-                int tmp = a; 
-                a = b; 
-                b = tmp;
-            }
-            edgeSet.add(a + "-" + b);
+            try{
+                a = Integer.parseInt(v1);
+                b = Integer.parseInt(v2);
+            } catch(NumberFormatException ex){
+                System.out.println("The graph input is malformed.");
+                return false;
+            } 
+
+            int minAB = Math.min(a, b);
+            int maxAB = Math.max(a, b);
+            edgeSet.add(minAB + "-" + maxAB);
         }
 
         // now every pair i-j with (i<j) from 1...n should appear in that set

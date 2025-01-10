@@ -55,7 +55,7 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("button.wav");
                 BasicGUI basicGUI = new BasicGUI();
-                basicGUI.createShowGUI();
+                basicGUI.infoScreen();
                 frame.dispose();
             }
         });
@@ -72,8 +72,8 @@ public class Main {
         ICMM.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("button.wav"); // Play success sound instead of fail
-                IChangedMyMind.game(); // Launch the "I Changed My Mind" game mode
+                SoundFX.playSound("button.wav");
+                IChangedMyMind.game();
                 frame.dispose();
             }
         });

@@ -51,12 +51,14 @@ public class IChangedMyMind {
 
         frame.add(startButton, BorderLayout.SOUTH);
         frame.add(centerPanel, BorderLayout.CENTER);
+
+        IChangedMyMind IChangedMyMind = new IChangedMyMind();
+        IChangedMyMind.initializeGame();
+
         frame.setVisible(true);
 
         startButton.addActionListener(e -> {
             SoundFX.playSound("button.wav");
-            IChangedMyMind IChangedMyMind = new IChangedMyMind();
-            IChangedMyMind.initializeGame();
             frame.dispose();
         });
     }
