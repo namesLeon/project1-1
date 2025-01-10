@@ -52,6 +52,7 @@ public class BasicGUI {
     private int panY = 0;
     private static final int DRAG_THRESHOLD = 5; // Adjust this value as needed
     private Map<String, Point> vertexPositions = new HashMap<>();
+    
     public void infoScreen() {
         JFrame frame = new JFrame("infoText");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
