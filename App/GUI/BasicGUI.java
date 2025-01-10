@@ -84,6 +84,30 @@ public class BasicGUI {
     // Method to create and display the GUI
     public void createShowGUI() {
 
+        /**
+         * Note from Ilgaz:
+         * new mouse listener implementation 
+         */
+
+         graphPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Point clickPoint = e.getPoint();
+                for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
+                    String vertex = entry.getKey();
+                    Point vertexPosition = entry.getValue();
+                    int radius = 20; 
+        
+                    if (vertexPosition.distance(clickPoint) < radius) {
+                        // Vertex is clicked
+                        //todo: popup method
+                        break;
+                    }
+                }
+            }
+        });
+        
+         
         // create a new window
         frame = new JFrame("Basic GUI");
 
