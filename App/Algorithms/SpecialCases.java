@@ -75,7 +75,6 @@ public class SpecialCases {
             // like edge (1,2) => "1-2"
 
             try{
-                
                 int a = Integer.parseInt(v1);
                 int b = Integer.parseInt(v2);
             } catch(NumberFormatException ex){
@@ -83,12 +82,9 @@ public class SpecialCases {
                 return false;
             } 
 
-            if (a > b) {
-                int tmp = a; 
-                a = b; 
-                b = tmp;
-            }
-            edgeSet.add(a + "-" + b);
+            int minAB = Math.min(a, b);
+            int maxAB = Math.max(a, b);
+            edgeSet.add(minAB + "-" + maxAB);
         }
 
         // now every pair i-j with (i<j) from 1...n should appear in that set

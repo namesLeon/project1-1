@@ -22,7 +22,7 @@ public class GraphVisualizer extends JPanel {
     private int panY = 0; // Vertical pan offset
     private String[] vertexOrder;
     private String highlightedVertex; // Added for highlighting
-    private boolean showColoredGraph = false; // Default of the graph is uncolored
+    private boolean showColoredGraph = true; // Default of the graph is uncolored
 
 
     // Variables for dragging
