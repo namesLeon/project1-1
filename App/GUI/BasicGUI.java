@@ -84,31 +84,6 @@ public class BasicGUI {
 
     // Method to create and display the GUI
     public void createShowGUI() {
-
-        /**
-         * Note from Ilgaz:
-         * new mouse listener implementation 
-         */
-
-         graphPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Point clickPoint = e.getPoint();
-                for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
-                    String vertex = entry.getKey();
-                    Point vertexPosition = entry.getValue();
-                    int radius = 20; 
-        
-                    if (vertexPosition.distance(clickPoint) < radius) {
-                        // Vertex is clicked
-                        //todo: popup method
-                        break;
-                    }
-                }
-            }
-        });
-        
-         
         // create a new window
         frame = new JFrame("Basic GUI");
 
@@ -170,13 +145,14 @@ public class BasicGUI {
          * for vertex clicks
          * 
          * I think this is why coloring doesn't work in Sandbox mode.
-         */
+           */
         graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
             @Override
             public void vertexClicked(String vertex) {
                 //todo: method to handle vertex click
             }
         });
+        
 
         // Action listener for load graph button
         loadGraphButton.addActionListener(new ActionListener() {
@@ -336,6 +312,7 @@ public class BasicGUI {
         });
     }
 
+    
     private void handleVertexClick(String vertex) {
         Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
         String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Orange"};
@@ -360,6 +337,7 @@ public class BasicGUI {
             graphPanel.repaint();
         }
     }
+    
 
     // Helper methods
     private void loadGraphFromFile(File file) {
