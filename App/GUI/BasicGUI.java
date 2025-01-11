@@ -336,6 +336,31 @@ public class BasicGUI {
         });
     }
 
+    private void handleVertexClick(String vertex) {
+        Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
+        String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Orange"};
+
+        String selectedColorName = (String) JOptionPane.showInputDialog(
+            frame,
+            "Choose a color for vertex " + vertex + ":",
+            "Select Color",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            colorNames,
+            colorNames[0]
+        );
+
+        if(selectedColorName != null) {
+            for(int i=0; i<colorNames.length; i++) {
+                if(selectedColorName.equals(colorNames[i])) {
+                    graphPanel.setVertexColor(vertex, colors[i]);
+                    break;
+                }
+            }
+            graphPanel.repaint();
+        }
+    }
+
     // Helper methods
     private void loadGraphFromFile(File file) {
                 // logic to read graph from file
