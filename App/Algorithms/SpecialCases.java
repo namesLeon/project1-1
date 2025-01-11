@@ -146,4 +146,93 @@ public class SpecialCases {
         }
         return true;
     }
+
+    public static boolean isCycle(String[] vertices, String[][] edges) {
+        int n = vertices.length;
+        if (n < 3) {
+            // A cyclic graph requires at least 3 vertices
+            return false;
+        }
+    
+        // Build adjacency list
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+    
+        // Check each edge and fill in the adjacency list
+        for (String[] edge : edges) {
+            int u = Integer.parseInt(edge[0]) - 1; // Convert to 0-based index
+            int v = Integer.parseInt(edge[1]) - 1;
+            if (u == v) {
+                // Self-loops break the cyclic graph definition
+                return false;
+            }
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+        }
+    
+        // Check that the degree of each vertex is exactly 2
+        for (int i = 0; i < n; i++) {
+            if (adj.get(i).size() != 2) {
+                return false;
+            }
+        }
+    
+        // Use DFS（Depth First Search） to check if it is a connected cycle
+        boolean[] visited = new boolean[n];
+        int start = 0;
+        int parent = -1;
+        int visitedCount = 0;
+    
+        // DFS
+        if (!dfsCycle(adj, start, visited, parent)) {
+            return false;
+        }
+    
+        // Check if all nodes are visited
+        for (boolean v : visited) {
+            if (v) {
+                visitedCount++;
+            }
+        }
+    
+        // If connected and the number of visited vertices is equal to the number of vertices in the graph
+        return visitedCount == n;
+    }
+    
+    private static boolean dfsCycle(List<List<Integer>> adj, int node, boolean[] visited, int parent) {
+        visited[node] = true;
+    
+        for (int neighbor : adj.get(node)) {
+            if (!visited[neighbor]) {
+                // If not visited, recursively check neighbors
+                if (!dfsCycle(adj, neighbor, visited, node)) {
+                    return false;
+                }
+            } else if (neighbor != parent) {
+                // If it has been visited and is not the parent node, it means there is a duplicate edge (non-loop edge)
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static int detectSpecialCase(String[] vertices, String[][] edges) {
+        if (isComplete(vertices, edges)) {
+            // Chromatic number of a complete graph
+            return vertices.length;
+        }
+        if (isBipartite(vertices, edges)) {
+            // Chromatic number of a bipartite graph
+            return 2;
+        }
+        if (isCycle(vertices, edges)) {
+            // Chromatic number of a cycle graph
+            return (vertices.length % 2 == 0) ? 2 : 3;
+        }
+        // If no special case, return -1 to indicate fallback to general algorithm
+        return -1;
+    }
+    
 }
