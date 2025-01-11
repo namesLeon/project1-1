@@ -81,6 +81,7 @@ public class BasicGUI {
         });
     }
 
+
     // Method to create and display the GUI
     public void createShowGUI() {
 
@@ -163,7 +164,19 @@ public class BasicGUI {
         // make the window visible
         frame.setVisible(true);
 
-        
+        /**
+         * I noticed that GraphVisualizer provides the method setVertexClickListener
+         * but there is no code in BasicGUI that sets a listener 
+         * for vertex clicks
+         * 
+         * I think this is why coloring doesn't work in Sandbox mode.
+         */
+        graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
+            @Override
+            public void vertexClicked(String vertex) {
+                //todo: method to handle vertex click
+            }
+        });
 
         // Action listener for load graph button
         loadGraphButton.addActionListener(new ActionListener() {
