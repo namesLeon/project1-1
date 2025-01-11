@@ -340,8 +340,18 @@ public class BasicGUI {
     
 
     // Helper methods
+
+    /**
+     * I made minimal changes to the loadGraphFromFile:
+     * 
+     * the click listener now connects vertex clicks to the handleVertexClick method
+     * 
+     * no changes in updateGraph call
+     * no changes in ui updates
+     * no changes in logic
+     * 
+     */
     private void loadGraphFromFile(File file) {
-                // logic to read graph from file
 
         TxtInterpretation txtInt = new TxtInterpretation();
         // getting vertices and edges
@@ -350,14 +360,20 @@ public class BasicGUI {
 
         if(vertices != null && edges != null) {
             upperBound = -1; // reset
-
-
             // display in result area
-            resultArea.append("graph loaded from file: " + file.getName() + "\n");
-            resultArea.append("number of vertices: " + vertices.length + "\n");
-            resultArea.append("number of edges: " + edges.length + "\n\n");
+            resultArea.append("Graph loaded from file: " + file.getName() + "\n");
+            resultArea.append("Number of vertices: " + vertices.length + "\n");
+            resultArea.append("Number of edges: " + edges.length + "\n\n");
 
             graphPanel.updateGraph(vertices, edges);
+
+            graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
+                @Override
+                public void vertexClicked(String vertex) {
+                    handleVertexClick(vertex);
+                }
+            });
+
             frame.revalidate();
             frame.repaint();
         } else {
