@@ -1,5 +1,6 @@
 package App.GUI;
 
+import App.GUI.GraphVisualizer.VertexClickListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class GraphVisualizer extends JPanel {
     private String[] vertexOrder;
     private String highlightedVertex; // Added for highlighting
     private boolean showColoredGraph = true; // Default of the graph is uncolored
+    private VertexClickListener vertexClickListener; // Listener for vertex clicks
 
 
     // Variables for dragging
@@ -37,8 +39,7 @@ public class GraphVisualizer extends JPanel {
         this.restrictClicksToHighlightedVertex = restrict;
     }
 
-    private VertexClickListener vertexClickListener;
-
+    
     public interface VertexClickListener {
         void vertexClicked(String vertex);
     }
@@ -87,10 +88,10 @@ public class GraphVisualizer extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 // It's a click, not a drag
-                if (vertexClickListener != null) {
-                    if (!restrictClicksToHighlightedVertex || (draggedVertex.equals(highlightedVertex))) {
+                if (!isDraggingVertex && draggedVertex != null && vertexClickListener != null) {
+                    if (!restrictClicksToHighlightedVertex || draggedVertex.equals(highlightedVertex)) {
                         vertexClickListener.vertexClicked(draggedVertex);
-                    } 
+                    }
                 }
                 draggedVertex = null;
                 isDraggingVertex = false;

@@ -149,7 +149,7 @@ public class BasicGUI {
         graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
             @Override
             public void vertexClicked(String vertex) {
-                //todo: method to handle vertex click
+                handleVertexClick(vertex);
             }
         });
         
@@ -265,6 +265,7 @@ public class BasicGUI {
                 Point adjustedClickPoint = new Point(adjustedX, adjustedY);
 
                 draggedVertex = null;
+                isDraggingVertex = false; //resetting the dragging flag
 
                 for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
                     String vertex = entry.getKey();
@@ -276,15 +277,13 @@ public class BasicGUI {
                         break;
                     }
                 }
-
                 lastMousePosition = adjustedClickPoint;
-                isDraggingVertex = false;
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 draggedVertex = null;
-                isDraggingVertex = false;
+                isDraggingVertex = false; // Reset dragging flag
             }
         });
 
