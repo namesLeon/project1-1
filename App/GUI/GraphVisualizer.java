@@ -1,5 +1,6 @@
 package App.GUI;
 
+import App.Algorithms.ColoringAlgorithm;
 import App.GUI.GraphVisualizer.VertexClickListener;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import javax.swing.*;
 
 
@@ -34,6 +36,7 @@ public class GraphVisualizer extends JPanel {
     private final int DRAG_THRESHOLD = 5; // Pixels
 
     private boolean restrictClicksToHighlightedVertex = false;
+    private boolean isGraphColored = false;
 
     public void setRestrictClicksToHighlightedVertex(boolean restrict) {
         this.restrictClicksToHighlightedVertex = restrict;
@@ -130,12 +133,29 @@ public class GraphVisualizer extends JPanel {
         }
     }
 
-    public void clearVertexColors() {
-        for (String vertex : vertices) {
-            vertexColors.put(vertex, Color.WHITE); // Reset each vertex to the default color
-        }
-        repaint();
+    
+    public void autoColorGraph(Map<String, Color> coloring) {
+        for (Map.Entry<String, Color> entry : coloring.entrySet()) {
+            vertexColors.put(entry.getKey(), entry.getValue());
     }
+        repaint();
+}
+
+
+public void clearVertexColors() {
+    if (vertices == null) {
+        return; // No vertices to clear
+    }
+
+    for (String vertex : vertices) {
+        vertexColors.put(vertex, Color.WHITE); // Reset each vertex to white
+    }
+    isGraphColored = false; // Mark the graph as uncolored
+    repaint();
+}
+
+
+
     
     // Method to set a highlighted vertex
     public void highlightVertex(String vertex) {
@@ -226,6 +246,51 @@ public class GraphVisualizer extends JPanel {
         drawVertices(g2d);
     }
 
+
+    public void autoColorGraphWithAlgorithm(ColoringAlgorithm coloringAlgorithm) {
+        if (vertices == null || vertices.length == 0) {
+            return; // No vertices to color
+        }
+    
+        List<Color> availableColors = coloringAlgorithm.getAllColors();
+        Map<String, Color> coloring = new HashMap<>();
+    
+        for (String vertex : vertices) {
+            // Determine colors of adjacent vertices
+            Set<Color> adjacentColors = new HashSet<>();
+            for (String[] edge : edges) {
+                if (edge[0].equals(vertex) && coloring.containsKey(edge[1])) {
+                    adjacentColors.add(coloring.get(edge[1]));
+                } else if (edge[1].equals(vertex) && coloring.containsKey(edge[0])) {
+                    adjacentColors.add(coloring.get(edge[0]));
+                }
+            }
+    
+            // Assign the first available color that is not in adjacentColors
+            for (Color color : availableColors) {
+                if (!adjacentColors.contains(color)) {
+                    coloring.put(vertex, color);
+                    break;
+                }
+            }
+        }
+    
+        // Apply the coloring to the vertices
+        for (Map.Entry<String, Color> entry : coloring.entrySet()) {
+            vertexColors.put(entry.getKey(), entry.getValue());
+        }
+    
+        isGraphColored = true; // Mark the graph as colored
+        repaint(); // Refresh the visual representation
+    }
+    
+    
+    
+    
+
+
+    
+
     private void drawVertices(Graphics2D g2d) {
         int radius = 20;
         for (String vertex : vertices) {
@@ -260,9 +325,14 @@ public class GraphVisualizer extends JPanel {
         repaint();
     }
 
-    public void toggleGraphColoring(){
-        showColoredGraph = !showColoredGraph; // Toggle the flag
-        repaint();
+    public void toggleGraphColoring(ColoringAlgorithm coloringAlgorithm) {
+        if (isGraphColored) {
+            clearVertexColors();
+            isGraphColored = false;
+        } else {
+            autoColorGraphWithAlgorithm(coloringAlgorithm);
+            isGraphColored = true;
+        }
     }
 
     // Method to get a vertex's color
@@ -320,9 +390,11 @@ public class GraphVisualizer extends JPanel {
         for (String vertex : vertices) {
             Color color = vertexColors.getOrDefault(vertex, Color.WHITE);
             if (color.equals(Color.WHITE)) {
-                return false;
+                return false; // If any vertex is white, the graph is not fully colored
             }
         }
-        return true;
+        return true; // All vertices are colored
     }
+    
+    
 }

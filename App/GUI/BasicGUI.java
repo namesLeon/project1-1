@@ -23,6 +23,7 @@ import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import App.Algorithms.ColoringAlgorithm;
 
 public class BasicGUI {
 
@@ -45,6 +46,7 @@ public class BasicGUI {
     private int panY = 0;
     private static final int DRAG_THRESHOLD = 5; // Adjust this value as needed
     private Map<String, Point> vertexPositions = new HashMap<>();
+    ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
     
     public void infoScreen() {
         JFrame frame = new JFrame("infoText");
@@ -176,6 +178,27 @@ public class BasicGUI {
                 }
             }
         });
+
+toggleColorButton.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        SoundFX.playSound("button.wav");
+
+        // Check if the graph is already colored
+        if (!graphPanel.areAllVerticesColored()) {
+            // Color the graph using the autoColorGraphWithAlgorithm (similar to giveUp method)
+            ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
+            graphPanel.autoColorGraphWithAlgorithm(coloringAlgorithm);
+        } else {
+            // Clear the graph's colors
+            graphPanel.clearVertexColors();
+        }
+    }
+});
+
+        
+        
+        
         
         // Action listener for exact algorithm button
         exactButton.addActionListener(new ActionListener() {
@@ -191,11 +214,12 @@ public class BasicGUI {
         toggleColorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Toggle button clicked");// added this for debugging the toggle button
                 SoundFX.playSound("button.wav");
-                graphPanel.toggleGraphColoring();// Toggle between colored and uncolored views
+                ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
+                graphPanel.toggleGraphColoring(coloringAlgorithm);
             }
         });
+        
 
         // Action listener for upper bound algorithm button
         upperBoundButton.addActionListener(new ActionListener() {
@@ -254,6 +278,24 @@ public class BasicGUI {
                 generateGraph();  // Added action listener for random graph generation
             }
         });
+
+        toggleColorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
+        
+                // Check if the graph is already colored
+                if (!graphPanel.areAllVerticesColored()) {
+                    // Color the graph using the autoColorGraphWithAlgorithm (similar to giveUp method)
+                    ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
+                    graphPanel.autoColorGraphWithAlgorithm(coloringAlgorithm);
+                } else {
+                    // Clear the graph's colors
+                    graphPanel.clearVertexColors();
+                }
+            }
+        });
+        
 
         // Mouse listener for dragging
         graphPanel.addMouseListener(new MouseAdapter() {
@@ -500,7 +542,7 @@ private void generateRandomGraph() {
 
                 if (edges < 0) {
                     JOptionPane.showMessageDialog(frame2, "Number of edges cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                    return;
+                    return; 
                 }
 
                 int maxEdges = vertices * (vertices - 1) / 2;
