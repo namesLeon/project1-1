@@ -117,6 +117,9 @@ public class BasicGUI {
         resultArea = new JTextArea(15, 40);
         resultArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(resultArea);
+        resultArea.setLineWrap(true);
+        resultArea.setWrapStyleWord(true);
+
 
         // add buttons to panel
         panel1.add(loadGraphButton);
@@ -418,22 +421,22 @@ toggleColorButton.addActionListener(new ActionListener() {
             frame.revalidate();
             frame.repaint();
         } else {
-            resultArea.append("failed to load graph from file " + file.getName() + "\n");
+            resultArea.append("Failed to load graph from file " + file.getName() + "\n");
         }
     }
 
     private void runExactAlgorithm() {
         if(vertices == null || edges == null) {
-            resultArea.append("please load a graph first \n.");
+            resultArea.append("Please load a graph first.\n");
             return;
         }
         if(SpecialCases.isComplete(vertices, edges)) {
             int ans = vertices.length;
-            resultArea.append("Graph is complete. Chromatic number is " + ans);
+            resultArea.append("Graph is complete. Chromatic number is " + ans + ".\n");
             return;
         }
         if(SpecialCases.isBipartite(vertices, edges)) {
-            resultArea.append("Graph is bipartite. Chromatic number is 2");
+            resultArea.append("Graph is bipartite. Chromatic number is 2.\n");
             return;
         }
         ExactAlgorithm exactAlg = new ExactAlgorithm(vertices, edges);
@@ -448,10 +451,10 @@ toggleColorButton.addActionListener(new ActionListener() {
         int exactChroNumber = exactAlg.branchAndBound(vertices, edges, colors, upperBound, lowerBound);
         if(exactChroNumber == -1) {
             SoundFX.playSound("fail.wav");
-            resultArea.append("the calculation took more than 30 seconds \n" + "here is the upper bound " + upperBound + "\n" + "here is the lower bound " + lowerBound + "\n");
+            resultArea.append("The calculation took more than 30 seconds, \n" + "Here is the upper bound: " + upperBound + "\n" + "Here is the lower bound: " + lowerBound + "\n");
         }
         else {
-            resultArea.append("exact chromatic number: " + exactChroNumber + "\n");
+            resultArea.append("Exact chromatic number: " + exactChroNumber + ".\n");
         }
     }
 
@@ -479,22 +482,22 @@ private void generateRandomGraph() {
 
     private void runUpperBoundAlgorithm(){
         if(vertices == null || edges == null) {
-            resultArea.append("load a graph first \n");
+            resultArea.append("Please load a graph first.\n");
             return;
         }
 
         upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
-        resultArea.append("upper bound: " + upperBound + "\n");
+        resultArea.append("Upper bound: " + upperBound + ".\n");
     }
 
     private void runLowerBoundAlgorithm(){
         if(vertices == null || edges == null) {
-            resultArea.append("load a graph first \n");
+            resultArea.append("Please load a graph first .\n");
             return;
         }
 
         lowerBound = LowerBoundAlgorithm.LowerBound(vertices, edges);
-        resultArea.append("lower bound: " + lowerBound + "\n");
+        resultArea.append("Lower bound: " + lowerBound + ".\n");
     }
 
 
