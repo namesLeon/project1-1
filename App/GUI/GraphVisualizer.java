@@ -256,21 +256,28 @@ public void clearVertexColors() {
         Map<String, Color> coloring = new HashMap<>();
     
         for (String vertex : vertices) {
-            // Determine colors of adjacent vertices
-            Set<Color> adjacentColors = new HashSet<>();
-            for (String[] edge : edges) {
-                if (edge[0].equals(vertex) && coloring.containsKey(edge[1])) {
-                    adjacentColors.add(coloring.get(edge[1]));
-                } else if (edge[1].equals(vertex) && coloring.containsKey(edge[0])) {
-                    adjacentColors.add(coloring.get(edge[0]));
-                }
-            }
+            Color currentColor = vertexColors.getOrDefault(vertex, Color.WHITE);
     
-            // Assign the first available color that is not in adjacentColors
-            for (Color color : availableColors) {
-                if (!adjacentColors.contains(color)) {
-                    coloring.put(vertex, color);
-                    break;
+            if (currentColor.equals(Color.WHITE)) {
+                // Determine colors of adjacent vertices
+                Set<Color> adjacentColors = new HashSet<>();
+    
+                for (String[] edge : edges) {
+                    if (edge[0].equals(vertex)) {
+                        adjacentColors.add(vertexColors.getOrDefault(edge[1], Color.WHITE));
+                        adjacentColors.add(coloring.getOrDefault(edge[1], Color.WHITE));
+                    } else if (edge[1].equals(vertex)) {
+                        adjacentColors.add(vertexColors.getOrDefault(edge[0], Color.WHITE));
+                        adjacentColors.add(coloring.getOrDefault(edge[0], Color.WHITE));
+                    }
+                }
+    
+                // Assign the first available color that is not in adjacentColors
+                for (Color color : availableColors) {
+                    if (!adjacentColors.contains(color)) {
+                        coloring.put(vertex, color);
+                        break;
+                    }
                 }
             }
         }
@@ -284,13 +291,6 @@ public void clearVertexColors() {
         repaint(); // Refresh the visual representation
     }
     
-    
-    
-    
-
-
-    
-
     private void drawVertices(Graphics2D g2d) {
         int radius = 20;
         for (String vertex : vertices) {
