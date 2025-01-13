@@ -474,66 +474,67 @@ private void generateRandomGraph() {
         frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame2.setSize(new Dimension(300, 200));
         frame2.setLayout(new BorderLayout());
-
+    
         JPanel inputPanel = new JPanel(new GridLayout(2, 2));
         JLabel verticesLabel = new JLabel("Number of Vertices:");
         JTextField verticesField = new JTextField();
         JLabel edgesLabel = new JLabel("Number of Edges:");
         JTextField edgesField = new JTextField();
-
+    
         inputPanel.add(verticesLabel);
         inputPanel.add(verticesField);
         inputPanel.add(edgesLabel);
         inputPanel.add(edgesField);
-
+    
         JButton confirmButton = new JButton("Confirm");
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(confirmButton);
-
+    
         frame2.add(inputPanel, BorderLayout.CENTER);
         frame2.add(buttonPanel, BorderLayout.SOUTH);
         frame2.setVisible(true);
-
-        ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
-
+    
         confirmButton.addActionListener(e -> {
             try {
-                int vertices = Integer.parseInt(verticesField.getText());
-                int edges = Integer.parseInt(edgesField.getText());
-
-                if (vertices <= 0) {
+                int numVertices = Integer.parseInt(verticesField.getText());
+                int numEdges = Integer.parseInt(edgesField.getText());
+    
+                if (numVertices <= 0) {
                     JOptionPane.showMessageDialog(frame2, "Number of vertices must be positive.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                if (edges < vertices - 1) {
-                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (vertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    
+                if (numEdges < numVertices - 1) {
+                    JOptionPane.showMessageDialog(frame2, "Number of edges must be at least " + (numVertices - 1) + " to ensure connectivity.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                if (edges < 0) {
+    
+                if (numEdges < 0) {
                     JOptionPane.showMessageDialog(frame2, "Number of edges cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                    return; 
+                    return;
                 }
-
-                int maxEdges = vertices * (vertices - 1) / 2;
-                if (edges > maxEdges) {
+    
+                int maxEdges = numVertices * (numVertices - 1) / 2;
+                if (numEdges > maxEdges) {
                     JOptionPane.showMessageDialog(frame2, "Too many edges for the number of vertices. Maximum possible edges: " + maxEdges, "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                RandomGraphGenerator generator = new RandomGraphGenerator(vertices, edges);
-                String[] Vertices = generator.getVertices();
-                String[][] Edges = generator.getEdgesNormalized(); // Use normalized edges
-
-                graphPanel.updateGraph(Vertices, Edges);
-
+    
+                RandomGraphGenerator generator = new RandomGraphGenerator(numVertices, numEdges);
+                // Update instance variables, not local variables
+                vertices = generator.getVertices();
+                edges = generator.getEdgesNormalized();
+    
+                graphPanel.updateGraph(vertices, edges); // Update the graph in the GUI
                 frame2.dispose();
-
+    
+                resultArea.append("Random graph generated with " + numVertices + " vertices and " + numEdges + " edges.\n");
+    
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
+    
 }
 
