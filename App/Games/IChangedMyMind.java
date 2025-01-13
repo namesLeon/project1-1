@@ -39,7 +39,7 @@ public class IChangedMyMind {
 
         JTextPane infoDump = new JTextPane();
         infoDump.setEditable(false);
-        infoDump.setText("Welcome to the SandBox! \n \n Here you can create graphs and colour or drag them around as you wish, without pesky timers or orders to bother you. At the top of the screen there will be a couple buttons; there is the load graph button to load a graph from a special type of file, the generate graph button the generate a random graph with a by you specified numbers of vertices and edges and lastly the exact, upper bound and lower bound algorithm buttons which show you the exact chromatic number, the upper bound or the lower bound for the currently loaded graph. Finally there are the result area and the graph box which show the afore mentioned numbers and graphs.");
+        infoDump.setText("Welcome to the SandBox! \n \n Like “Random Order,” the vertices must be colored in a specified sequence. However, the player can undo previous color choices, but only in reverse order (most recent first). This added flexibility allows the player to refine their choices and aim to use the minimum number of colors.");
 
         StyledDocument doc = infoDump.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();

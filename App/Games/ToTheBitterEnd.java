@@ -37,7 +37,7 @@ public class ToTheBitterEnd {
 
         JTextPane infoDump = new JTextPane();
         infoDump.setEditable(false);
-        infoDump.setText("Welcome to the SandBox! \n \n Here you can create graphs and colour or drag them around as you wish, without pesky timers or orders to bother you. At the top of the screen there will be a couple buttons; there is the load graph button to load a graph from a special type of file, the generate graph button the generate a random graph with a by you specified numbers of vertices and edges and lastly the exact, upper bound and lower bound algorithm buttons which show you the exact chromatic number, the upper bound or the lower bound for the currently loaded graph. Finally there are the result area and the graph box which show the afore mentioned numbers and graphs.");
+        infoDump.setText("Welcome to the SandBox! \n \n The player must color the graph as quickly as possible, focusing solely on speed. There are no restrictions on the coloring order, but once a vertex is colored, its color cannot be changed. The challenge is purely about fast decision-making under time pressure.");
 
         StyledDocument doc = infoDump.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
