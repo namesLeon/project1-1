@@ -79,4 +79,12 @@ public class RandomGraphGenerator {
     public String[][] getEdges() {
         return edges;
     }
+    public String[][] getEdgesNormalized() {
+        String[][] normalizedEdges = new String[edges.length][2];
+        for (int i=0;i<edges.length;i++) {
+            normalizedEdges[i][0] = String.valueOf(Integer.parseInt(edges[i][0]) - 1); 
+            normalizedEdges[i][1] = String.valueOf(Integer.parseInt(edges[i][1]) - 1);
+        }
+        return normalizedEdges;
+    }
 }
