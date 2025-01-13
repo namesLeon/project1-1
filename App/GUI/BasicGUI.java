@@ -54,7 +54,7 @@ public class BasicGUI {
         frame.setSize(400, 300);
         frame.setLayout(new BorderLayout());
 
-        JButton startButton = new JButton("Start Game");
+        JButton startButton = new JButton("Start");
 
         JTextPane infoDump = new JTextPane();
         infoDump.setEditable(false);
@@ -182,27 +182,23 @@ public class BasicGUI {
             }
         });
 
-toggleColorButton.addActionListener(new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        SoundFX.playSound("button.wav");
+        toggleColorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SoundFX.playSound("button.wav");
 
-        // Check if the graph is already colored
-        if (!graphPanel.areAllVerticesColored()) {
-            // Color the graph using the autoColorGraphWithAlgorithm (similar to giveUp method)
-            ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
-            graphPanel.autoColorGraphWithAlgorithm(coloringAlgorithm);
-        } else {
-            // Clear the graph's colors
-            graphPanel.clearVertexColors();
-        }
-    }
-});
+                // Check if the graph is already colored
+                if (!graphPanel.areAllVerticesColored()) {
+                    // Color the graph using the autoColorGraphWithAlgorithm (similar to giveUp method)
+                    ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
+                    graphPanel.autoColorGraphWithAlgorithm(coloringAlgorithm);
+                } else {
+                    // Clear the graph's colors
+                    graphPanel.clearVertexColors();
+                }
+            }
+        });
 
-        
-        
-        
-        
         // Action listener for exact algorithm button
         exactButton.addActionListener(new ActionListener() {
             @Override
@@ -212,17 +208,6 @@ toggleColorButton.addActionListener(new ActionListener() {
                 System.out.println("exact Algorithm 2 button clicked.");
             }
         });
-
-        // Action listener for toggle color button
-        toggleColorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("button.wav");
-                ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
-                graphPanel.toggleGraphColoring(coloringAlgorithm);
-            }
-        });
-        
 
         // Action listener for upper bound algorithm button
         upperBoundButton.addActionListener(new ActionListener() {
@@ -281,24 +266,6 @@ toggleColorButton.addActionListener(new ActionListener() {
                 generateGraph();  // Added action listener for random graph generation
             }
         });
-
-        toggleColorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SoundFX.playSound("button.wav");
-        
-                // Check if the graph is already colored
-                if (!graphPanel.areAllVerticesColored()) {
-                    // Color the graph using the autoColorGraphWithAlgorithm (similar to giveUp method)
-                    ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
-                    graphPanel.autoColorGraphWithAlgorithm(coloringAlgorithm);
-                } else {
-                    // Clear the graph's colors
-                    graphPanel.clearVertexColors();
-                }
-            }
-        });
-        
 
         // Mouse listener for dragging
         graphPanel.addMouseListener(new MouseAdapter() {
