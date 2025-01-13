@@ -2,11 +2,9 @@ package App.Algorithms;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 /**
 * note from ilgaz
@@ -60,6 +58,7 @@ public class SpecialCases {
         // for further safety we can keep track in a set of pairs
         // to ensure that every pair appears only once
 
+        /* 
         Set<String> edgeSet = new HashSet<>();
 
             for (String[] e : edges) { 
@@ -101,8 +100,10 @@ public class SpecialCases {
             }
             
         }
-
-        return true;
+        */
+        else{
+            return true;
+        }
 
     }
 
