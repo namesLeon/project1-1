@@ -433,7 +433,7 @@ private void generateRandomGraph() {
     scanner.close();
     RandomGraphGenerator randomGraphGenerator = new RandomGraphGenerator(numVertices, numEdges); 
     vertices = randomGraphGenerator.getVertices(); 
-    edges = randomGraphGenerator.getEdges(); 
+    edges = randomGraphGenerator.getEdgesNormalized(); 
     
     vertexPositions.clear(); 
     Random rand = new Random(); 
@@ -444,7 +444,8 @@ private void generateRandomGraph() {
         
     resultArea.append("Random graph generated with " + numVertices + " vertices and " + numEdges + " edges.\n"); 
     graphPanel.updateGraph(vertices, edges); frame.revalidate(); // Revalidate the frame to reflect the changes 
-    frame.repaint(); // Repaint the frame to show the graph 
+    frame.revalidate();
+    frame.repaint(); 
     }
 
     private void runUpperBoundAlgorithm(){
@@ -523,7 +524,7 @@ private void generateRandomGraph() {
 
                 RandomGraphGenerator generator = new RandomGraphGenerator(vertices, edges);
                 String[] Vertices = generator.getVertices();
-                String[][] Edges = generator.getEdges();
+                String[][] Edges = generator.getEdgesNormalized(); // Use normalized edges
 
                 graphPanel.updateGraph(Vertices, Edges);
 
