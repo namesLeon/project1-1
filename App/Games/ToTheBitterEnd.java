@@ -27,6 +27,7 @@ public class ToTheBitterEnd {
     private String[] Vertices;
     private boolean interactable = true;
 
+    @SuppressWarnings("unused")
     public static void game() {
         JFrame frame = new JFrame("infoText");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -62,6 +63,7 @@ public class ToTheBitterEnd {
         });
     }
 
+    @SuppressWarnings("unused")
     private void initializeGame() {
         frame = new JFrame("To The Bitter End");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -118,6 +120,7 @@ public class ToTheBitterEnd {
         });
     }
 
+    @SuppressWarnings("unused")
     private void generateGraph() {
         JFrame frame2 = new JFrame("Generate Graph");
         frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -275,7 +278,6 @@ public class ToTheBitterEnd {
     
             if (selectedOption.equals("Generate New Color")) {
                 // Generate a new color and add it to coloringAlgorithm
-                Color newColor = coloringAlgorithm.addNewRandomColor();
                 JOptionPane.showMessageDialog(
                         frame,
                         "New color generated and added to the selection list.",
@@ -340,6 +342,7 @@ public class ToTheBitterEnd {
         }
     }
 
+    @SuppressWarnings("unused")
     public static void showLeaderboard() {
         List<Scoring.LeaderboardEntry> leaderboard = Scoring.getLeaderBoard("ToTheBitterEnd");
 
@@ -396,6 +399,7 @@ public class ToTheBitterEnd {
         hintPenaltySeconds += 10; 
     }
 
+    @SuppressWarnings("unused")
     private void giveUp() {
         interactable = false;
         

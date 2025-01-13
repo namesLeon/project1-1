@@ -4,7 +4,7 @@ import App.Algorithms.ColoringAlgorithm;
 import App.Algorithms.ExactAlgorithm;
 import App.Algorithms.LowerBoundAlgorithm;
 import App.Algorithms.RandomGraphGenerator;
-import App.Algorithms.SpecialCases;  // Added import
+import App.Algorithms.SpecialCases;
 import App.Algorithms.UpperBoundAlgorithm;
 import App.Main.Main;
 import App.Txt.TxtInterpretation;
@@ -17,13 +17,10 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import App.Algorithms.ColoringAlgorithm;
 
 public class BasicGUI {
 
@@ -48,6 +45,7 @@ public class BasicGUI {
     private Map<String, Point> vertexPositions = new HashMap<>();
     ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
     
+    @SuppressWarnings("unused")
     public void infoScreen() {
         JFrame frame = new JFrame("infoText");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -425,29 +423,6 @@ public class BasicGUI {
         }
     }
 
-
-private void generateRandomGraph() { 
-    Scanner scanner = new Scanner(System.in);
-    int numVertices = scanner.nextInt(); 
-    int numEdges = scanner.nextInt(); 
-    scanner.close();
-    RandomGraphGenerator randomGraphGenerator = new RandomGraphGenerator(numVertices, numEdges); 
-    vertices = randomGraphGenerator.getVertices(); 
-    edges = randomGraphGenerator.getEdgesNormalized(); 
-    
-    vertexPositions.clear(); 
-    Random rand = new Random(); 
-    for (String vertex : vertices) { 
-        int x = rand.nextInt(graphPanel.getWidth()); 
-        int y = rand.nextInt(graphPanel.getHeight()); 
-        vertexPositions.put(vertex, new Point(x, y)); } 
-        
-    resultArea.append("Random graph generated with " + numVertices + " vertices and " + numEdges + " edges.\n"); 
-    graphPanel.updateGraph(vertices, edges); frame.revalidate(); // Revalidate the frame to reflect the changes 
-    frame.revalidate();
-    frame.repaint(); 
-    }
-
     private void runUpperBoundAlgorithm(){
         if(vertices == null || edges == null) {
             resultArea.append("Please load a graph first.\n");
@@ -469,6 +444,7 @@ private void generateRandomGraph() {
     }
 
 
+    @SuppressWarnings("unused")
     private void generateGraph() {
         JFrame frame2 = new JFrame("Generate Graph");
         frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

@@ -1,7 +1,6 @@
 package App.GUI;
 
 import App.Algorithms.ColoringAlgorithm;
-import App.GUI.GraphVisualizer.VertexClickListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ public class GraphVisualizer extends JPanel {
     private double zoomFactor = 1.0; // Default zoom level
     private int panX = 0; // Horizontal pan offset
     private int panY = 0; // Vertical pan offset
+    @SuppressWarnings("unused")
     private String[] vertexOrder;
     private String highlightedVertex; // Added for highlighting
     private boolean showColoredGraph = true; // Default of the graph is uncolored
@@ -128,8 +128,6 @@ public class GraphVisualizer extends JPanel {
         if (vertexColors.containsKey(vertex) || true) {  // Add to ensure vertex exists or add new
             vertexColors.put(vertex, color);
             repaint();  // Refresh visual representation
-        } else {
-            throw new IllegalArgumentException("Vertex " + vertex + " not found.");
         }
     }
 
@@ -162,33 +160,6 @@ public void clearVertexColors() {
         this.highlightedVertex = vertex;
         repaint();
     }
-
-    // Helper method to handle vertex clicks
-    private void handleVertexClick(String vertex) {
-        Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
-        String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Orange"};
-
-        String selectedColorName = (String) JOptionPane.showInputDialog(
-                this,
-                "Choose a color for vertex " + vertex + ":",
-                "Select Color",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                colorNames,
-                colorNames[0]
-        );
-
-        if (selectedColorName != null) {
-            for (int i = 0; i < colorNames.length; i++) {
-                if (selectedColorName.equals(colorNames[i])) {
-                    vertexColors.put(vertex, colors[i]);
-                    break;
-                }
-            }
-            repaint();
-        }
-    }
-
 
     public void setVertexOrder(String[] order){
         this.vertexOrder = order;

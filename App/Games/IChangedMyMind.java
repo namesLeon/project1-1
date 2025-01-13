@@ -29,6 +29,7 @@ public class IChangedMyMind {
     private String[] Vertices;
     private boolean interactable = true;
 
+    @SuppressWarnings("unused")
     public static void game() { 
         JFrame frame = new JFrame("infoText");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -64,6 +65,7 @@ public class IChangedMyMind {
         });
     }
 
+    @SuppressWarnings("unused")
     private void initializeGame() {
         frame = new JFrame("I Changed My Mind");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -144,6 +146,7 @@ public class IChangedMyMind {
         });
     }
 
+    @SuppressWarnings("unused")
     private void generateGraph() {
         JFrame frame2 = new JFrame("Generate Graph");
         frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -317,7 +320,6 @@ public class IChangedMyMind {
             }
     
             if (selectedOption.equals("Generate New Color")) {
-                Color newColor = coloringAlgorithm.addNewRandomColor();
                 JOptionPane.showMessageDialog(
                         frame,
                         "New color generated and added to the selection list.",
@@ -410,6 +412,7 @@ public class IChangedMyMind {
         }
     }
 
+    @SuppressWarnings("unused")
     public static void showLeaderboard() {
         List<Scoring.LeaderboardEntry> leaderboard = Scoring.getLeaderBoard("RandomOrder");
 
@@ -445,6 +448,7 @@ public class IChangedMyMind {
     private static class UndoStep {
         int vertexIndex;
         Color previousColor;
+        @SuppressWarnings("unused")
         Color newColor;
     
         UndoStep(int vertexIndex, Color previousColor, Color newColor) {
@@ -454,6 +458,7 @@ public class IChangedMyMind {
         }
     }
 
+    @SuppressWarnings("unused")
     private void giveUp() {
         interactable = false;
 
