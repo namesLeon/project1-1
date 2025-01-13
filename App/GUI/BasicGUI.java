@@ -16,7 +16,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -188,8 +192,10 @@ public class BasicGUI {
                 // Check if the graph is already colored
                 if (!graphPanel.areAllVerticesColored()) {
                     // Color the graph using the autoColorGraphWithAlgorithm (similar to giveUp method)
-                    ColoringAlgorithm coloringAlgorithm = new ColoringAlgorithm();
-                    graphPanel.autoColorGraphWithAlgorithm(coloringAlgorithm);
+                    for(int i = 0; i < vertices.length; i++) {
+                        Color suggestedColor = getComputerSuggestion(vertices[i]);
+                        graphPanel.setVertexColor(vertices[i], suggestedColor);
+                    }
                 } else {
                     // Clear the graph's colors
                     graphPanel.clearVertexColors();
@@ -511,6 +517,37 @@ public class BasicGUI {
             }
         });
     }
+    private Color getComputerSuggestion(String vertex) {
+        // Get colors of adjacent vertices
+        Set<Color> invalidColors = getAdjacentColors(vertex);
     
+        // Try to use existing colors to minimize the number of colors used
+        List<Color> allColors = coloringAlgorithm.getAllColors();
+    
+        for (Color color : allColors) {
+            if (!invalidColors.contains(color)) {
+                // Found a valid color
+                return color;
+            }
+        }
+    
+        // If no existing color is valid, generate a new color
+        Color newColor = coloringAlgorithm.addNewRandomColor();
+        return newColor;
+    }
+
+    private Set<Color> getAdjacentColors(String vertex) {
+        Set<Color> colors = new HashSet<>();
+        for (String[] edge : graphPanel.getEdges()) {
+            if (edge[0].equals(vertex)) {
+                Color color = graphPanel.getVertexColor(edge[1]);
+                if (color != null) colors.add(color);
+            } else if (edge[1].equals(vertex)) {
+                Color color = graphPanel.getVertexColor(edge[0]);
+                if (color != null) colors.add(color);
+            }
+        }
+        return colors;
+    }
 }
 
