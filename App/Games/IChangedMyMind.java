@@ -320,6 +320,7 @@ public class IChangedMyMind {
             }
     
             if (selectedOption.equals("Generate New Color")) {
+                coloringAlgorithm.addNewRandomColor();
                 JOptionPane.showMessageDialog(
                         frame,
                         "New color generated and added to the selection list.",

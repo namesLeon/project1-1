@@ -278,6 +278,7 @@ public class ToTheBitterEnd {
     
             if (selectedOption.equals("Generate New Color")) {
                 // Generate a new color and add it to coloringAlgorithm
+                coloringAlgorithm.addNewRandomColor();
                 JOptionPane.showMessageDialog(
                         frame,
                         "New color generated and added to the selection list.",
