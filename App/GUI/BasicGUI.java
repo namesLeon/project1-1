@@ -367,34 +367,36 @@ public class BasicGUI {
      * 
      */
     private void loadGraphFromFile(File file) {
-
         TxtInterpretation txtInt = new TxtInterpretation();
         // getting vertices and edges
         vertices = txtInt.getVertices(file.getAbsolutePath());
         edges = txtInt.getEdges(file.getAbsolutePath());
-
-        if(vertices != null && edges != null) {
+    
+        if (vertices != null && edges != null) {
             upperBound = -1; // reset
-            // display in result area
             resultArea.append("Graph loaded from file: " + file.getName() + "\n");
             resultArea.append("Number of vertices: " + vertices.length + "\n");
             resultArea.append("Number of edges: " + edges.length + "\n\n");
-
+    
             graphPanel.updateGraph(vertices, edges);
-
+            
+            // Apply minimal edge crossing algorithm
+            graphPanel.applyMinimalEdgeCrossingAlgorithm(vertices, edges);
+    
             graphPanel.setVertexClickListener(new GraphVisualizer.VertexClickListener() {
                 @Override
                 public void vertexClicked(String vertex) {
                     handleVertexClick(vertex);
                 }
             });
-
+    
             frame.revalidate();
             frame.repaint();
         } else {
             resultArea.append("Failed to load graph from file " + file.getName() + "\n");
         }
     }
+    
 
     private void runExactAlgorithm() {
         if(vertices == null || edges == null) {
@@ -456,26 +458,26 @@ public class BasicGUI {
         frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame2.setSize(new Dimension(300, 200));
         frame2.setLayout(new BorderLayout());
-    
+        
         JPanel inputPanel = new JPanel(new GridLayout(2, 2));
         JLabel verticesLabel = new JLabel("Number of Vertices:");
         JTextField verticesField = new JTextField();
         JLabel edgesLabel = new JLabel("Number of Edges:");
         JTextField edgesField = new JTextField();
-    
+        
         inputPanel.add(verticesLabel);
         inputPanel.add(verticesField);
         inputPanel.add(edgesLabel);
         inputPanel.add(edgesField);
-    
+        
         JButton confirmButton = new JButton("Confirm");
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(confirmButton);
-    
+        
         frame2.add(inputPanel, BorderLayout.CENTER);
         frame2.add(buttonPanel, BorderLayout.SOUTH);
         frame2.setVisible(true);
-    
+        
         confirmButton.addActionListener(e -> {
             try {
                 int numVertices = Integer.parseInt(verticesField.getText());
@@ -491,11 +493,6 @@ public class BasicGUI {
                     return;
                 }
     
-                if (numEdges < 0) {
-                    JOptionPane.showMessageDialog(frame2, "Number of edges cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-    
                 int maxEdges = numVertices * (numVertices - 1) / 2;
                 if (numEdges > maxEdges) {
                     JOptionPane.showMessageDialog(frame2, "Too many edges for the number of vertices. Maximum possible edges: " + maxEdges, "Input Error", JOptionPane.ERROR_MESSAGE);
@@ -503,20 +500,23 @@ public class BasicGUI {
                 }
     
                 RandomGraphGenerator generator = new RandomGraphGenerator(numVertices, numEdges);
-                // Update instance variables, not local variables
                 vertices = generator.getVertices();
                 edges = generator.getEdgesNormalized();
+                
+                graphPanel.updateGraph(vertices, edges);
     
-                graphPanel.updateGraph(vertices, edges); // Update the graph in the GUI
+                // Apply minimal edge crossing algorithm
+                graphPanel.applyMinimalEdgeCrossingAlgorithm(vertices, edges);
+    
                 frame2.dispose();
-    
+                
                 resultArea.append("Random graph generated with " + numVertices + " vertices and " + numEdges + " edges.\n");
-    
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame2, "Please enter valid integers.", "Input Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
+    
     private Color getComputerSuggestion(String vertex) {
         // Get colors of adjacent vertices
         Set<Color> invalidColors = getAdjacentColors(vertex);

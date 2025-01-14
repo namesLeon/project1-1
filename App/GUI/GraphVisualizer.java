@@ -73,6 +73,7 @@ public class GraphVisualizer extends JPanel {
         
                 draggedVertex = null;
         
+                // Check if a vertex is clicked
                 for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
                     String vertex = entry.getKey();
                     Point vertexPos = entry.getValue();
@@ -84,13 +85,16 @@ public class GraphVisualizer extends JPanel {
                     }
                 }
         
-                lastMousePosition = adjustedClickPoint;
+                // If no vertex is selected, initiate dragging of the graph
+                if (draggedVertex == null) {
+                    lastMousePosition = adjustedClickPoint; // Track mouse position for graph movement
+                }
+        
                 isDraggingVertex = false;
             }
         
             @Override
             public void mouseReleased(MouseEvent e) {
-                // It's a click, not a drag
                 if (!isDraggingVertex && draggedVertex != null && vertexClickListener != null) {
                     if (!restrictClicksToHighlightedVertex || draggedVertex.equals(highlightedVertex)) {
                         vertexClickListener.vertexClicked(draggedVertex);
@@ -104,24 +108,47 @@ public class GraphVisualizer extends JPanel {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                Point currentPoint = e.getPoint();
+                // Adjust mouse position with respect to the zoom factor
+                int adjustedX = (int) ((currentPoint.x - panX) / zoomFactor);
+                int adjustedY = (int) ((currentPoint.y - panY) / zoomFactor);
+                Point adjustedCurrentPoint = new Point(adjustedX, adjustedY);
+        
                 if (draggedVertex != null) {
-                    Point currentPoint = e.getPoint();
-                    int adjustedX = (int) ((currentPoint.x - panX) / zoomFactor);
-                    int adjustedY = (int) ((currentPoint.y - panY) / zoomFactor);
-                    Point adjustedCurrentPoint = new Point(adjustedX, adjustedY);
-
+                    // Dragging a vertex
                     if (!isDraggingVertex && lastMousePosition.distance(adjustedCurrentPoint) > DRAG_THRESHOLD) {
                         isDraggingVertex = true;
                     }
-
+        
                     if (isDraggingVertex) {
                         vertexPositions.put(draggedVertex, adjustedCurrentPoint);
                         lastMousePosition = adjustedCurrentPoint;
                         repaint();
                     }
+                } else {
+                    // Dragging the entire graph (when no vertex is being dragged)
+                    // Calculate the pan change by comparing to last mouse position
+                    int deltaX = adjustedCurrentPoint.x - lastMousePosition.x;
+                    int deltaY = adjustedCurrentPoint.y - lastMousePosition.y;
+        
+                    // Apply scaling factor only to delta changes (to prevent too rapid movement)
+                    deltaX = (int) (deltaX * zoomFactor);
+                    deltaY = (int) (deltaY * zoomFactor);
+        
+                    // Update pan coordinates based on delta
+                    panX += deltaX;
+                    panY += deltaY;
+        
+                    // Update the last position for future dragging movements
+                    lastMousePosition = adjustedCurrentPoint;
+        
+                    // Repaint to reflect the change
+                    repaint();
                 }
             }
         });
+        
+        
     }
 
     public void recolorVertex(String vertex, Color color) {
@@ -367,5 +394,97 @@ public void clearVertexColors() {
         return true; // All vertices are colored
     }
     
+    public void applyMinimalEdgeCrossingAlgorithm(String[] vertices, String[][] edges) {
+        Map<String, Point> newPositions = new HashMap<>();
+        
+        Random rand = new Random();
+        int width = getWidth();
+        int height = getHeight();
+        
+        // Initialize positions randomly or on a grid
+        for (String vertex : vertices) {
+            int x = rand.nextInt(width);
+            int y = rand.nextInt(height);
+            newPositions.put(vertex, new Point(x, y));
+        }
     
-}
+        // Simple force-directed layout
+        for (int iteration = 0; iteration < 10000; iteration++) {  // 100 iterations for optimization
+            for (String v1 : vertices) {
+                Point position1 = newPositions.get(v1);
+                for (String v2 : vertices) {
+                    if (!v1.equals(v2)) {
+                        Point position2 = newPositions.get(v2);
+                        
+                        // Apply simple repulsive force
+                        int dx = position1.x - position2.x;
+                        int dy = position1.y - position2.y;
+                        double distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 50) distance = 50; // Avoid overlap
+                        
+                        int forceX = (int) (1000 * dx / distance);
+                        int forceY = (int) (1000 * dy / distance);
+                        
+                        newPositions.put(v1, new Point(position1.x + forceX, position1.y + forceY));
+                        newPositions.put(v2, new Point(position2.x - forceX, position2.y - forceY));
+                    }
+                }
+            }
+    
+            // Apply attraction between connected vertices (edges)
+            for (String[] edge : edges) {
+                String v1 = edge[0];
+                String v2 = edge[1];
+                
+                Point position1 = newPositions.get(v1);
+                Point position2 = newPositions.get(v2);
+                
+                int dx = position1.x - position2.x;
+                int dy = position1.y - position2.y;
+                double distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Apply simple attraction force (to reduce edge crossing)
+                int forceX = (int) (600 * dx / distance);
+                int forceY = (int) (600 * dy / distance);
+                
+                newPositions.put(v1, new Point(position1.x - forceX, position1.y - forceY));
+                newPositions.put(v2, new Point(position2.x + forceX, position2.y + forceY));
+            }
+        }
+    
+        // Now scale the positions to fit within the bounds of the window
+        scaleGraphToFitWindow(newPositions);
+    
+        // Update the graph panel with new positions after layout
+        vertexPositions = newPositions;
+        repaint(); // Repaint the graph with new positions
+    }
+    
+    private void scaleGraphToFitWindow(Map<String, Point> newPositions) {
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        
+        // Find the min/max x and y values to determine the bounding box of the graph
+        for (Point p : newPositions.values()) {
+            minX = Math.min(minX, p.x);
+            minY = Math.min(minY, p.y);
+            maxX = Math.max(maxX, p.x);
+            maxY = Math.max(maxY, p.y);
+        }
+    
+        // Calculate the scaling factors for the graph to fit within the window
+        double scaleX = (double) getWidth() / (maxX - minX);
+        double scaleY = (double) getHeight() / (maxY - minY);
+        double scale = Math.min(scaleX, scaleY);  // Scale the graph to fit the window
+    
+        // Apply scaling to the vertex positions
+        for (Map.Entry<String, Point> entry : newPositions.entrySet()) {
+            Point original = entry.getValue();
+            int scaledX = (int) ((original.x - minX) * scale);
+            int scaledY = (int) ((original.y - minY) * scale);
+            entry.setValue(new Point(scaledX, scaledY));
+        }
+    }
+}    
