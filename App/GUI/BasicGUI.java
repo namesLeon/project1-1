@@ -209,7 +209,7 @@ public class BasicGUI {
             public void actionPerformed(ActionEvent e) {
                 SoundFX.playSound("button.wav");
                 runExactAlgorithm();
-                System.out.println("exact Algorithm 2 button clicked.");
+                System.out.println("exact Algorithm button clicked.");
             }
         });
 
@@ -409,12 +409,33 @@ public class BasicGUI {
             return;
         }
         if(SpecialCases.isBipartite(vertices, edges)) {
-            resultArea.append("Graph is bipartite. Chromatic number is 2.\n");
+            resultArea.append("Graph is a bipartite. Chromatic number is 2.\n");
             return;
         }
         if(SpecialCases.isCycle(vertices, edges)) {
             int ans = (vertices.length % 2 == 0) ? 2 : 3;
-            resultArea.append("Graph is a cycle. Chromatic number is " + ans + ".\n");
+            resultArea.append("Graph is a cycle graph. Chromatic number is " + ans + ".\n");
+            return;
+        }
+        if(SpecialCases.isStarGraph(vertices, edges)) {
+            int ans = 2;
+            resultArea.append("Graph is a star graph. Chromatic number is " + ans + ".\n");
+            return;
+        }
+        if(SpecialCases.isPathGraph(vertices, edges)) {
+            int ans = 2;
+            resultArea.append("Graph is a path graph. Chromatic number is " + ans + ".\n");
+            return;
+        }
+        if(SpecialCases.isTree(vertices, edges)) {
+            int ans = 2;
+            resultArea.append("Graph is a tree graph. Chromatic number is " + ans + ".\n");
+            return;
+        }
+        if(SpecialCases.isWheelGraph(vertices, edges)) {
+            int ans = (vertices.length % 2 == 0) ? 3 : 4;
+            resultArea.append("Graph is a wheel graph. Chromatic number is " + ans + ".\n");
+            return;
         }
         ExactAlgorithm exactAlg = new ExactAlgorithm(vertices, edges);
         if(upperBound == -1) {

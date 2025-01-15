@@ -218,22 +218,148 @@ public class SpecialCases {
         }
         return true;
     }
+
+    public static boolean isStarGraph(String[] vertices, String[][] edges) {
+        int n = vertices.length;
+        int[] degree = new int[n];
+        for (String[] edge : edges) {
+            int u = Integer.parseInt(edge[0]) - 1;
+            int v = Integer.parseInt(edge[1]) - 1;
+            degree[u]++;
+            degree[v]++;
+        }
     
-    public static int detectSpecialCase(String[] vertices, String[][] edges) {
-        if (isComplete(vertices, edges)) {
-            // Chromatic number of a complete graph
-            return vertices.length;
+        int centerCount = 0, leafCount = 0;
+        for (int d : degree) {
+            if (d == n - 1) centerCount++;
+            else if (d == 1) leafCount++;
+            else return false;
         }
-        if (isBipartite(vertices, edges)) {
-            // Chromatic number of a bipartite graph
-            return 2;
-        }
-        if (isCycle(vertices, edges)) {
-            // Chromatic number of a cycle graph
-            return (vertices.length % 2 == 0) ? 2 : 3;
-        }
-        // If no special case, return -1 to indicate fallback to general algorithm
-        return -1;
+        return centerCount == 1 && leafCount == n - 1;
     }
+
+    public static boolean isPathGraph(String[] vertices, String[][] edges) {
+        int n = vertices.length;
+        int[] degree = new int[n];
+        for (String[] edge : edges) {
+            int u = Integer.parseInt(edge[0]) - 1;
+            int v = Integer.parseInt(edge[1]) - 1;
+            degree[u]++;
+            degree[v]++;
+        }
+    
+        int endCount = 0;
+        for (int d : degree) {
+            if (d == 1) endCount++;
+            else if (d != 2) return false;
+        }
+        return endCount == 2; // Path graph must have exactly 2 endpoints
+    }
+    
+    public static boolean isTree(String[] vertices, String[][] edges) {
+        int n = vertices.length;
+        if (edges.length != n - 1) return false; // Tree must have n-1 edges
+    
+        boolean[] visited = new boolean[n];
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+    
+        for (String[] edge : edges) {
+            int u = Integer.parseInt(edge[0]) - 1;
+            int v = Integer.parseInt(edge[1]) - 1;
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+        }
+    
+        if (!dfsTree(adj, 0, visited, -1)) return false; // Detect cycles
+    
+        // Check if all vertices are visited
+        for (boolean v : visited) {
+            if (!v) return false;
+        }
+        return true;
+    }
+    
+    private static boolean dfsTree(List<List<Integer>> adj, int node, boolean[] visited, int parent) {
+        visited[node] = true;
+    
+        for (int neighbor : adj.get(node)) {
+            if (!visited[neighbor]) {
+                if (!dfsTree(adj, neighbor, visited, node)) return false;
+            } else if (neighbor != parent) {
+                return false; // Cycle detected
+            }
+        }
+        return true;
+    }
+    
+    public static boolean isWheelGraph(String[] vertices, String[][] edges) {
+        int n = vertices.length;
+        if (n < 4) return false;
+    
+        int[] degree = new int[n];
+        for (String[] edge : edges) {
+            int u = Integer.parseInt(edge[0]) - 1;
+            int v = Integer.parseInt(edge[1]) - 1;
+            degree[u]++;
+            degree[v]++;
+        }
+    
+        int center = -1;
+        for (int i = 0; i < n; i++) {
+            if (degree[i] == n - 1) {
+                if (center != -1) return false; // Only one center allowed
+                center = i;
+            }
+        }
+        if (center == -1) return false;
+    
+        // Check if remaining vertices form a cycle
+        List<String> cycleVertices = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (i != center) cycleVertices.add(String.valueOf(i + 1));
+        }
+        return isCycle(cycleVertices.toArray(new String[0]), edges);
+    }
+    
+    public static boolean isDisconnected(String[] vertices, String[][] edges) {
+        int n = vertices.length;
+        boolean[] visited = new boolean[n];
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+    
+        for (String[] edge : edges) {
+            int u = Integer.parseInt(edge[0]) - 1;
+            int v = Integer.parseInt(edge[1]) - 1;
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+        }
+    
+        // Use BFS or DFS to traverse
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        visited[0] = true;
+    
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            for (int v : adj.get(u)) {
+                if (!visited[v]) {
+                    visited[v] = true;
+                    queue.add(v);
+                }
+            }
+        }
+    
+        // Check if all vertices are visited
+        for (boolean v : visited) {
+            if (!v) return true; // Graph is disconnected
+        }
+        return false;
+    }
+    
     
 }
