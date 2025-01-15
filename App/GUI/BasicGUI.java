@@ -112,7 +112,8 @@ public class BasicGUI {
         JButton zoomInButton = new JButton("Zoom In");
         JButton zoomOutButton = new JButton("Zoom Out");
         JButton toggleColorButton = new JButton("Toggle Graph Coloring");
-        JButton randomGraphButton = new JButton("Generate Random Graph"); 
+        JButton randomGraphButton = new JButton("Generate Random Graph");
+        JButton testButton = new JButton("test"); 
 
 
         // new text area to display the results
@@ -133,7 +134,8 @@ public class BasicGUI {
         panel2.add(backButton);
         panel2.add(zoomOutButton);
         panel1.add(toggleColorButton);
-        panel1.add(randomGraphButton);  // Added button to panel
+        panel1.add(randomGraphButton);
+        panel1.add(testButton);
 
         graphPanel = new GraphVisualizer(new String[0], new String[0][0]);
         graphPanel.setPreferredSize(new Dimension(600, 600));
@@ -180,6 +182,49 @@ public class BasicGUI {
                     loadGraphFromFile(selectedFile);
                 } else {
                     resultArea.append("file selection cancelled.");
+                }
+            }
+        });
+
+        testButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(int i = 1; i <= 100; i++) {
+                    int Vertices = -1;
+                    int Edges = -1;
+
+                    Vertices = (int) (Math.random() * 100);
+                    Edges = (int) (Math.random() * 100);
+                    int maxEdges = Vertices * (Vertices - 1) / 2;
+
+                    if (Vertices <= 0) {
+                        i = i - 1;
+                    }
+        
+                    else if (Edges < Vertices - 1) {
+                        i = i - 1;
+                    }
+        
+                    else if (Edges > maxEdges) {
+                        i = i - 1;
+                    }
+
+                    else {
+                    RandomGraphGenerator generator = new RandomGraphGenerator(Vertices, Edges);
+                    vertices = generator.getVertices();
+                    edges = generator.getEdgesNormalized();
+                    graphPanel.updateGraph(vertices, edges);
+
+                    upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);
+                    lowerBound = LowerBoundAlgorithm.LowerBound(vertices, edges);
+
+                    int[] colors = new int[vertices.length];
+                    ExactAlgorithm exactAlg = new ExactAlgorithm(vertices, edges);
+                    int exactChroNumber = exactAlg.branchAndBound(vertices, edges, colors, upperBound, lowerBound);
+
+                    resultArea.append("number of vertices: " + Vertices + "\nnumber of edges: " + Edges + "\nexact chromatic number" + exactChroNumber + "\n\n");
+                    }
+                    
                 }
             }
         });
