@@ -412,6 +412,10 @@ public class BasicGUI {
             resultArea.append("Graph is bipartite. Chromatic number is 2.\n");
             return;
         }
+        if(SpecialCases.isCycle(vertices, edges)) {
+            int ans = (vertices.length % 2 == 0) ? 2 : 3;
+            resultArea.append("Graph is a cycle. Chromatic number is " + ans + ".\n");
+        }
         ExactAlgorithm exactAlg = new ExactAlgorithm(vertices, edges);
         if(upperBound == -1) {
             upperBound = UpperBoundAlgorithm.UpperBound(vertices, edges);

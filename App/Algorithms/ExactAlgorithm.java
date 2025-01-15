@@ -37,7 +37,7 @@ public class ExactAlgorithm {
             colors[nextVertex] = color;
             int currentMaxColor = getMaxColorUsed(colors);
 
-            if (currentMaxColor >= upperBound || currentMaxColor < lowerBound) {
+            if (currentMaxColor >= upperBound) {
                 colors[nextVertex] = 0;
                 continue;
             }
@@ -81,9 +81,16 @@ public class ExactAlgorithm {
         for (int i = 0; i < colors.length; i++) {
             if (colors[i] == 0) {
                 int saturation = computeSaturation(i, colors, adjacencyList);
+                int degree = adjacencyList.get(i).size();  // or number of colored neighbors
                 if (saturation > maxSaturation) {
                     maxSaturation = saturation;
                     selectedVertex = i;
+                } else if (saturation == maxSaturation) {
+                    // TIE-BREAK: check degree
+                    int selectedVertexDegree = adjacencyList.get(selectedVertex).size();
+                    if (degree > selectedVertexDegree) {
+                        selectedVertex = i;
+                    }
                 }
             }
         }
