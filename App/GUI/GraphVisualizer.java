@@ -73,7 +73,6 @@ public class GraphVisualizer extends JPanel {
         
                 draggedVertex = null;
         
-                // Check if a vertex is clicked
                 for (Map.Entry<String, Point> entry : vertexPositions.entrySet()) {
                     String vertex = entry.getKey();
                     Point vertexPos = entry.getValue();
@@ -85,16 +84,13 @@ public class GraphVisualizer extends JPanel {
                     }
                 }
         
-                // If no vertex is selected, initiate dragging of the graph
-                if (draggedVertex == null) {
-                    lastMousePosition = adjustedClickPoint; // Track mouse position for graph movement
-                }
-        
+                lastMousePosition = adjustedClickPoint;
                 isDraggingVertex = false;
             }
         
             @Override
             public void mouseReleased(MouseEvent e) {
+                // It's a click, not a drag
                 if (!isDraggingVertex && draggedVertex != null && vertexClickListener != null) {
                     if (!restrictClicksToHighlightedVertex || draggedVertex.equals(highlightedVertex)) {
                         vertexClickListener.vertexClicked(draggedVertex);
@@ -108,47 +104,24 @@ public class GraphVisualizer extends JPanel {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                Point currentPoint = e.getPoint();
-                // Adjust mouse position with respect to the zoom factor
-                int adjustedX = (int) ((currentPoint.x - panX) / zoomFactor);
-                int adjustedY = (int) ((currentPoint.y - panY) / zoomFactor);
-                Point adjustedCurrentPoint = new Point(adjustedX, adjustedY);
-        
                 if (draggedVertex != null) {
-                    // Dragging a vertex
+                    Point currentPoint = e.getPoint();
+                    int adjustedX = (int) ((currentPoint.x - panX) / zoomFactor);
+                    int adjustedY = (int) ((currentPoint.y - panY) / zoomFactor);
+                    Point adjustedCurrentPoint = new Point(adjustedX, adjustedY);
+
                     if (!isDraggingVertex && lastMousePosition.distance(adjustedCurrentPoint) > DRAG_THRESHOLD) {
                         isDraggingVertex = true;
                     }
-        
+
                     if (isDraggingVertex) {
                         vertexPositions.put(draggedVertex, adjustedCurrentPoint);
                         lastMousePosition = adjustedCurrentPoint;
                         repaint();
                     }
-                } else {
-                    // Dragging the entire graph (when no vertex is being dragged)
-                    // Calculate the pan change by comparing to last mouse position
-                    int deltaX = adjustedCurrentPoint.x - lastMousePosition.x;
-                    int deltaY = adjustedCurrentPoint.y - lastMousePosition.y;
-        
-                    // Apply scaling factor only to delta changes (to prevent too rapid movement)
-                    deltaX = (int) (deltaX * zoomFactor);
-                    deltaY = (int) (deltaY * zoomFactor);
-        
-                    // Update pan coordinates based on delta
-                    panX += deltaX;
-                    panY += deltaY;
-        
-                    // Update the last position for future dragging movements
-                    lastMousePosition = adjustedCurrentPoint;
-        
-                    // Repaint to reflect the change
-                    repaint();
                 }
             }
         });
-        
-        
     }
 
     public void recolorVertex(String vertex, Color color) {
